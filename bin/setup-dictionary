@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/spellr/dictionary'
+Spellr::Dictionary.download
+puts 'done'
