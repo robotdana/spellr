@@ -1,6 +1,6 @@
 require "bundler/setup"
 require "spellr"
-require 'rspec_command'
+require 'pry'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -13,5 +13,5 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.include RSpecCommand
+  require_relative './support/cli_helper'
 end

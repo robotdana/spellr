@@ -1,4 +1,22 @@
 #!/usr/bin/env ruby
 require_relative '../lib/spellr'
+require 'optparse'
 
-puts Spellr::VERSION
+list = false
+interactive = false
+
+OptionParser.new do |opts|
+  opts.on('--list', 'List files to be spellchecked') { list = true }
+  opts.on('-i', '--interactive', "Runs the spell check interactively") { interactive = true }
+  opts.on_tail('-v', '--version', "Returns the current version") { puts Spellr::VERSION; exit }
+  opts.on_tail('-h', '--help', "Shows this message" ) { puts opts; exit }
+end.parse!
+
+files = Spellr::Files.new(globs: ARGV)
+
+if list
+  puts files.map(&:expand_path).join("\n")
+  exit
+end
+
+# Spellr::Check.new(files: files, interactive: interactive)
