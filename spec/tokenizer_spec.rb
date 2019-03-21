@@ -1,77 +1,107 @@
+RSpec::Matchers.define :have_tokens do |*expected|
+  match do |actual|
+    @actual = Spellr::Line.new(actual).tokenize.map(&:to_s)
+    expect(@actual).to match(expected)
+  end
+
+  diffable
+end
+RSpec::Matchers.alias_matcher :have_no_tokens, :have_tokens
+
 RSpec.describe Spellr::Line do
   it 'returns tokens split by spaces' do
-    tokens = described_class.new("This line").tokenize
-    expect(tokens.map(&:to_s)).to eq ["This", "line"]
+    expect("This line").to have_tokens "This", "line"
   end
 
   it 'returns tokens split by :' do
-    tokens = described_class.new("Spellr::Line").tokenize
-    expect(tokens.map(&:to_s)).to eq ["Spellr", "Line"]
+    expect("Spellr::Line").to have_tokens "Spellr", "Line"
   end
 
   it "doesn't tokenize a URL" do
-    tokens = described_class.new('click here https://google.com').tokenize
-    expect(tokens.map(&:to_s)).to eq ['click', 'here']
+    expect('click here https://google.com').to have_tokens 'click', 'here'
+  end
+
+  it "doesn't tokenize a URL in parens" do
+    expect('[link](ftp://example.org)').to have_tokens 'link'
+  end
+
+  it "doesn't tokenize a URL in angle brackets" do
+    expect('Dave <dave@example.com>').to have_tokens 'Dave'
+  end
+
+  it "doesn't tokenize a URL followed by punctuation" do
+    expect('read this http://google.com, and this http://apple.com').to have_tokens 'read', 'this', 'and', 'this'
+  end
+
+  it "doesn't tokenize a URL with a query string" do
+    expect('query https://the-google.com?query-string=whatever%2Bthing').to have_tokens 'query'
   end
 
   it "doesn't tokenize a URL with no scheme" do
-    pending
-    tokens = described_class.new('click here //google.com').tokenize
-    expect(tokens.map(&:to_s)).to eq ['click', 'here']
+    expect('click here //google.com').to have_tokens 'click', 'here'
   end
 
   it "doesn't tokenize an email" do
-    tokens = described_class.new('href="mailto:robot@dana.sh"').tokenize
-    expect(tokens.map(&:to_s)).to eq ['href']
+    expect('href="mailto:robot@dana.sh"').to have_tokens 'href'
+  end
+
+  it "doesn't tokenize an email with no scheme" do
+    expect('send here: robot@dana.sh').to have_tokens 'send', 'here'
   end
 
   it "doesn't tokenize short words" do
-    tokens = described_class.new('to be or not to be').tokenize
-    expect(tokens.map(&:to_s)).to eq ['not']
+    expect('to be or not to be').to have_tokens 'not'
   end
 
   it 'excludes URLs with numbers in them' do
-    tokens = described_class.new('http://www.the4wd.com').tokenize
-    expect(tokens.map(&:to_s)).to be_empty
+    expect('http://www.the4wd.com').to have_no_tokens
   end
 
   it "doesn't tokenize numbers only" do
-    tokens = described_class.new('3.14 100 4,000').tokenize
-    expect(tokens).to be_empty
+    expect('3.14 100 4,000').to have_no_tokens
   end
 
   it "dosen't tokenize maths only" do
-    tokens = described_class.new('1+1 1/2 10>4 15-10').tokenize
-    expect(tokens).to be_empty
+    expect('1+1 1/2 10>4 15-10').to have_no_tokens
   end
 
   it "tokenizes html tags" do
-    tokens = described_class.new('<div style="background: red">').tokenize
-    expect(tokens.map(&:to_s)).to eq ['div', 'style', 'background', 'red']
+    expect('<div style="background: red">').to have_tokens 'div', 'style', 'background', 'red'
   end
 
   it "doesn't tokenize CSS colours" do
-    tokens = described_class.new('color: #fee; background: #fad').tokenize
-    expect(tokens.map(&:to_s)).to eq ['color', 'background']
+    expect('color: #fee; background: #fad').to have_tokens 'color', 'background'
   end
 
   it "doesn't split on apostrophes" do
-    tokens = described_class.new("didn't shouldn't could've o'clock").tokenize
-    expect(tokens.map(&:to_s)).to eq ["didn't", "shouldn't", "could've", "o'clock"]
+    expect("didn't shouldn't could've o'clock").to have_tokens "didn't", "shouldn't", "could've", "o'clock"
   end
 
   it "splits on wrapping quotes" do
-    tokens = described_class.new(%{"didn't" 'shouldn't' <could've> 'o'clock'}).tokenize
-    expect(tokens.map(&:to_s)).to eq ["didn't", "shouldn't", "could've", "o'clock"]
+    expect(%{"didn't" 'shouldn't' <could've> 'o'clock'}).to have_tokens "didn't", "shouldn't", "could've", "o'clock"
   end
 
   it "splits on underscore" do
-    tokens = described_class.new("this_that_the_other SCREAMING_SNAKE_CASE").tokenize
-    expect(tokens.map(&:to_s)).to eq ['this', 'that', 'the', 'other', 'SCREAMING', 'SNAKE', 'CASE']
+    expect("this_that_the_other").to have_tokens 'this', 'that', 'the', 'other'
+  end
+
+  it "splits on underscore when all caps" do
+    expect('SCREAMING_SNAKE_CASE').to have_tokens 'SCREAMING', 'SNAKE', 'CASE'
+  end
+
+  it "splits on dashes" do
+    expect("white-space:nowrap;align-items:center").to have_tokens 'white', 'space', 'nowrap', 'align', 'items', 'center'
+  end
+
+  it "splits on dashes in all caps" do
+    expect('CAPS-WITH-DASHES').to have_tokens 'CAPS', 'WITH', 'DASHES'
   end
 
   it 'splits on camel case' do
-    tokens = described_class.new("CamelCase camelCase").tokenize
-    expect(tokens.map(&:to_s)).to eq ['Camel', 'Case', 'camel', 'Case']
+    expect("CamelCase camelCase").to have_tokens 'Camel', 'Case', 'camel', 'Case'
+  end
+
+  it 'splits on camel case with all caps' do
+    expect("HTTParty GoogleAPI").to have_tokens 'HTT', 'Party', 'Google', 'API'
   end
 end
