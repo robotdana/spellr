@@ -6,3 +6,4 @@ tokenizes
 exitstatus
 subtoken
 checkable
+gitignored

@@ -1,5 +1,7 @@
 require 'pathname'
 require 'ptools'
+require 'gitignore/parser'
+
 module Spellr
   class File
     attr_reader :file
@@ -17,7 +19,19 @@ module Spellr
       # can't check the dictionary against the dictionary
       return false if Spellr.config.dictionaries.any? { |k, v| v.file === file }
 
+      return false if gitignored?
+
       true
+    end
+
+    def self.gitignore_allowed
+      @gitignore_allowed ||= Gitignore::Parser.list_files(directory: Pathname.pwd.to_s)
+    end
+
+    def gitignored?
+      return if self.class.gitignore_allowed.empty?
+
+      !self.class.gitignore_allowed.include?(file.to_s)
     end
 
     def fn_match?(matches)

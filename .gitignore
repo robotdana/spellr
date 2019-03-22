@@ -1,10 +1,2 @@
-/.bundle/
-/.yardoc
-/_yardoc/
-/coverage/
-/doc/
-/pkg/
-/spec/reports/
-/tmp/
 /dictionaries/natural*
 .rspec_status
