@@ -6,9 +6,5 @@
 /pkg/
 /spec/reports/
 /tmp/
-
-# rspec failure tracking
+/dictionaries/natural*
 .rspec_status
-
-data/DICTIONARY
-data/LICENSE
