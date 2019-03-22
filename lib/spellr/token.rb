@@ -4,7 +4,7 @@ module Spellr
     STRIP_START = %r{^[^\\/#[[:alpha:]]]+}
     STRIP_END = %r{[^[[:alpha:]]]+$}
     SUBTOKEN_RE = %r{(
-      (?<![[:upper:]])[[[:lower:]]']+(?<!'s) # lowercase not preceeded by uppercase
+      (?<![[:upper:]])[[[:lower:]]']+(?<!'s) # lowercase not preceded by uppercase
       |
       [[[:upper:]]']+(?<!'S)(?![[:lower:]]) # uppercase not succeeded by lowercase
       |
@@ -22,6 +22,22 @@ module Spellr
 
       strip_start
       strip_end
+    end
+
+    def file
+      line.file
+    end
+
+    def before
+      line.line.slice(0...start)
+    end
+
+    def after
+      line.line.slice(@end..-1)
+    end
+
+    def location
+      [line.location, start].compact.join(':')
     end
 
     def strip_start
@@ -42,10 +58,8 @@ module Spellr
 
     def url?
       return true unless URI.extract(@string).empty?
-
-      # schemeless URI
+      # URI with no scheme
       return true if @string.start_with?('//') && !URI.extract("http:#{@string}").empty?
-
       return true if @string.include?('@') && !URI.extract("mailto:#{@string}").empty?
     end
 

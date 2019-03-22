@@ -21,7 +21,7 @@ RSpec.describe Spellr::Line do
     expect('click here https://google.com').to have_tokens 'click', 'here'
   end
 
-  it "doesn't tokenize a URL in parens" do
+  it "doesn't tokenize a URL in parentheses" do
     expect('[link](ftp://example.org)').to have_tokens 'link'
   end
 
@@ -61,12 +61,12 @@ RSpec.describe Spellr::Line do
     expect('3.14 100 4,000').to have_no_tokens
   end
 
-  it "dosen't tokenize maths only" do
+  it "doesn't tokenize maths only" do
     expect('1+1 1/2 10>4 15-10').to have_no_tokens
   end
 
   it "tokenizes html tags" do
-    expect('<div style="background: red">').to have_tokens 'div', 'style', 'background', 'red'
+    expect('<a style="background: red">').to have_tokens 'a', 'style', 'background', 'red'
   end
 
   it "doesn't tokenize CSS colours" do
@@ -90,7 +90,7 @@ RSpec.describe Spellr::Line do
   end
 
   it "splits on dashes" do
-    expect("white-space:nowrap;align-items:center").to have_tokens 'white', 'space', 'nowrap', 'align', 'items', 'center'
+    expect("align-items:center").to have_tokens 'align', 'items', 'center'
   end
 
   it "splits on dashes in all caps" do

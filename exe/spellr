@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+
 require_relative '../lib/spellr'
 require 'optparse'
 
@@ -23,10 +24,10 @@ begin
 rescue LoadError
 end
 
-files = Spellr::Files.new(globs: ARGV)
+files = Spellr::FileList.new(globs: ARGV)
 
 if list
-  puts files.map(&:expand_path).join("\n")
+  puts files.join("\n")
   exit
 end
 

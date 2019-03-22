@@ -1,2 +1,8 @@
 sherson
-spellr
+ptools
+tokenize
+tokenizer
+tokenizes
+exitstatus
+subtoken
+checkable

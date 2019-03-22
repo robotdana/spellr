@@ -5,13 +5,15 @@ module Spellr
   class Dictionary
     include Enumerable
 
-    attr_accessor :download_required, :download_options, :file, :name
+    attr_accessor :download_required, :download_options, :file, :name, :only, :only_hashbangs
     alias_method :download_required?, :download_required
 
     def initialize(file)
-      @file = file.is_a?(Pathname) ? file : Pathname.new(file)
+      @file = Pathname.new(file).expand_path
       @name = @file.basename('.*')
       @download_options = {}
+      @only = []
+      @only_hashbangs = []
     end
 
     def each(&block)

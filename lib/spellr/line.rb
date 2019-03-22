@@ -33,6 +33,18 @@ module Spellr
         tokens += Token.new(Regexp.last_match, line: self).tokens
       end
       tokens
+
+    rescue
+      puts file
+      raise
+    end
+
+    def each_token(&block)
+      tokenize.each(&block)
+    end
+
+    def location
+      [file, line_number].join(':')
     end
   end
 end

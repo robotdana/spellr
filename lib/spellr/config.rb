@@ -1,21 +1,16 @@
 module Spellr
   class Config
-    attr_reader :dictionaries
+    attr_accessor :dictionaries, :exclusions
 
     def initialize
-      @dictionaries = []
+      @dictionaries = {}
+      @exclusions = []
     end
 
     def add_dictionary(filename)
       dictionary = Dictionary.new(filename)
       yield dictionary if block_given?
-      dictionaries << dictionary
-    end
-
-    def remove_dictionary(name)
-      dictionaries.delete_if do |dict|
-        dict.name == name.to_s || dict.file == name.to_s
-      end
+      dictionaries[dictionary.name.to_s.to_sym] = dictionary
     end
   end
 end
