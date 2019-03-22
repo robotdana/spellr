@@ -1,6 +1,6 @@
 module Spellr
   class Line
-    attr_reader :line
+    attr_reader :line, :file, :line_number
     # Finds everything that is either a word,
     # Or we might need it for proving something isn't a word
     # in additional to [[:alpha:]], for testing if they're
@@ -21,14 +21,16 @@ module Spellr
       ){3,} # no short words
     }x
 
-    def initialize(line)
+    def initialize(line, file: nil, line_number: nil)
       @line = line
+      @file = file
+      @line_number = line_number
     end
 
     def tokenize
       tokens = []
       line.scan(SCAN_RE) do
-        tokens += Token.new(Regexp.last_match).tokens
+        tokens += Token.new(Regexp.last_match, line: self).tokens
       end
       tokens
     end

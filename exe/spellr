@@ -19,4 +19,16 @@ if list
   exit
 end
 
-# Spellr::Check.new(files: files, interactive: interactive)
+unless Spellr::Dictionary['natural'].file.exist?
+  STDERR.puts "Fetching the natural language dictionary"
+  Spellr::DictionaryLoader.download
+  unless Spellr::Dictionary['natural'].file.exist?
+    STDERR.puts "There was an error fetching the natural language dictionary"
+    exit 1
+  end
+end
+
+checker = Spellr::Check.new(files: files, interactive: interactive)
+checker.check
+
+exit checker.exit_code

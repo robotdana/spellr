@@ -4,6 +4,8 @@ require_relative "spellr/line"
 require_relative "spellr/files"
 require_relative "spellr/dictionary"
 require_relative "spellr/dictionary_loader"
+require_relative "spellr/reporter"
+require_relative "spellr/check"
 
 module Spellr
   class Error < StandardError; end

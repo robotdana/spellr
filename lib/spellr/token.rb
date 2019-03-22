@@ -13,8 +13,9 @@ module Spellr
       [[:upper:]]+(?=[[:upper:]][[:lower:]])
     )}x
 
-    attr_reader :string, :start, :end
-    def initialize(match, offset: 0)
+    attr_reader :string, :start, :end, :line
+    def initialize(match, offset: 0, line:)
+      @line = line
       @string = match[0]
       @start = match.begin(0) + offset
       @end = match.end(0) + offset
@@ -63,7 +64,7 @@ module Spellr
     def tokens
       return [] unless word?
       t = []
-      string.scan(SUBTOKEN_RE) { t << Token.new(Regexp.last_match, offset: @start)  }
+      string.scan(SUBTOKEN_RE) { t << Token.new(Regexp.last_match, offset: @start, line: line)  }
       t.select(&:word?)
     end
   end
