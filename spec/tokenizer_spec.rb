@@ -104,4 +104,16 @@ RSpec.describe Spellr::Line do
   it 'splits on camel case with all caps' do
     expect("HTTParty GoogleAPI").to have_tokens 'HTT', 'Party', 'Google', 'API'
   end
+
+  it "drops 's" do
+    expect("do's and don't's").to have_tokens 'and', "don't"
+  end
+
+  it "drops 's with all caps" do
+    expect("DO'S AND DON'T'S").to have_tokens 'AND', "DON'T"
+  end
+
+  it "drops 's with all camel case" do
+    expect("TheThing's").to have_tokens 'The', "Thing"
+  end
 end

@@ -4,13 +4,13 @@ module Spellr
     STRIP_START = %r{^[^\\/#[[:alpha:]]]+}
     STRIP_END = %r{[^[[:alpha:]]]+$}
     SUBTOKEN_RE = %r{(
-      (?<![[:upper:]])[[[:lower:]]']+ # lowercase not preceeded by uppercase
+      (?<![[:upper:]])[[[:lower:]]']+(?<!'s) # lowercase not preceeded by uppercase
       |
-      [[[:upper:]]']+(?![[:lower:]]) # uppercase not succeeded by lowercase
+      [[[:upper:]]']+(?<!'S)(?![[:lower:]]) # uppercase not succeeded by lowercase
       |
-      [[:upper:]][[:lower:]]+
+      [[:upper:]][[[:lower:]]']+(?<!'s) # camel case like CaseCase
       |
-      [[:upper:]]+(?=[[:upper:]][[:lower:]])
+      [[[:upper:]]']+(?<!'S)(?=[[:upper:]][[:lower:]]) # camel case like CASECase
     )}x
 
     attr_reader :string, :start, :end, :line
