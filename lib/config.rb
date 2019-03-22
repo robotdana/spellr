@@ -8,6 +8,11 @@ Spellr.configure do |config|
     .DS_Store
     Gemfile.lock
     .rspec_status
+    *.png
+    *.jpg
+    *.gif
+    *.ico
+    .gitkeep
   }
 
   config.add_dictionary(default(:natural)) do |dict|

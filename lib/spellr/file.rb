@@ -1,5 +1,4 @@
 require 'pathname'
-require 'ptools'
 require 'gitignore/parser'
 
 module Spellr
@@ -14,7 +13,6 @@ module Spellr
       # can't check unless it's a file
       return false unless file.file?
       return false if fn_match?(Spellr.config.exclusions)
-      return false if ::File.binary?(file)
 
       # can't check the dictionary against the dictionary
       return false if Spellr.config.dictionaries.any? { |k, v| v.file === file }

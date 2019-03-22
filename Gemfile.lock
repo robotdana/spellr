@@ -3,7 +3,6 @@ PATH
   specs:
     spellr (0.1.0)
       gitignore-parser
-      ptools
 
 GEM
   remote: https://rubygems.org/
@@ -16,7 +15,6 @@ GEM
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    ptools (1.3.5)
     rake (10.5.0)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
