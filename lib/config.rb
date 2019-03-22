@@ -17,8 +17,8 @@ Spellr.configure do |config|
 
   config.add_dictionary(default(:natural)) do |dict|
     dict.lazy_download(
-      max_size: 50,
-      spelling: %w{US AU},
+      max_size: 95,
+      spelling: %w{US AU CA GBz GBs},
       max_variant: 0,
       diacritic: :both,
       special: :hacker
