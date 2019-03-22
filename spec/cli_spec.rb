@@ -8,6 +8,7 @@ RSpec.describe 'command line', type: :cli do
         'Usage: spellr [options]',
         '        --list                       List files to be spellchecked',
         '    -i, --interactive                Runs the spell check interactively',
+        '    -c, --config FILENAME            Path to the config file',
         '    -v, --version                    Returns the current version',
         '    -h, --help                       Shows this message'
       ]

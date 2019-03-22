@@ -4,13 +4,24 @@ require 'optparse'
 
 list = false
 interactive = false
+config_file = nil
 
 OptionParser.new do |opts|
   opts.on('--list', 'List files to be spellchecked') { list = true }
   opts.on('-i', '--interactive', "Runs the spell check interactively") { interactive = true }
+  opts.on('-c', '--config FILENAME', String, "Path to the config file") { |file| config_file = file }
   opts.on_tail('-v', '--version', "Returns the current version") { puts Spellr::VERSION; exit }
   opts.on_tail('-h', '--help', "Shows this message" ) { puts opts; exit }
 end.parse!
+
+require_relative '../lib/config'
+require config_file if config_file
+
+# default config file is not required
+begin
+  require './.spellr_config' unless config_file
+rescue LoadError
+end
 
 files = Spellr::Files.new(globs: ARGV)
 
@@ -19,14 +30,6 @@ if list
   exit
 end
 
-unless Spellr::Dictionary['natural'].file.exist?
-  STDERR.puts "Fetching the natural language dictionary"
-  Spellr::DictionaryLoader.download
-  unless Spellr::Dictionary['natural'].file.exist?
-    STDERR.puts "There was an error fetching the natural language dictionary"
-    exit 1
-  end
-end
 
 checker = Spellr::Check.new(files: files, interactive: interactive)
 checker.check

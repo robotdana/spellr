@@ -3,4 +3,7 @@ env
 ext
 org
 uri
-
+exe
+repo
+todo
+metadata

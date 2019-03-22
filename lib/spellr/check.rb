@@ -11,8 +11,9 @@ module Spellr
     def check
       each_token do |token|
         token_string = token.to_s.downcase + "\n"
-        next if Spellr::Dictionary['common'].include?(token_string)
-        next if Spellr::Dictionary['natural'].include?(token_string)
+        next if Spellr.config.dictionaries.any? do |dict|
+          dict.include?(token_string)
+        end
         reporter.report(token)
         @exit_code = 1
       end
