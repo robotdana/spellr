@@ -1,6 +1,26 @@
 require 'uri'
 module Spellr
   class Token
+    # Finds everything that is either a word,
+    # Or we might need it for proving something isn't a word
+    # in additional to [[:alpha:]], for testing if they're
+    SCAN_RE = %r{
+      (?:
+        [[[:alpha:]]\#\\=/\-0-9]
+        # inside URL or starting colour code
+        # escape codes maybe
+        # base64
+      |
+        (?<!\s)[%&._@+=/\-?](?!\s) # inside a URL
+      |
+        \:((?=//)|(?<=mailto:)) # colon in a URL or mailto link
+      |
+        (?<!\\033)(?<!\\e)\[ # shell escape codes
+      |
+        (?<=[[[:alpha:]]])'(?=[[[:alpha:]]]) # apostrophes
+      ){3,} # no short words
+    }x
+
     STRIP_START = %r{^[^\\/#[[:alpha:]]]+}
     STRIP_END = %r{[^[[:alpha:]]]+$}
     SUBTOKEN_RE = %r{(
@@ -12,6 +32,14 @@ module Spellr
       |
       [[[:upper:]]']+(?<!'S)(?=[[:upper:]][[:lower:]]) # camel case like CASECase
     )}x
+
+    def self.tokenize(line)
+      tokens = []
+      line.scan(SCAN_RE) do
+        tokens += Token.new(Regexp.last_match, line: line).tokens
+      end
+      tokens
+    end
 
     attr_reader :string, :start, :end, :line
     def initialize(match, offset: 0, line:)
@@ -29,11 +57,11 @@ module Spellr
     end
 
     def before
-      line.line.slice(0...start)
+      line.slice(0...start)
     end
 
     def after
-      line.line.slice(@end..-1)
+      line.slice(@end..-1)
     end
 
     def location
