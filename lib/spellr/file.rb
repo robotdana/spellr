@@ -26,6 +26,12 @@ module Spellr
       @gitignore_allowed ||= Gitignore::Parser.list_files(directory: Pathname.pwd.to_s)
     end
 
+    def dictionaries
+      @dictionaries ||= Spellr.config.dictionaries.values.select do |dict|
+        fn_match?(dict.only) || hashbang_match?(dict.only_hashbangs)
+      end
+    end
+
     def gitignored?
       return if self.class.gitignore_allowed.empty?
 
@@ -55,15 +61,17 @@ module Spellr
       file.to_s
     end
 
-    def dictionaries
-      @dictionaries ||= Spellr.config.dictionaries.values.select { |dict| fn_match?(dict.only) || hashbang_match?(dict.only_hashbangs) }
-    end
-
-    def each_line
+    def each_line(&block)
       file.each_line.lazy.with_index do |line_string, line_number|
         line = Spellr::Line.new(line_string, file: self, line_number: line_number)
 
-        yield line
+        block.call line
+      end
+    end
+
+    def each_token(&block)
+      each_line do |line|
+        line.each_token(&block)
       end
     end
   end

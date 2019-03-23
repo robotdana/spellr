@@ -1,12 +1,22 @@
 RSpec::Matchers.define :have_tokens do |*expected|
   match do |actual|
-    @actual = Spellr::Token.tokenize(actual).map(&:to_s)
+    @actual = Spellr::Token.tokenize(actual)
     expect(@actual).to match(expected)
   end
 
   diffable
 end
 RSpec::Matchers.alias_matcher :have_no_tokens, :have_tokens
+
+RSpec::Matchers.define :have_subwords do |*expected|
+  match do |actual|
+    @actual = Spellr::Token.new(actual).subwords
+    expect(@actual).to match_array(expected)
+  end
+
+  diffable
+end
+RSpec::Matchers.alias_matcher :have_no_subwords, :have_subwords
 
 RSpec.describe Spellr::Token do
   describe '.tokenize' do
@@ -116,6 +126,34 @@ RSpec.describe Spellr::Token do
 
     it "drops 's with all camel case" do
       expect("TheThing's").to have_tokens 'The', "Thing"
+    end
+  end
+
+  describe '#subwords' do
+    before { stub_config(subword_minimum_length: 3) }
+
+    it "returns nothing for the shortest word" do
+      expect("foo").to have_no_subwords
+    end
+
+    it "returns nothing for the just slightly longer than the shortest word" do
+      expect("food").to have_no_subwords
+    end
+
+    it "splits once for double the shortest word" do
+      expect("foobar").to have_subwords ["foo", "bar"]
+    end
+
+    it "has both splitting points for just slightly longer than double the shortest word" do
+      expect("foodbar").to have_subwords ["food", "bar"], ["foo", "dbar"]
+    end
+
+    it "splits into three for three times the longest word, and also has all possible pairs" do
+      expect("foobarbaz").to have_subwords ["foo", "bar", "baz"], ["foob", "arbaz"], ["fooba", "rbaz"], ["foobar", "baz"], ["foo", "barbaz"]
+    end
+
+    it "just keeps going" do
+      expect("foobarbazz").to have_subwords ["foo", "barbazz"], ["foo", "bar", "bazz"], ["foo", "barb", "azz"], ["foob", "arbazz"], ["foob", "arb", "azz"], ["fooba", "rbazz"], ["foobar", "bazz"], ["foobarb", "azz"]
     end
   end
 end

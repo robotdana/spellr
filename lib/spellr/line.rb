@@ -23,5 +23,9 @@ module Spellr
     def slice(*args)
       line.slice(*args)
     end
+
+    def to_s
+      line
+    end
   end
 end

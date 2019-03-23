@@ -13,5 +13,10 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
+  config.mock_with :rspec do |mocks|
+    mocks.verify_partial_doubles = true
+  end
+
   require_relative './support/cli_helper'
+  require_relative './support/stub_helper'
 end

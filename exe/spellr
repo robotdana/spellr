@@ -32,7 +32,7 @@ if list
 end
 
 
-checker = Spellr::Check.new(files: files, interactive: interactive)
+checker = Spellr::Check.new(files: files)
 checker.check
 
 exit checker.exit_code

@@ -15,11 +15,10 @@ module Spellr
   module_function
 
   def config
-    @config
+    @config ||= Spellr::Config.new
   end
 
   def configure
-    @config ||= Spellr::Config.new
-    yield(@config)
+    yield(config)
   end
 end

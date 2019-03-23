@@ -35,21 +35,20 @@ module Spellr
 
     def self.tokenize(line)
       tokens = []
-      line.scan(SCAN_RE) do
-        tokens += Token.new(Regexp.last_match, line: line).tokens
+      line.to_s.scan(SCAN_RE) do
+        m = Regexp.last_match
+        t = Token.new(m[0], start: m.begin(0), line: line)
+        t.strip!
+        tokens += t.tokens
       end
       tokens
     end
 
     attr_reader :string, :start, :end, :line
-    def initialize(match, offset: 0, line:)
+    def initialize(string, start: 0, line: nil)
       @line = line
-      @string = match[0]
-      @start = match.begin(0) + offset
-      @end = match.end(0) + offset
-
-      strip_start
-      strip_end
+      @string = string
+      @start = start
     end
 
     def file
@@ -61,38 +60,36 @@ module Spellr
     end
 
     def after
-      line.slice(@end..-1)
+      line.slice(self.end..-1)
+    end
+
+    def end
+      start + string.length
     end
 
     def location
       [line.location, start].compact.join(':')
     end
 
-    def strip_start
-      new_string = @string.sub(STRIP_START, '')
+    def strip!
+      new_string = string.sub(STRIP_START, '')
       @start += @string.length - new_string.length
-      @string = new_string
-    end
-
-    def strip_end
-      new_string = @string.sub(STRIP_END, '')
-      @end -= @string.length - new_string.length
-      @string = new_string
+      @string = new_string.sub(STRIP_END, '')
     end
 
     def to_s
-      @string
+      string
     end
 
     def url?
       return true unless URI.extract(@string).empty?
       # URI with no scheme
-      return true if @string.start_with?('//') && !URI.extract("http:#{@string}").empty?
-      return true if @string.include?('@') && !URI.extract("mailto:#{@string}").empty?
+      return true if string.start_with?('//') && !URI.extract("http:#{@string}").empty?
+      return true if string.include?('@') && !URI.extract("mailto:#{@string}").empty?
     end
 
     def hex?
-      @string =~ /(#|0x)(\h{6}|\h{3})/
+      string =~ /\A(#|0x)(\h{6}|\h{3})\z/
     end
 
     def word?
@@ -103,11 +100,38 @@ module Spellr
       true
     end
 
+    def to_str
+      string
+    end
+
+    def ==(other)
+      return string == other if other.is_a?(String)
+
+      super
+    end
+
     def tokens
       return [] unless word?
       t = []
-      string.scan(SUBTOKEN_RE) { t << Token.new(Regexp.last_match, offset: @start, line: line)  }
+      string.scan(SUBTOKEN_RE) do
+        m = Regexp.last_match
+        tt = Token.new(m[0], start: start + m.begin(0), line: line)
+        tt.strip!
+        t << tt
+      end
       t.select(&:word?)
+    end
+
+    def subwords(include_self: false, depth: Spellr.config.subword_maximum_count)
+      min_length = Spellr.config.subword_minimum_length
+      base = include_self ? [[self]] : []
+      return base unless min_length * 2 <= string.length || depth == 1
+      base + (min_length..(string.length - min_length)).flat_map do |first_part_length|
+        first_part = Token.new(string.slice(0, first_part_length), start: start, line: line)
+        Token.new(string.slice(first_part_length..-1), start: start + first_part_length, line: line).subwords(include_self: true, depth: depth - 1).map do |t|
+          [first_part, *t.flatten]
+        end
+      end
     end
   end
 end
