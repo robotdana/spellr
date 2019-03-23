@@ -2,10 +2,12 @@ RSpec::Matchers.define :include_spelling_errors do |*expected|
   match do |actual|
     @actual = []
 
-    allow(Spellr.config.reporter).to receive(:report) { |arg| @actual << arg }
 
     file = stub_file(tokens: actual.map { |a| Spellr::Token.new(a) }, dictionaries: [dictionary])
-    Spellr::Check.new(files: [file]).check
+    check = Spellr::Check.new(files: [file])
+
+    allow(check.reporter).to receive(:call) { |arg| @actual << arg }
+    check.check
 
     expect(@actual).to match(expected)
   end

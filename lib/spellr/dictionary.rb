@@ -3,6 +3,8 @@ require 'net/http'
 
 module Spellr
   class Dictionary
+    DEFAULT_DIR = Pathname.new(__FILE__).parent.parent.parent.join('dictionaries')
+
     include Enumerable
 
     attr_accessor :download_required, :download_options, :file, :name, :only, :only_hashbangs
@@ -30,10 +32,15 @@ module Spellr
       self.download_required = false
       uri = URI.parse('http://app.aspell.net/create')
       uri.query = URI.encode_www_form(
+        diacritic: :strip,
+        max_size: 50,
+        spelling: :US,
+        max_variant: 0,
+        special: :hacker,
         **options,
         download: :wordlist,
         encoding: 'utf-8',
-        format: :inline
+        format: :inline,
       )
 
       license, wordlist = Net::HTTP.get_response(uri).body.split('---', 2)
@@ -47,7 +54,7 @@ module Spellr
     def process_wordlist
       wordlist = file.each_line.map do |line|
         line = line.strip.downcase.sub(/'s$/, '')
-        next unless line.length > 2 # why 2 letter words. You are unnecessary
+        next unless line.length >= Spellr.config.minimum_dictionary_entry_length
         line
       end.compact.sort.uniq
 

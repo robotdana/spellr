@@ -1,0 +1,100 @@
+#!/usr/bin/env ruby
+if ARGV.include?('--with-stdlib')
+  require 'abbrev'
+  require 'base64'
+  require 'benchmark'
+  require 'cgi'
+  require 'cmath'
+  require 'csv'
+  require 'date'
+  # require 'debug'
+  require 'delegate'
+  require 'digest'
+  require 'drb'
+  require 'e2mmap'
+  require 'erb'
+  require 'expect'
+  require 'fiddle'
+  require 'fileutils'
+  require 'find'
+  require 'forwardable'
+  require 'getoptlong'
+  require 'ipaddr'
+  require 'irb'
+  require 'json'
+  require 'kconv'
+  require 'logger'
+  require 'matrix'
+  require 'mkmf'
+  require 'monitor'
+  require 'mutex_m'
+  require 'observer'
+  require 'open-uri'
+  require 'open3'
+  require 'openssl'
+  require 'optionparser'
+  require 'optparse'
+  require 'ostruct'
+  require 'pathname'
+  require 'pp'
+  require 'prettyprint'
+  require 'prime'
+  require 'profile'
+  require 'profiler'
+  require 'pstore'
+  require 'psych'
+  require 'rdoc'
+  require 'resolv-replace'
+  require 'resolv'
+  require 'ripper'
+  require 'rss'
+  require 'rubygems'
+  require 'scanf'
+  require 'securerandom'
+  require 'set'
+  require 'shell'
+  require 'shellwords'
+  require 'singleton'
+  require 'socket'
+  require 'sync'
+  require 'tempfile'
+  require 'thwait'
+  require 'time'
+  require 'timeout'
+  require 'tmpdir'
+  require 'tracer'
+  require 'tsort'
+  require 'un'
+  require 'uri'
+  require 'weakref'
+  require 'webrick'
+  require 'yaml'
+end
+words = ObjectSpace
+  .each_object
+  .select { |x| x.is_a?(Class) }
+  .flat_map { |x| [*x.name&.to_sym] + x.methods + x.instance_methods }
+  .uniq.join("\n")
+
+require_relative '../lib/spellr'
+
+dict_path = Spellr::Dictionary::DEFAULT_DIR.join('natural.small.txt')
+ruby_dict_path = dict_path.parent.join("ruby#{".stdlib" if ARGV.include?('--with-stdlib')}.txt")
+
+dict = Spellr::Dictionary.new(dict_path)
+dict.download(max_size: 50)
+dictionaries = [dict]
+misspelled_words = []
+
+checker = Spellr::Check.new
+
+tokens = Spellr::Token.tokenize(words).uniq(&:to_s)
+
+tokens.each do |token|
+  next if checker.send(:check_token, token, dictionaries)
+
+  misspelled_words << token.to_s.downcase
+end
+ruby_dict_path.write(misspelled_words.join("\n"))
+
+Spellr::Dictionary.new(ruby_dict_path).send(:process_wordlist)

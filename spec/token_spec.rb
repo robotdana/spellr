@@ -64,6 +64,12 @@ RSpec.describe Spellr::Token do
       expect('to be or not to be').to have_tokens 'not'
     end
 
+    it "can configure how short a short word is" do
+      stub_config(word_minimum_length: 2)
+
+      expect('to be or not to be').to have_tokens 'to', 'be', 'or', 'not', 'to', 'be'
+    end
+
     it 'excludes URLs with numbers in them' do
       expect('http://www.the4wd.com').to have_no_tokens
     end
@@ -130,8 +136,6 @@ RSpec.describe Spellr::Token do
   end
 
   describe '#subwords' do
-    before { stub_config(subword_minimum_length: 3) }
-
     it "returns nothing for the shortest word" do
       expect("foo").to have_no_subwords
     end

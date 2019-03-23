@@ -1,7 +1,7 @@
 Spellr.configure do |config|
-  def default(name)
-    Pathname.new(__FILE__).join('..', '..', 'dictionaries', "#{name}.txt")
-  end
+  config.word_minimum_length = 3
+  config.subword_minimum_length = 3
+  config.subword_maximum_count = 2
 
   config.exclusions = %w{
     .git/*
@@ -15,19 +15,18 @@ Spellr.configure do |config|
     .gitkeep
   }
 
-  config.add_dictionary(default(:natural)) do |dict|
+  config.add_default_dictionary(:natural) do |dict|
     dict.lazy_download(
       max_size: 95,
       spelling: %w{US AU CA GBz GBs},
-      max_variant: 0,
       diacritic: :both,
       special: :hacker
     )
   end
 
-  config.add_dictionary(default(:common))
+  config.add_default_dictionary(:common)
 
-  config.add_dictionary(default(:ruby)) do |dict|
+  config.add_default_dictionary(:ruby) do |dict|
     dict.only = %w{
       *.rb
       Gemfile
@@ -39,7 +38,7 @@ Spellr.configure do |config|
     dict.only_hashbangs = %w{ruby}
   end
 
-  config.add_dictionary(default(:shell)) do |dict|
+  config.add_default_dictionary(:shell) do |dict|
     dict.only = %w{*.sh}
     dict.only_hashbangs = %w{bash sh}
   end

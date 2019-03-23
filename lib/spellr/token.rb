@@ -18,7 +18,7 @@ module Spellr
         (?<!\\033)(?<!\\e)\[ # shell escape codes
       |
         (?<=[[[:alpha:]]])'(?=[[[:alpha:]]]) # apostrophes
-      ){3,} # no short words
+      )+
     }x
 
     STRIP_START = %r{^[^\\/#[[:alpha:]]]+}
@@ -92,9 +92,13 @@ module Spellr
       string =~ /\A(#|0x)(\h{6}|\h{3})\z/
     end
 
+    def inspect
+      "Token(#{string})"
+    end
+
     def word?
-      return if @string.empty?
-      return if @string.length <= 2
+      return if string.empty?
+      return if string.length < Spellr.config.word_minimum_length
       return if url?
       return if hex?
       true

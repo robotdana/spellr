@@ -1,8 +1,9 @@
 module Spellr
   class Check
     attr_reader :exit_code
+    attr_reader :files, :reporter
 
-    def initialize(files:, reporter: Spellr.config.reporter)
+    def initialize(files: [], reporter: Spellr.config.reporter)
       @files = files
       @reporter = reporter
       @exit_code = 0
@@ -13,7 +14,7 @@ module Spellr
         file.each_token do |token|
           next if check_token(token, file.dictionaries)
 
-          reporter.report(token)
+          reporter.call(token)
           @exit_code = 1
         end
       end
@@ -34,6 +35,5 @@ module Spellr
       end
     end
 
-    attr_reader :files, :reporter
   end
 end
