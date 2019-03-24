@@ -23,6 +23,14 @@ module Spellr
       enumerator.each(&block)
     end
 
+    def to_a
+      @to_a ||= super.sort
+    end
+
+    def bsearch(&block)
+      to_a.bsearch(&block)
+    end
+
     def lazy_download(**download_options)
       self.download_required = true
       self.download_options = download_options

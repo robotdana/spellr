@@ -31,23 +31,23 @@ module Spellr
     end
 
     def excluded?(file)
-      @exclusions ||= Spellr::FileList.glob(*Spellr.config.exclusions)
+      @exclusions ||= Spellr::FileList.glob(*Spellr.config.exclusions).sort
 
-      @exclusions.include?(file)
+      @exclusions.bsearch { |value| file <=> value }
     end
 
     def dictionary?(file)
-      @dictionaries ||= Spellr.config.dictionaries.map { |k,v| v.file }
+      @dictionaries ||= Spellr.config.dictionaries.map { |k,v| v.file }.sort
 
-      @dictionaries.include?(file)
+      @dictionaries.bsearch { |value| file <=> value }
     end
 
     def gitignored?(file)
-      @gitignore_allowed ||= Gitignore::Parser.list_files(directory: Pathname.pwd.to_s)
+      @gitignore_allowed ||= Gitignore::Parser.list_files(directory: Pathname.pwd.to_s).sort
 
       return if @gitignore_allowed.empty?
 
-      !@gitignore_allowed.include?(file.to_s)
+      !@gitignore_allowed.bsearch { |value| file.to_s <=> value }
     end
 
     def each(&block)

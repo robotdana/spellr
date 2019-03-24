@@ -25,12 +25,12 @@ module Spellr
     def check_token(token, dictionaries)
       token_string = token.to_s.downcase + "\n"
 
-      return true if dictionaries.any? { |d| d.include?(token_string) }
+      return true if dictionaries.any? { |d| d.bsearch { |value| token_string <=> value } }
 
       return true if Spellr.config.run_together_words? && token.subwords.any? do |subword_set|
         subword_set.all? do |subword|
           subword_string = subword.to_s.downcase + "\n"
-          dictionaries.any? { |d| d.include?(subword_string) }
+          dictionaries.any? { |d| d.bsearch { |value| subword_string <=> value } }
         end
       end
     end

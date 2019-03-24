@@ -19,8 +19,8 @@ RSpec.describe Spellr::Check do
   describe '#check_token' do
     let(:dictionary) do
       stub_dictionary <<~DICTIONARY
-        foo
         bar
+        foo
       DICTIONARY
     end
 

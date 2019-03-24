@@ -12,7 +12,8 @@ Spellr.configure do |config|
     *.jpg
     *.gif
     *.ico
-    .gitkeep
+    **/.gitkeep
+    **/.keep
   }
 
   config.add_default_dictionary(:natural) do |dict|
