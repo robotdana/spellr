@@ -15,18 +15,19 @@ module Spellr
       @dictionaries ||= Spellr.config.dictionaries.values.select do |dict|
         dict.only.empty? ||
           dict.file_list.bsearch { |value| file <=> value } ||
-          hashbang_match?(dict.only_hashbangs)
+          (hashbang && dict.only_hashbangs.any? { |match| hashbang.include?(match) })
       end
     end
 
-    def hashbang_match?(matches)
-      return false if matches.empty?
-      return false if file.extname != ''
+    def hashbang
+      return if file.extname != ''
+      return unless first_line.start_with?("#!")
 
-      first_line = file.each_line(1).first
-      return false unless first_line.start_with?("#!")
+      first_line
+    end
 
-      matches.any? { |match| first_line.include?(match) }
+    def first_line
+      @first_line ||= file.each_line.first
     end
 
     def to_s
@@ -41,15 +42,9 @@ module Spellr
 
     def each_line(&block)
       file.each_line.lazy.with_index do |line_string, line_number|
-        line = Spellr::Line.new(line_string, file: self, line_number: line_number)
+        line = Spellr::Line.new(line_string)
 
-        block.call line
-      end
-    end
-
-    def each_token(&block)
-      each_line do |line|
-        line.each_token(&block)
+        block.call line, line_number
       end
     end
   end

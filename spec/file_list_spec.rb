@@ -21,7 +21,7 @@ RSpec.describe Spellr::FileList do
   end
 
   it 'globs everything' do
-    expect(Spellr::FileList.new.files).to match_relative_paths(
+    expect(Spellr::FileList.new.to_a).to match_relative_paths(
       'foo.rb',
       'foo/bar.txt',
       'spec/foo_spec.rb'
@@ -29,20 +29,20 @@ RSpec.describe Spellr::FileList do
   end
 
   it 'globs extensions' do
-    expect(Spellr::FileList.new('*.rb').files).to match_relative_paths(
+    expect(Spellr::FileList.new('*.rb').to_a).to match_relative_paths(
       'foo.rb',
       'spec/foo_spec.rb'
     )
   end
 
   it 'globs partial filenames' do
-    expect(Spellr::FileList.new('*_spec.rb').files).to match_relative_paths(
+    expect(Spellr::FileList.new('*_spec.rb').to_a).to match_relative_paths(
       'spec/foo_spec.rb'
     )
   end
 
   it "can respect absolute paths" do
-    expect(Spellr::FileList.new(Pathname.pwd.join('foo.rb').to_s).files).to match_relative_paths(
+    expect(Spellr::FileList.new(Pathname.pwd.join('foo.rb').to_s).to_a).to match_relative_paths(
       'foo.rb'
     )
   end
@@ -52,7 +52,7 @@ RSpec.describe Spellr::FileList do
       foo*
       !spec/foo*
     BODY
-    expect(Spellr::FileList.new.files).to match_relative_paths(
+    expect(Spellr::FileList.new.to_a).to match_relative_paths(
       '.gitignore',
       'spec/foo_spec.rb'
     )
@@ -61,7 +61,7 @@ RSpec.describe Spellr::FileList do
   it "ignores excluded files" do
     stub_config(exclusions: ["foo.rb", "*.txt"])
 
-    expect(Spellr::FileList.new.files).to match_relative_paths(
+    expect(Spellr::FileList.new.to_a).to match_relative_paths(
       'spec/foo_spec.rb'
     )
   end

@@ -19,20 +19,21 @@ module Spellr
     end
 
     def each(&block)
-      enumerator.rewind
-      enumerator.each(&block)
+      download if !file.exist? && download_required?
+
+      file.each_line(&block)
     end
 
     def file_list
       @file_list ||= Spellr::FileList.glob(*only).sort
     end
 
-    def to_a
-      @to_a ||= super.sort
-    end
-
     def bsearch(&block)
       to_a.bsearch(&block)
+    end
+
+    def to_a
+      @to_a ||= super
     end
 
     def lazy_download(**download_options)
@@ -68,14 +69,9 @@ module Spellr
         line = line.strip.downcase.sub(/'s$/, '')
         next unless line.length >= Spellr.config.minimum_dictionary_entry_length
         line
-      end.compact.sort.uniq
+      end.compact.uniq.sort
 
       file.write(wordlist.join("\n") + "\n")
-    end
-
-    def enumerator
-      download if !file.exist? && download_required?
-      @enumerator ||= file.each_line.lazy
     end
   end
 end

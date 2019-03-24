@@ -16,7 +16,7 @@ RSpec::Matchers.define :include_spelling_errors do |*expected|
 end
 
 RSpec.describe Spellr::Check do
-  describe '#check_token' do
+  describe '#check' do
     let(:dictionary) do
       stub_dictionary <<~DICTIONARY
         bar

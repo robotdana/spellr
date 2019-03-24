@@ -1,4 +1,5 @@
 require 'uri'
+
 module Spellr
   class Token
     # Finds everything that is either a word,
@@ -34,9 +35,9 @@ module Spellr
     )}x
 
     def self.each_token(line, &block)
-      line.to_s.enum_for(:scan, SCAN_RE).lazy.each do
+      line.to_s.scan(SCAN_RE) do
         m = Regexp.last_match
-        t = Token.new(m[0], start: m.begin(0), line: line)
+        t = Token.new(m[0], start: m.begin(0))
         t.strip!
         next unless t.word?
         t.each_token(&block)
@@ -47,23 +48,14 @@ module Spellr
       enum_for(:each_token, line).to_a
     end
 
-    attr_reader :string, :start, :end, :line
-    def initialize(string, start: 0, line: nil)
-      @line = line
+    attr_reader :string, :start, :end
+    def initialize(string, start: 0)
       @string = string
       @start = start
     end
 
     def file
       line.file
-    end
-
-    def before
-      line.slice(0...start)
-    end
-
-    def after
-      line.slice(self.end..-1)
     end
 
     def end
@@ -118,9 +110,9 @@ module Spellr
     end
 
     def each_token(&block)
-      string.enum_for(:scan, SUBTOKEN_RE).lazy.each do
+      string.scan(SUBTOKEN_RE) do
         m = Regexp.last_match
-        tt = Token.new(m[0], start: start + m.begin(0), line: line)
+        tt = Token.new(m[0], start: start + m.begin(0))
         tt.strip!
         next unless tt.word?
         block.call tt
@@ -132,8 +124,8 @@ module Spellr
       base = include_self ? [[self]] : []
       return base unless min_length * 2 <= string.length || depth == 1
       base + (min_length..(string.length - min_length)).flat_map do |first_part_length|
-        first_part = Token.new(string.slice(0, first_part_length), start: start, line: line)
-        Token.new(string.slice(first_part_length..-1), start: start + first_part_length, line: line).subwords(include_self: true, depth: depth - 1).map do |t|
+        first_part = Token.new(string.slice(0, first_part_length), start: start)
+        Token.new(string.slice(first_part_length..-1), start: start + first_part_length).subwords(include_self: true, depth: depth - 1).map do |t|
           [first_part, *t.flatten]
         end
       end

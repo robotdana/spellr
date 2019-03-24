@@ -61,8 +61,8 @@ module Spellr
       end
     end
 
-    def files
-      @files ||= enum_for(:each).to_a
+    def to_a
+      enum_for(:each).to_a
     end
   end
 end

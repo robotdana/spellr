@@ -11,11 +11,13 @@ module Spellr
 
     def check
       files.each do |file|
-        file.each_token do |token|
-          next if check_token(token, file.dictionaries)
+        file.each_line do |line, line_number|
+          line.each_token do |token|
+            next if check_token(token, file.dictionaries)
 
-          reporter.call(token)
-          @exit_code = 1
+            reporter.call(token, line, line_number, file)
+            @exit_code = 1
+          end
         end
       end
     end
@@ -34,6 +36,5 @@ module Spellr
         end
       end
     end
-
   end
 end

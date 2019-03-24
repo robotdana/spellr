@@ -1,13 +1,20 @@
 module StubHelper
   def stub_file(tokens: [], dictionaries: [])
     double = instance_double(Spellr::File, dictionaries: dictionaries)
+    allow(double).to receive(:each_line) { |&block| block.call(stub_line(tokens: tokens)) }
+    double
+  end
+
+  def stub_line(tokens: [])
+    double = instance_double(Spellr::Line)
     allow(double).to receive(:each_token) { |&block| tokens.each(&block) }
     double
   end
 
-  def stub_dictionary(lines, only: [])
-    double = instance_double(Spellr::Dictionary, only: only)
+  def stub_dictionary(lines, only: [], only_hashbangs: [])
+    double = instance_double(Spellr::Dictionary, only: only, only_hashbangs: [])
     allow(double).to receive(:each) { |&block| lines.each_line(&block) }
+    allow(double).to receive(:bsearch) { |&block| lines.lines.sort.bsearch(&block) }
     double.extend Enumerable
     double
   end
@@ -37,6 +44,7 @@ module StubHelper
     path = Pathname.pwd.join(filename)
     path.parent.mkpath
     path.write(body)
+    path
   end
 end
 
