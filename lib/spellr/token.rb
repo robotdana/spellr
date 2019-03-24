@@ -33,15 +33,18 @@ module Spellr
       [[[:upper:]]']+(?<!'S)(?=[[:upper:]][[:lower:]]) # camel case like CASECase
     )}x
 
-    def self.tokenize(line)
-      tokens = []
-      line.to_s.scan(SCAN_RE) do
+    def self.each_token(line, &block)
+      line.to_s.enum_for(:scan, SCAN_RE).lazy.each do
         m = Regexp.last_match
         t = Token.new(m[0], start: m.begin(0), line: line)
         t.strip!
-        tokens += t.tokens
+        next unless t.word?
+        t.each_token(&block)
       end
-      tokens
+    end
+
+    def self.tokenize(line)
+      enum_for(:each_token, line).map(&:itself).to_a
     end
 
     attr_reader :string, :start, :end, :line
@@ -114,16 +117,14 @@ module Spellr
       super
     end
 
-    def tokens
-      return [] unless word?
-      t = []
-      string.scan(SUBTOKEN_RE) do
+    def each_token(&block)
+      string.enum_for(:scan, SUBTOKEN_RE).lazy.each do
         m = Regexp.last_match
         tt = Token.new(m[0], start: start + m.begin(0), line: line)
         tt.strip!
-        t << tt
+        next unless tt.word?
+        block.call tt
       end
-      t.select(&:word?)
     end
 
     def subwords(include_self: false, depth: Spellr.config.subword_maximum_count)

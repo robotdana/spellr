@@ -9,7 +9,7 @@ module Spellr
     end
 
     def each_token(&block)
-      Spellr::Token.tokenize(self).each(&block)
+      Spellr::Token.each_token(self, &block)
     end
 
     def location
