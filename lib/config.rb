@@ -4,8 +4,8 @@ Spellr.configure do |config|
   config.subword_maximum_count = 2
 
   config.exclusions = %w{
-    .git/*
-    .DS_Store
+    .git/**/*
+    **/.DS_Store
     Gemfile.lock
     .rspec_status
     *.png

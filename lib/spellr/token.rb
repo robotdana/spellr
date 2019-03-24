@@ -44,7 +44,7 @@ module Spellr
     end
 
     def self.tokenize(line)
-      enum_for(:each_token, line).map(&:itself).to_a
+      enum_for(:each_token, line).to_a
     end
 
     attr_reader :string, :start, :end, :line
@@ -112,7 +112,7 @@ module Spellr
     end
 
     def ==(other)
-      return string == other if other.is_a?(String)
+      return to_s == other if other.respond_to?(:to_str)
 
       super
     end

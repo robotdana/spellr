@@ -9,33 +9,12 @@ module Spellr
       @file = Pathname.new(name).expand_path
     end
 
-    def checkable?
-      # can't check unless it's a file
-      return false unless file.file?
-      return false if fn_match?(Spellr.config.exclusions)
 
-      # can't check the dictionary against the dictionary
-      return false if Spellr.config.dictionaries.any? { |k, v| v.file === file }
-
-      return false if gitignored?
-
-      true
-    end
-
-    def self.gitignore_allowed
-      @gitignore_allowed ||= Gitignore::Parser.list_files(directory: Pathname.pwd.to_s)
-    end
 
     def dictionaries
       @dictionaries ||= Spellr.config.dictionaries.values.select do |dict|
         fn_match?(dict.only) || hashbang_match?(dict.only_hashbangs)
       end
-    end
-
-    def gitignored?
-      return if self.class.gitignore_allowed.empty?
-
-      !self.class.gitignore_allowed.include?(file.to_s)
     end
 
     def fn_match?(matches)
@@ -59,6 +38,12 @@ module Spellr
 
     def to_s
       file.to_s
+    end
+
+    def ==(other)
+      return to_s == other if other.respond_to?(:to_str)
+
+      super
     end
 
     def each_line(&block)

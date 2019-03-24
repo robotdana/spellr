@@ -5,7 +5,14 @@ module Spellr
     attr_accessor :globs
     include Enumerable
 
-    def initialize(globs: [])
+    def self.glob(*globs, &block)
+      return [] if globs.empty?
+      globs = globs.map { |g| g.to_s.start_with?('*') ? "**/#{g}" : g }
+      glob = globs.length == 1 ? globs.first : "{#{globs.join(",")}}"
+      Pathname.pwd.glob(glob, ::File::FNM_DOTMATCH | ::File::FNM_EXTGLOB, &block)
+    end
+
+    def initialize(*globs)
       @globs = globs
     end
 
@@ -19,23 +26,43 @@ module Spellr
       @globs = values
     end
 
-    def each(&block)
-      files.each(&block)
-    end
-
     def join(*_)
       to_a.join(*_)
     end
 
-    def files
-      @files ||= globs.flat_map do |glob|
-        glob = "**/#{glob}" if glob.include?('*')
-        Dir.glob(glob, ::File::FNM_DOTMATCH | ::File::FNM_EXTGLOB)
-      end.map do |file|
+    def excluded?(file)
+      @exclusions ||= Spellr::FileList.glob(*Spellr.config.exclusions)
+
+      @exclusions.include?(file)
+    end
+
+    def dictionary?(file)
+      @dictionaries ||= Spellr.config.dictionaries.map { |k,v| v.file }
+
+      @dictionaries.include?(file)
+    end
+
+    def gitignored?(file)
+      @gitignore_allowed ||= Gitignore::Parser.list_files(directory: Pathname.pwd.to_s)
+
+      return if @gitignore_allowed.empty?
+
+      !@gitignore_allowed.include?(file.to_s)
+    end
+
+    def each(&block)
+      self.class.glob(*globs).lazy.each do |file|
+        next unless file.file?
+        next if dictionary?(file)
+        next if gitignored?(file)
+        next if excluded?(file)
         file = Spellr::File.new(file)
-        next unless file.checkable?
-        file
-      end.compact
+        block.call(file)
+      end
+    end
+
+    def files
+      @files ||= enum_for(:each).to_a
     end
   end
 end

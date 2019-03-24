@@ -24,10 +24,10 @@ begin
 rescue LoadError
 end
 
-files = Spellr::FileList.new(globs: ARGV)
+files = Spellr::FileList.new(*ARGV)
 
 if list
-  puts files.join("\n")
+  files.each { |f| puts f }
   exit
 end
 
