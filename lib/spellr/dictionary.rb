@@ -12,7 +12,7 @@ module Spellr
 
     def initialize(file)
       @file = Pathname.new(file).expand_path
-      @name = @file.basename('.*')
+      @name = @file.basename('.*').to_s
       @download_options = {}
       @only = []
       @only_hashbangs = []
@@ -21,6 +21,10 @@ module Spellr
     def each(&block)
       enumerator.rewind
       enumerator.each(&block)
+    end
+
+    def file_list
+      @file_list ||= Spellr::FileList.glob(*only).sort
     end
 
     def to_a

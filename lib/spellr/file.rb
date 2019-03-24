@@ -13,24 +13,17 @@ module Spellr
 
     def dictionaries
       @dictionaries ||= Spellr.config.dictionaries.values.select do |dict|
-        fn_match?(dict.only) || hashbang_match?(dict.only_hashbangs)
+        dict.only.empty? ||
+          dict.file_list.bsearch { |value| file <=> value } ||
+          hashbang_match?(dict.only_hashbangs)
       end
-    end
-
-    def fn_match?(matches)
-      return true if matches.empty?
-      matches = matches.map { |match| "*/#{match}" }
-      match_string = matches.first if matches.length == 1
-      match_string ||= "{#{matches.join(',')}}"
-
-      file.fnmatch?(match_string, ::File::FNM_DOTMATCH | ::File::FNM_EXTGLOB)
     end
 
     def hashbang_match?(matches)
       return false if matches.empty?
       return false if file.extname != ''
 
-      first_line = file.each_line.lazy.first
+      first_line = file.each_line(1).first
       return false unless first_line.start_with?("#!")
 
       matches.any? { |match| first_line.include?(match) }
