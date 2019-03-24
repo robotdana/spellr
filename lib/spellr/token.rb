@@ -82,10 +82,10 @@ module Spellr
     end
 
     def url?
-      return true unless URI.extract(@string).empty?
+      return true unless URI.extract(string).empty?
       # URI with no scheme
-      return true if string.start_with?('//') && !URI.extract("http:#{@string}").empty?
-      return true if string.include?('@') && !URI.extract("mailto:#{@string}").empty?
+      return true if string.start_with?('//') && !URI.extract("http:#{string}").empty?
+      return true if string.include?('@') && !URI.extract("mailto:#{string}").empty?
     end
 
     def hex?

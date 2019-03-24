@@ -1,5 +1,5 @@
 module StubHelper
-  def stub_file(tokens: tokens, dictionaries: dictionaries)
+  def stub_file(tokens: [], dictionaries: [])
     double = instance_double(Spellr::File, dictionaries: dictionaries)
     allow(double).to receive(:each_token) { |&block| tokens.each(&block) }
     double

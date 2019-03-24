@@ -38,6 +38,18 @@ Spellr.configure do |config|
     dict.only_hashbangs = %w{ruby}
   end
 
+  config.add_default_dictionary(:'ruby.stdlib') do |dict|
+    dict.only = %w{
+      *.rb
+      Gemfile
+      Rakefile
+      *.gemspec
+      rake
+      .travis.yml
+    }
+    dict.only_hashbangs = %w{ruby}
+  end
+
   config.add_default_dictionary(:shell) do |dict|
     dict.only = %w{*.sh}
     dict.only_hashbangs = %w{bash sh}
