@@ -1,7 +1,8 @@
 Spellr.configure do |config|
   config.word_minimum_length = 3
   config.subword_minimum_length = 3
-  config.subword_maximum_count = 2
+  config.subword_maximum_count = 0
+  config.run_together_words_maximum_length = 10
 
   config.exclusions = %w{
     .git/**/*

@@ -29,7 +29,11 @@ module Spellr
 
       return true if dictionaries.any? { |d| d.bsearch { |value| token_string <=> value } }
 
-      return true if Spellr.config.run_together_words? && token.subwords.any? do |subword_set|
+      return false unless Spellr.config.run_together_words?
+
+      return false if token.length > Spellr.config.run_together_words_maximum_length
+
+      token.subwords.any? do |subword_set|
         subword_set.all? do |subword|
           subword_string = subword.to_s.downcase + "\n"
           dictionaries.any? { |d| d.bsearch { |value| subword_string <=> value } }

@@ -42,8 +42,12 @@ module Spellr
       @dictionaries.bsearch { |value| file <=> value }
     end
 
+    # TODO: replace with a reasonably fast ruby version
     def gitignored?(file)
-      @gitignore_allowed ||= Gitignore::Parser.list_files(directory: Pathname.pwd.to_s).sort
+      @gitignore_allowed ||= begin
+        pwd = Dir.pwd
+        `git ls-files`.split("\n").map { |path| "#{pwd}/#{path}" }
+      end
 
       return if @gitignore_allowed.empty?
 

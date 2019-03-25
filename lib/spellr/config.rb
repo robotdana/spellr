@@ -1,7 +1,7 @@
 module Spellr
   class Config
     attr_accessor :dictionaries, :exclusions, :reporter
-    attr_accessor :word_minimum_length, :subword_minimum_length, :subword_maximum_count
+    attr_accessor :word_minimum_length, :subword_minimum_length, :subword_maximum_count, :run_together_words_maximum_length
 
     def initialize
       @dictionaries = {}
@@ -10,6 +10,7 @@ module Spellr
       @word_minimum_length = 3
       @subword_minimum_length = 3
       @subword_maximum_count = 2
+      @run_together_words_maximum_length = 10
     end
 
     def minimum_dictionary_entry_length

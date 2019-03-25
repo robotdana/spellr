@@ -103,6 +103,10 @@ module Spellr
       string
     end
 
+    def length
+      string.length
+    end
+
     def ==(other)
       return to_s == other if other.respond_to?(:to_str)
 
