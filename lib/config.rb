@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Spellr.configure do |config|
   config.word_minimum_length = 3
   config.subword_minimum_length = 3

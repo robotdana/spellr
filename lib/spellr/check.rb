@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Spellr
   class Check
     attr_reader :exit_code
@@ -19,6 +21,7 @@ module Spellr
             @exit_code = 1
           end
         end
+        GC.start
       end
     end
 
@@ -29,16 +32,17 @@ module Spellr
 
       return true if dictionaries.any? { |d| d.bsearch { |value| token_string <=> value } }
 
-      return false unless Spellr.config.run_together_words?
+      # TODO: this needs work
+      # return false unless Spellr.config.run_together_words?
 
-      return false if token.length > Spellr.config.run_together_words_maximum_length
+      # return false if token.length > Spellr.config.run_together_words_maximum_length
 
-      token.subwords.any? do |subword_set|
-        subword_set.all? do |subword|
-          subword_string = subword.to_s.downcase + "\n"
-          dictionaries.any? { |d| d.bsearch { |value| subword_string <=> value } }
-        end
-      end
+      # token.subwords.any? do |subword_set|
+      #   subword_set.all? do |subword|
+      #     subword_string = subword.to_s.downcase + "\n"
+      #     dictionaries.any? { |d| d.bsearch { |value| subword_string <=> value } }
+      #   end
+      # end
     end
   end
 end

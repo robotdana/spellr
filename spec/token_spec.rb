@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec::Matchers.define :have_tokens do |*expected|
   match do |actual|
     @actual = Spellr::Token.tokenize(actual)
@@ -21,11 +23,11 @@ RSpec::Matchers.alias_matcher :have_no_subwords, :have_subwords
 RSpec.describe Spellr::Token do
   describe '.tokenize' do
     it 'returns tokens split by spaces' do
-      expect("This line").to have_tokens "This", "line"
+      expect('This line').to have_tokens 'This', 'line'
     end
 
     it 'returns tokens split by :' do
-      expect("Spellr::Line").to have_tokens "Spellr", "Line"
+      expect('Spellr::Line').to have_tokens 'Spellr', 'Line'
     end
 
     it "doesn't tokenize a URL" do
@@ -64,7 +66,7 @@ RSpec.describe Spellr::Token do
       expect('to be or not to be').to have_tokens 'not'
     end
 
-    it "can configure how short a short word is" do
+    it 'can configure how short a short word is' do
       stub_config(word_minimum_length: 2)
 
       expect('to be or not to be').to have_tokens 'to', 'be', 'or', 'not', 'to', 'be'
@@ -82,7 +84,7 @@ RSpec.describe Spellr::Token do
       expect('1+1 1/2 10>4 15-10').to have_no_tokens
     end
 
-    it "tokenizes html tags" do
+    it 'tokenizes html tags' do
       expect('<a style="background: red">').to have_tokens 'style', 'background', 'red'
     end
 
@@ -94,32 +96,32 @@ RSpec.describe Spellr::Token do
       expect("didn't shouldn't could've o'clock").to have_tokens "didn't", "shouldn't", "could've", "o'clock"
     end
 
-    it "splits on wrapping quotes" do
+    it 'splits on wrapping quotes' do
       expect(%{"didn't" 'shouldn't' <could've> 'o'clock'}).to have_tokens "didn't", "shouldn't", "could've", "o'clock"
     end
 
-    it "splits on underscore" do
-      expect("this_that_the_other").to have_tokens 'this', 'that', 'the', 'other'
+    it 'splits on underscore' do
+      expect('this_that_the_other').to have_tokens 'this', 'that', 'the', 'other'
     end
 
-    it "splits on underscore when all caps" do
+    it 'splits on underscore when all caps' do
       expect('SCREAMING_SNAKE_CASE').to have_tokens 'SCREAMING', 'SNAKE', 'CASE'
     end
 
-    it "splits on dashes" do
-      expect("align-items:center").to have_tokens 'align', 'items', 'center'
+    it 'splits on dashes' do
+      expect('align-items:center').to have_tokens 'align', 'items', 'center'
     end
 
-    it "splits on dashes in all caps" do
+    it 'splits on dashes in all caps' do
       expect('CAPS-WITH-DASHES').to have_tokens 'CAPS', 'WITH', 'DASHES'
     end
 
     it 'splits on camel case' do
-      expect("CamelCase camelCase").to have_tokens 'Camel', 'Case', 'camel', 'Case'
+      expect('CamelCase camelCase').to have_tokens 'Camel', 'Case', 'camel', 'Case'
     end
 
     it 'splits on camel case with all caps' do
-      expect("HTTParty GoogleAPI").to have_tokens 'HTT', 'Party', 'Google', 'API'
+      expect('HTTParty GoogleAPI').to have_tokens 'HTT', 'Party', 'Google', 'API'
     end
 
     it "drops 's" do
@@ -131,33 +133,35 @@ RSpec.describe Spellr::Token do
     end
 
     it "drops 's with all camel case" do
-      expect("TheThing's").to have_tokens 'The', "Thing"
+      expect("TheThing's").to have_tokens 'The', 'Thing'
     end
   end
 
   describe '#subwords' do
-    it "returns nothing for the shortest word" do
-      expect("foo").to have_no_subwords
+    it 'returns nothing for the shortest word' do
+      expect('foo').to have_no_subwords
     end
 
-    it "returns nothing for the just slightly longer than the shortest word" do
-      expect("food").to have_no_subwords
+    it 'returns nothing for the just slightly longer than the shortest word' do
+      expect('food').to have_no_subwords
     end
 
-    it "splits once for double the shortest word" do
-      expect("foobar").to have_subwords ["foo", "bar"]
+    it 'splits once for double the shortest word' do
+      expect('foobar').to have_subwords %w{foo bar}
     end
 
-    it "has both splitting points for just slightly longer than double the shortest word" do
-      expect("foodbar").to have_subwords ["food", "bar"], ["foo", "dbar"]
+    it 'has both splitting points for just slightly longer than double the shortest word' do
+      expect('foodbar').to have_subwords %w{food bar}, %w{foo dbar}
     end
 
-    it "splits into three for three times the longest word, and also has all possible pairs" do
-      expect("foobarbaz").to have_subwords ["foo", "bar", "baz"], ["foob", "arbaz"], ["fooba", "rbaz"], ["foobar", "baz"], ["foo", "barbaz"]
+    it 'splits into three for three times the longest word, and also has all possible pairs' do
+      expect('foobarbaz').to have_subwords %w{foo bar baz}, %w{foob arbaz}, %w{fooba rbaz},
+        %w{foobar baz}, %w{foo barbaz}
     end
 
-    it "just keeps going" do
-      expect("foobarbazz").to have_subwords ["foo", "barbazz"], ["foo", "bar", "bazz"], ["foo", "barb", "azz"], ["foob", "arbazz"], ["foob", "arb", "azz"], ["fooba", "rbazz"], ["foobar", "bazz"], ["foobarb", "azz"]
+    it 'just keeps going' do
+      expect('foobarbazz').to have_subwords %w{foo barbazz}, %w{foo bar bazz}, %w{foo barb azz},
+        %w{foob arbazz}, %w{foob arb azz}, %w{fooba rbazz}, %w{foobar bazz}, %w{foobarb azz}
     end
   end
 end

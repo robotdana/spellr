@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 require 'gitignore/parser'
 
@@ -9,9 +11,7 @@ module Spellr
       @file = Pathname.new(name).expand_path
     end
 
-
-
-    def dictionaries
+    def dictionaries # rubocop:disable Metrics/AbcSize
       @dictionaries ||= Spellr.config.dictionaries.values.select do |dict|
         dict.only.empty? ||
           dict.file_list.bsearch { |value| file <=> value } ||
@@ -21,7 +21,7 @@ module Spellr
 
     def hashbang
       return if file.extname != ''
-      return unless first_line.start_with?("#!")
+      return unless first_line.start_with?('#!')
 
       first_line
     end
@@ -40,11 +40,11 @@ module Spellr
       super
     end
 
-    def each_line(&block)
+    def each_line
       file.each_line.lazy.with_index do |line_string, line_number|
         line = Spellr::Line.new(line_string)
 
-        block.call line, line_number
+        yield line, line_number
       end
     end
   end

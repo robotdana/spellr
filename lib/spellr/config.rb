@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module Spellr
   class Config
     attr_accessor :dictionaries, :exclusions, :reporter
-    attr_accessor :word_minimum_length, :subword_minimum_length, :subword_maximum_count, :run_together_words_maximum_length
+    attr_accessor :word_minimum_length, :subword_minimum_length
+    attr_accessor :subword_maximum_count, :run_together_words_maximum_length
 
     def initialize
       @dictionaries = {}

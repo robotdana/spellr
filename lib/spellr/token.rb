@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'uri'
 
 module Spellr
@@ -20,11 +22,11 @@ module Spellr
       |
         (?<=[[[:alpha:]]])'(?=[[[:alpha:]]]) # apostrophes
       )+
-    }x
+    }x.freeze
 
-    STRIP_START = %r{^[^\\/#[[:alpha:]]]+}
-    STRIP_END = %r{[^[[:alpha:]]]+$}
-    SUBTOKEN_RE = %r{(
+    STRIP_START = %r{^[^\\/#[[:alpha:]]]+}.freeze
+    STRIP_END = /[^[[:alpha:]]]+$/.freeze
+    SUBTOKEN_RE = /(
       (?<![[:upper:]])[[[:lower:]]']+(?<!'s) # lowercase not preceded by uppercase
       |
       [[[:upper:]]']+(?<!'S)(?![[:lower:]]) # uppercase not succeeded by lowercase
@@ -32,7 +34,7 @@ module Spellr
       [[:upper:]][[[:lower:]]']+(?<!'s) # camel case like CaseCase
       |
       [[[:upper:]]']+(?<!'S)(?=[[:upper:]][[:lower:]]) # camel case like CASECase
-    )}x
+    )/x.freeze
 
     def self.each_token(line, &block)
       line.to_s.scan(SCAN_RE) do
@@ -40,6 +42,7 @@ module Spellr
         t = Token.new(m[0], start: m.begin(0))
         t.strip!
         next unless t.word?
+
         t.each_token(&block)
       end
     end
@@ -48,7 +51,8 @@ module Spellr
       enum_for(:each_token, line).to_a
     end
 
-    attr_reader :string, :start, :end
+    attr_reader :string, :start
+
     def initialize(string, start: 0)
       @string = string
       @start = start
@@ -62,10 +66,6 @@ module Spellr
       start + string.length
     end
 
-    def location
-      [line.location, start].compact.join(':')
-    end
-
     def strip!
       new_string = string.sub(STRIP_START, '')
       @start += @string.length - new_string.length
@@ -77,10 +77,19 @@ module Spellr
     end
 
     def url?
-      return true unless URI.extract(string).empty?
-      # URI with no scheme
-      return true if string.start_with?('//') && !URI.extract("http:#{string}").empty?
-      return true if string.include?('@') && !URI.extract("mailto:#{string}").empty?
+      url_with_scheme? || url_without_scheme? || email_without_scheme?
+    end
+
+    def url_with_scheme?(str = string)
+      !URI.extract(str).empty?
+    end
+
+    def url_without_scheme?
+      string.start_with?('//') && url_with_scheme?("http:#{string}")
+    end
+
+    def email_without_scheme?
+      string.include?('@') && url_with_scheme?("mailto:#{string}")
     end
 
     def hex?
@@ -93,9 +102,10 @@ module Spellr
 
     def word?
       return if string.empty?
-      return if string.length < Spellr.config.word_minimum_length
+      return if length < Spellr.config.word_minimum_length
       return if url?
       return if hex?
+
       true
     end
 
@@ -113,26 +123,31 @@ module Spellr
       super
     end
 
-    def each_token(&block)
+    def each_token
       string.scan(SUBTOKEN_RE) do
         m = Regexp.last_match
         tt = Token.new(m[0], start: start + m.begin(0))
         tt.strip!
         next unless tt.word?
-        block.call tt
+
+        yield tt
       end
     end
 
-    def subwords(include_self: false, depth: Spellr.config.subword_maximum_count)
-      min_length = Spellr.config.subword_minimum_length
-      base = include_self ? [[self]] : []
-      return base unless min_length * 2 <= string.length || depth == 1
-      base + (min_length..(string.length - min_length)).flat_map do |first_part_length|
-        first_part = Token.new(string.slice(0, first_part_length), start: start)
-        Token.new(string.slice(first_part_length..-1), start: start + first_part_length).subwords(include_self: true, depth: depth - 1).map do |t|
-          [first_part, *t.flatten]
-        end
-      end
-    end
+    # TODO: this needs work
+    # def subwords(include_self: false, depth: Spellr.config.subword_maximum_count)
+    #   min_length = Spellr.config.subword_minimum_length
+    #   base = include_self ? [[self]] : []
+    #   return base unless min_length * 2 <= string.length || depth == 1
+
+    #   base + (min_length..(string.length - min_length)).flat_map do |first_part_length|
+    #     first_part = Token.new(string.slice(0, first_part_length), start: start)
+    #     Token.new(
+    #       string.slice(first_part_length..-1), start: start + first_part_length
+    #     ).subwords(include_self: true, depth: depth - 1).map do |t|
+    #       [first_part, *t.flatten]
+    #     end
+    #   end
+    # end
   end
 end

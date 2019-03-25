@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 RSpec.describe 'command line', type: :cli do
   describe '--help' do
-    it 'returns the help' do
+    it 'returns the help' do # rubocop:disable RSpec/ExampleLength
       run 'spellr --help'
       expect(exitstatus).to be 0
       expect(stderr).to be_empty
-      expect(stdout).to eq [
-        'Usage: spellr [options]',
-        '        --list                       List files to be spellchecked',
-        '    -i, --interactive                Runs the spell check interactively',
-        '    -c, --config FILENAME            Path to the config file',
-        '    -v, --version                    Returns the current version',
-        '    -h, --help                       Shows this message'
-      ]
+      expect(stdout.join("\n")).to eq <<~HELP
+        Usage: spellr [options]
+                --list                       List files to be spellchecked
+            -i, --interactive                Runs the spell check interactively
+            -c, --config FILENAME            Path to the config file
+            -v, --version                    Returns the current version
+            -h, --help                       Shows this message
+      HELP
     end
   end
 
@@ -68,7 +70,7 @@ RSpec.describe 'command line', type: :cli do
   context 'with no arguments' do
     it 'does not return the version' do
       run 'spellr'
-      expect(stdout).to_not include Spellr::VERSION
+      expect(stdout).not_to include Spellr::VERSION
     end
   end
 end

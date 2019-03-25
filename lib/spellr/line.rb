@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Spellr
   class Line
     attr_reader :line, :file, :line_number
@@ -10,10 +12,6 @@ module Spellr
 
     def each_token(&block)
       Spellr::Token.each_token(self, &block)
-    end
-
-    def location
-      [file, line_number].join(':')
     end
 
     def scan(pattern, &block)

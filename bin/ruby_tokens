@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 @looked_at = []
 @strings = []
@@ -33,17 +34,18 @@ private
 
 def get_everything(parent)
   return if @looked_at.include?(parent.__id__) # to prevent endless loops
+
   @looked_at << parent.__id__
 
   @strings |= parent.public_instance_methods(false) if parent.respond_to?(:public_instance_methods)
   @strings |= parent.public_methods(false) if parent.respond_to?(:public_methods)
 
-  if parent.respond_to?(:constants)
-    parent.constants.each do |c|
-      @strings |= [c]
-      c = parent.const_get(c)
-      get_everything(c)
-    end
+  return unless parent.respond_to?(:constants)
+
+  parent.constants.each do |c|
+    @strings |= [c]
+    c = parent.const_get(c)
+    get_everything(c)
   end
 end
 
@@ -52,6 +54,5 @@ get_everything(Module)
 require_relative '../lib/spellr'
 
 Spellr::Dictionary::DEFAULT_DIR
-  .join("ruby#{".stdlib" if stdlib}#{".bundler" if bundler}.txt")
+  .join("ruby#{'.stdlib' if stdlib}#{'.bundler' if bundler}.txt")
   .write(Spellr::Token.tokenize(@strings.uniq.join("\n")).map { |w| w.to_s.downcase }.sort.uniq.join("\n"))
-

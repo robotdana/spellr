@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 require 'net/http'
 
@@ -41,7 +43,7 @@ module Spellr
       self.download_options = download_options
     end
 
-    def download(options = download_options)
+    def download(options = download_options) # rubocop:disable Metrics/MethodLength
       self.download_required = false
       uri = URI.parse('http://app.aspell.net/create')
       uri.query = URI.encode_www_form(
@@ -53,7 +55,7 @@ module Spellr
         **options,
         download: :wordlist,
         encoding: 'utf-8',
-        format: :inline,
+        format: :inline
       )
 
       license, wordlist = Net::HTTP.get_response(uri).body.split('---', 2)
@@ -64,10 +66,11 @@ module Spellr
 
     private
 
-    def process_wordlist
+    def process_wordlist # rubocop:disable Metrics/AbcSize
       wordlist = file.each_line.map do |line|
         line = line.strip.downcase.sub(/'s$/, '')
         next unless line.length >= Spellr.config.minimum_dictionary_entry_length
+
         line
       end.compact.uniq.sort
 

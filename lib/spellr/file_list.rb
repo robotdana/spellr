@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 module Spellr
@@ -7,27 +9,18 @@ module Spellr
 
     def self.glob(*globs, &block)
       return [] if globs.empty?
+
       globs = globs.map { |g| g.to_s.start_with?('*') ? "**/#{g}" : g }
-      glob = globs.length == 1 ? globs.first : "{#{globs.join(",")}}"
+      glob = globs.length == 1 ? globs.first : "{#{globs.join(',')}}"
       Pathname.pwd.glob(glob, ::File::FNM_DOTMATCH | ::File::FNM_EXTGLOB, &block)
     end
 
     def initialize(*globs)
-      @globs = globs
+      @globs = globs.empty? ? ['*'] : globs
     end
 
-    def globs
-      return ['*'] if @globs.empty?
-      @globs
-    end
-
-    def globs=(values)
-      @files = nil
-      @globs = values
-    end
-
-    def join(*_)
-      to_a.join(*_)
+    def join(*args)
+      to_a.join(*args)
     end
 
     def excluded?(file)
@@ -37,7 +30,7 @@ module Spellr
     end
 
     def dictionary?(file)
-      @dictionaries ||= Spellr.config.dictionaries.map { |k,v| v.file }.sort
+      @dictionaries ||= Spellr.config.dictionaries.map { |_k, v| v.file }.sort
 
       @dictionaries.bsearch { |value| file <=> value }
     end
@@ -54,14 +47,15 @@ module Spellr
       !@gitignore_allowed.bsearch { |value| file.to_s <=> value }
     end
 
-    def each(&block)
+    def each
       self.class.glob(*globs).lazy.each do |file|
         next unless file.file?
         next if dictionary?(file)
         next if gitignored?(file)
         next if excluded?(file)
+
         file = Spellr::File.new(file)
-        block.call(file)
+        yield(file)
       end
     end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec::Matchers.define :match_relative_paths do |*expected|
   match do |actual|
     @actual = actual.map { |a| Pathname.new(a.to_s).relative_path_from(Pathname.pwd).to_s }
@@ -21,7 +23,7 @@ RSpec.describe Spellr::FileList do
   end
 
   it 'globs everything' do
-    expect(Spellr::FileList.new.to_a).to match_relative_paths(
+    expect(described_class.new.to_a).to match_relative_paths(
       'foo.rb',
       'foo/bar.txt',
       'spec/foo_spec.rb'
@@ -29,40 +31,47 @@ RSpec.describe Spellr::FileList do
   end
 
   it 'globs extensions' do
-    expect(Spellr::FileList.new('*.rb').to_a).to match_relative_paths(
+    expect(described_class.new('*.rb').to_a).to match_relative_paths(
       'foo.rb',
       'spec/foo_spec.rb'
     )
   end
 
   it 'globs partial filenames' do
-    expect(Spellr::FileList.new('*_spec.rb').to_a).to match_relative_paths(
+    expect(described_class.new('*_spec.rb').to_a).to match_relative_paths(
       'spec/foo_spec.rb'
     )
   end
 
-  it "can respect absolute paths" do
-    expect(Spellr::FileList.new(Pathname.pwd.join('foo.rb').to_s).to_a).to match_relative_paths(
+  it 'can respect absolute paths' do
+    expect(described_class.new(Pathname.pwd.join('foo.rb').to_s).to_a).to match_relative_paths(
       'foo.rb'
     )
   end
 
-  it "ignores gitignore files" do
-    stub_fs_file('.gitignore', <<~BODY)
-      foo*
-      !spec/foo*
-    BODY
-    expect(Spellr::FileList.new.to_a).to match_relative_paths(
-      '.gitignore',
-      'spec/foo_spec.rb'
-    )
+  context 'with a gitignore' do
+    before do
+      stub_fs_file('.gitignore', <<~BODY)
+        foo*
+        !spec/foo*
+      BODY
+    end
+
+    it 'ignores gitignore files' do
+      expect(described_class.new.to_a).to match_relative_paths(
+        '.gitignore',
+        'spec/foo_spec.rb'
+      )
+    end
   end
 
-  it "ignores excluded files" do
-    stub_config(exclusions: ["foo.rb", "*.txt"])
+  context 'with excluded files' do
+    before { stub_config(exclusions: ['foo.rb', '*.txt']) }
 
-    expect(Spellr::FileList.new.to_a).to match_relative_paths(
-      'spec/foo_spec.rb'
-    )
+    it 'ignores excluded files' do
+      expect(described_class.new.to_a).to match_relative_paths(
+        'spec/foo_spec.rb'
+      )
+    end
   end
 end
