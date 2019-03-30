@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'in_threads'
 module Spellr
   class Check
     attr_reader :exit_code
@@ -12,7 +13,7 @@ module Spellr
     end
 
     def check
-      files.each do |file|
+      files.in_threads.map do |file|
         file.each_line do |line, line_number|
           line.each_token do |token|
             next if check_token(token, file.dictionaries)
@@ -21,7 +22,6 @@ module Spellr
             @exit_code = 1
           end
         end
-        GC.start
       end
     end
 
