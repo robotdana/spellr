@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'set'
 require 'in_threads'
 module Spellr
   class Check
@@ -12,21 +13,28 @@ module Spellr
       @exit_code = 0
     end
 
-    def check
+    def check # rubocop:disable Metrics/MethodLength
       files.in_threads.map do |file|
-        file.each_token do |token, pos|
-          next if check_token(token, file.dictionaries)
+        found_words = Set.new
+        missed_words = Set.new
 
-          unfound_token = Spellr::Token.new(token, start: pos, file: file)
-          reporter.call(unfound_token)
-          @exit_code = 1
+        file.each_token do |token, pos|
+          if check_token(token, found_words, missed_words, file.dictionaries)
+            found_words << token
+          else
+            missed_words << token
+            reporter.call(Spellr::Token.new(token, start: pos, file: file))
+            @exit_code = 1
+          end
         end
       end
     end
 
     private
 
-    def check_token(token, dictionaries)
+    def check_token(token, found_words, missed_words, dictionaries)
+      return true if found_words.include?(token)
+      return false if missed_words.include?(token)
       return true if dictionaries.any? { |d| d.include?(token) }
 
       # TODO: this needs work
