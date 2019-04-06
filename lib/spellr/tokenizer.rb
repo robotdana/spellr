@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'set'
 require 'strscan'
+
 module Spellr
   class Tokenizer < StringScanner
     def tokenize

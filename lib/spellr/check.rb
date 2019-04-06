@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'set'
-require 'parallel'
-
 module Spellr
   class Check
     attr_reader :exit_code
@@ -15,7 +12,7 @@ module Spellr
     end
 
     def check
-      Parallel.each(files) do |file|
+      files.each do |file|
         file.each_token do |token, pos|
           next if check_token(token, file.dictionaries)
 

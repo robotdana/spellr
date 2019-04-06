@@ -2,7 +2,6 @@
 
 require 'pathname'
 require 'net/http'
-require 'set'
 
 module Spellr
   class Dictionary
@@ -21,8 +20,6 @@ module Spellr
       @extensions = []
       @filenames = []
       @hashbangs = []
-      @found_words = Set.new
-      @missed_words = Set.new
     end
 
     def each(&block)
@@ -33,20 +30,13 @@ module Spellr
 
     def include?(term)
       term = term.to_s.downcase + "\n"
-      return true if found_words.include?(term)
-      return false if missed_words.include?(term)
 
-      if to_set.include?(term)
-        found_words << term
-        true
-      else
-        missed_words << term
-        false
-      end
+      @include ||= {}
+      @include[term] ||= to_a.bsearch { |value| term <=> value }
     end
 
-    def to_set
-      @to_set ||= super
+    def to_a
+      @to_a ||= super
     end
 
     def lazy_download(**download_options)
