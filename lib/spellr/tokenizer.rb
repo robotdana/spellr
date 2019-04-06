@@ -30,7 +30,7 @@ module Spellr
       skip_hex
       skip_email
       skip(%r{[/#0-9]+})
-      [charpos, title_case || lower_case || upper_case]
+      [charpos, title_case || lower_case || upper_case || other_case]
     end
 
     def title_case
@@ -43,6 +43,10 @@ module Spellr
 
     def upper_case
       scan(/[[:upper:]]+(?:'[[:upper:]]+(?<!S))*(?![[:lower:]])/)
+    end
+
+    def other_case
+      scan(/[[:alpha:]]+/)
     end
 
     def skip_url

@@ -14,7 +14,7 @@ module Spellr
       @exit_code = 0
     end
 
-    def check # rubocop:disable Metrics/MethodLength
+    def check # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       Parallel.each(files) do |file|
         found_words = Set.new
         missed_words = Set.new
@@ -27,6 +27,11 @@ module Spellr
             @exit_code = 1
           end
         end
+      rescue ArgumentError => error
+        # sometimes files are binary
+        next if error.message =~ /invalid byte sequence/
+
+        raise
       end
     end
 

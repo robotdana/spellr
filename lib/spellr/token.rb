@@ -11,11 +11,17 @@ module Spellr
     end
 
     def line
-      @line ||= file.each_line.to_a[line_number - 1]
+      @line ||= file.lines[line_number - 1]
     end
 
     def line_number
-      @line_number ||= file_before.each_line.count
+      @line_number ||= begin
+        if file_before.empty?
+          1
+        else
+          file_before.lines.count
+        end
+      end
     end
 
     def length
@@ -35,7 +41,7 @@ module Spellr
     end
 
     def line_start
-      @line_start ||= file_before.each_line.to_a.last.length
+      @line_start ||= file_before.lines.last&.length || 0
     end
 
     def to_s

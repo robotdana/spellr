@@ -39,6 +39,10 @@ module Spellr
       @first_line ||= each_line.first
     end
 
+    def lines
+      file.read.lines
+    end
+
     def to_s
       file.to_s
     end
