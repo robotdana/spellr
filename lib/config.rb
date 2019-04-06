@@ -7,16 +7,16 @@ Spellr.configure do |config|
   config.run_together_words_maximum_length = 10
 
   config.exclusions = %w{
-    .git/**/*
-    **/.DS_Store
+    /.git/
+    .DS_Store
     Gemfile.lock
     .rspec_status
     *.png
     *.jpg
     *.gif
     *.ico
-    **/.gitkeep
-    **/.keep
+    .gitkeep
+    .keep
   }
 
   config.add_default_dictionary(:natural) do |dict|

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'pathname'
-require 'gitignore/parser'
 
 module Spellr
   class File
