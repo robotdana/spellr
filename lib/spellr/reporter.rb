@@ -8,13 +8,9 @@ module Spellr
     RED = "\033[1;31m"
     RESET = "\033[0m"
 
-    def call(token, startpos, line, line_number, file)
-      before = line.slice(0...startpos)
-      endpos = startpos + token.length
-      after = line.slice(endpos..-1)
-
-      location = "#{file}:#{line_number}:#{startpos}"
-      line = "#{before}#{RED}#{token}#{RESET}#{after}".strip
+    def call(token)
+      location = "#{token.file}:#{token.line_number}:#{token.line_start}"
+      line = "#{token.line_before}#{RED}#{token}#{RESET}#{token.line_after}".strip
 
       puts "#{AQUA}#{location}#{RESET} #{line}"
     end

@@ -14,13 +14,12 @@ module Spellr
 
     def check
       files.in_threads.map do |file|
-        file.each_line do |line, line_number|
-          line.each_token do |token, startpos|
-            next if check_token(token, file.dictionaries)
+        file.each_token do |token, pos|
+          next if check_token(token, file.dictionaries)
 
-            reporter.call(token, startpos, line, line_number, file)
-            @exit_code = 1
-          end
+          unfound_token = Spellr::Token.new(token, start: pos, file: file)
+          reporter.call(unfound_token)
+          @exit_code = 1
         end
       end
     end

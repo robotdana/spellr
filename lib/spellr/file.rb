@@ -26,8 +26,16 @@ module Spellr
       first_line
     end
 
+    def read
+      file.read
+    end
+
+    def each_line
+      file.each_line
+    end
+
     def first_line
-      @first_line ||= file.each_line.first
+      @first_line ||= each_line.first
     end
 
     def to_s
@@ -40,12 +48,8 @@ module Spellr
       super
     end
 
-    def each_line
-      file.each_line.lazy.with_index do |line_string, line_number|
-        line = Spellr::Line.new(line_string)
-
-        yield line, line_number
-      end
+    def each_token(&block)
+      Spellr::Tokenizer.new(file.read).each(&block)
     end
   end
 end

@@ -2,7 +2,7 @@
 
 require_relative 'spellr/version'
 require_relative 'spellr/tokenizer'
-require_relative 'spellr/line'
+require_relative 'spellr/token'
 require_relative 'spellr/file_list'
 require_relative 'spellr/file'
 require_relative 'spellr/scowl_downloader'
