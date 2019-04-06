@@ -10,7 +10,7 @@ module Spellr
 
     include Enumerable
 
-    attr_accessor :download_required, :download_options, :file, :name, :only, :only_hashbangs
+    attr_accessor :download_required, :downloader, :file, :name, :only, :only_hashbangs
     alias_method :download_required?, :download_required
 
     def initialize(file)
@@ -41,28 +41,16 @@ module Spellr
     end
 
     def lazy_download(**download_options)
+      self.downloader = Spellr::SCOWLDownloader.new(download_options)
       self.download_required = true
-      self.download_options = download_options
     end
 
-    def download(options = download_options) # rubocop:disable Metrics/MethodLength
+    def download(**download_options)
+      self.downloader ||= Spellr::SCOWLDownloader.new(download_options)
       self.download_required = false
-      uri = URI.parse('http://app.aspell.net/create')
-      uri.query = URI.encode_www_form(
-        diacritic: :strip,
-        max_size: 50,
-        spelling: :US,
-        max_variant: 0,
-        special: :hacker,
-        **options,
-        download: :wordlist,
-        encoding: 'utf-8',
-        format: :inline
-      )
+      downloader.download(to: file)
+      self.downloader = nil
 
-      license, wordlist = Net::HTTP.get_response(uri).body.split('---', 2)
-      file.write(wordlist)
-      file.sub_ext('.LICENSE.txt').write(license)
       process_wordlist
     end
 
