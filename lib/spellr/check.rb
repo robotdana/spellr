@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'set'
-require 'in_threads'
+require 'parallel'
+
 module Spellr
   class Check
     attr_reader :exit_code
@@ -14,10 +15,9 @@ module Spellr
     end
 
     def check # rubocop:disable Metrics/MethodLength
-      files.in_threads.map do |file|
+      Parallel.each(files) do |file|
         found_words = Set.new
         missed_words = Set.new
-
         file.each_token do |token, pos|
           if check_token(token, found_words, missed_words, file.dictionaries)
             found_words << token
