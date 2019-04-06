@@ -28,9 +28,7 @@ module Spellr
     private
 
     def check_token(token, dictionaries)
-      token_string = token.to_s.downcase + "\n"
-
-      return true if dictionaries.any? { |d| d.bsearch { |value| token_string <=> value } }
+      return true if dictionaries.any? { |d| d.include?(token) }
 
       # TODO: this needs work
       # return false unless Spellr.config.run_together_words?

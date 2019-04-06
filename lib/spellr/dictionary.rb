@@ -2,6 +2,7 @@
 
 require 'pathname'
 require 'net/http'
+require 'set'
 
 module Spellr
   class Dictionary
@@ -30,12 +31,13 @@ module Spellr
       @file_list ||= Spellr::FileList.glob(*only).sort
     end
 
-    def bsearch(&block)
-      to_a.bsearch(&block)
+    def include?(term)
+      term = term.to_s.downcase + "\n"
+      to_set.include?(term)
     end
 
-    def to_a
-      @to_a ||= super
+    def to_set
+      @to_set ||= super
     end
 
     def lazy_download(**download_options)
