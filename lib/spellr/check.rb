@@ -15,10 +15,10 @@ module Spellr
     def check
       files.in_threads.map do |file|
         file.each_line do |line, line_number|
-          line.each_token do |token|
+          line.each_token do |token, startpos|
             next if check_token(token, file.dictionaries)
 
-            reporter.call(token, line, line_number, file)
+            reporter.call(token, startpos, line, line_number, file)
             @exit_code = 1
           end
         end

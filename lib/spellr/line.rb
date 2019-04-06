@@ -11,7 +11,7 @@ module Spellr
     end
 
     def each_token(&block)
-      Spellr::Token.each_token(self, &block)
+      Spellr::Tokenizer.new(to_s).each(&block)
     end
 
     def scan(pattern, &block)
