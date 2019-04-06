@@ -10,25 +10,22 @@ module Spellr
 
     include Enumerable
 
-    attr_accessor :download_required, :downloader, :file, :name, :only, :only_hashbangs
+    attr_accessor :download_required, :downloader, :file, :name, :extensions, :hashbangs, :filenames
     alias_method :download_required?, :download_required
 
     def initialize(file)
       @file = Pathname.new(file).expand_path
       @name = @file.basename('.*').to_s
       @download_options = {}
-      @only = []
-      @only_hashbangs = []
+      @extensions = []
+      @filenames = []
+      @hashbangs = []
     end
 
     def each(&block)
       download if !file.exist? && download_required?
 
       file.each_line(&block)
-    end
-
-    def file_list
-      @file_list ||= Spellr::FileList.glob(*only).sort
     end
 
     def include?(term)

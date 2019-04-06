@@ -29,31 +29,32 @@ Spellr.configure do |config|
   config.add_default_dictionary(:common)
 
   config.add_default_dictionary(:ruby) do |dict|
-    dict.only = %w{
-      *.rb
+    dict.extensions = %w{
+      rb
+      rake
+      gemspec
+      ru
+      erb
+      haml
+      jbuilder
+      builder
+    }
+    dict.filenames = %w{
       Gemfile
       Rakefile
-      *.gemspec
-      rake
-      .travis.yml
     }
-    dict.only_hashbangs = %w{ruby}
-  end
-
-  config.add_default_dictionary(:'ruby.stdlib') do |dict|
-    dict.only = %w{
-      *.rb
-      Gemfile
-      Rakefile
-      *.gemspec
-      rake
-      .travis.yml
+    dict.hashbangs = %w{
+      ruby
     }
-    dict.only_hashbangs = %w{ruby}
   end
 
   config.add_default_dictionary(:shell) do |dict|
-    dict.only = %w{*.sh}
-    dict.only_hashbangs = %w{bash sh}
+    dict.extensions = %w{
+      sh
+    }
+    dict.hashbangs = %w{
+      bash
+      sh
+    }
   end
 end

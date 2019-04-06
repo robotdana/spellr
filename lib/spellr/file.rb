@@ -11,11 +11,12 @@ module Spellr
       @file = Pathname.new(name).expand_path
     end
 
-    def dictionaries # rubocop:disable Metrics/AbcSize
+    def dictionaries # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
       @dictionaries ||= Spellr.config.dictionaries.values.select do |dict|
-        dict.only.empty? ||
-          dict.file_list.bsearch { |value| file <=> value } ||
-          (hashbang && dict.only_hashbangs.any? { |match| hashbang.include?(match) })
+        (dict.extensions.empty? && dict.filenames.empty? && dict.hashbangs.empty?) ||
+          dict.extensions.include?(file.extname) ||
+          dict.filenames.include?(file.basename) ||
+          (hashbang && dict.hashbangs.any? { |match| hashbang.include?(match) })
       end
     end
 
