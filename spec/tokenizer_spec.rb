@@ -20,49 +20,49 @@ RSpec::Matchers.define :have_subwords do |*expected|
 end
 RSpec::Matchers.alias_matcher :have_no_subwords, :have_subwords
 
-RSpec.describe Spellr::Token do
+RSpec.describe Spellr::Tokenizer do
   describe '.tokenize' do
-    it 'returns tokens split by spaces' do
+    it 'splits tokens by spaces' do
       expect('This line').to have_tokens 'This', 'line'
     end
 
-    it 'returns tokens split by :' do
+    it 'splits tokens by :' do
       expect('Spellr::Line').to have_tokens 'Spellr', 'Line'
     end
 
-    it "doesn't tokenize a URL" do
+    it 'excludes URLs' do
       expect('click here https://google.com').to have_tokens 'click', 'here'
     end
 
-    it "doesn't tokenize a URL in parentheses" do
+    it 'excludes URLs in parentheses' do
       expect('[link](ftp://example.org)').to have_tokens 'link'
     end
 
-    it "doesn't tokenize a URL in angle brackets" do
+    it 'excludes URLs in angle brackets' do
       expect('Dave <dave@example.com>').to have_tokens 'Dave'
     end
 
-    it "doesn't tokenize a URL followed by punctuation" do
+    it 'excludes URLs when followed by punctuation' do
       expect('read this http://google.com, and this http://apple.com').to have_tokens 'read', 'this', 'and', 'this'
     end
 
-    it "doesn't tokenize a URL with a query string" do
+    it 'excludes URLs with a query string' do
       expect('query https://the-google.com?query-string=whatever%2Bthing').to have_tokens 'query'
     end
 
-    it "doesn't tokenize a URL with no scheme" do
+    it 'excludes URLs with no scheme' do
       expect('click here //google.com').to have_tokens 'click', 'here'
     end
 
-    it "doesn't tokenize an email" do
+    it 'excludes mailto: email links' do
       expect('href="mailto:robot@dana.sh"').to have_tokens 'href'
     end
 
-    it "doesn't tokenize an email with no scheme" do
+    it 'excludes emails' do
       expect('send here: robot@dana.sh').to have_tokens 'send', 'here'
     end
 
-    it "doesn't tokenize short words" do
+    it 'excludes short words' do
       expect('to be or not to be').to have_tokens 'not'
     end
 
@@ -76,11 +76,11 @@ RSpec.describe Spellr::Token do
       expect('http://www.the4wd.com').to have_no_tokens
     end
 
-    it "doesn't tokenize numbers only" do
+    it 'excludes numbers only' do
       expect('3.14 100 4,000').to have_no_tokens
     end
 
-    it "doesn't tokenize maths only" do
+    it 'excludes maths only' do
       expect('1+1 1/2 10>4 15-10').to have_no_tokens
     end
 
@@ -88,7 +88,7 @@ RSpec.describe Spellr::Token do
       expect('<a style="background: red">').to have_tokens 'style', 'background', 'red'
     end
 
-    it "doesn't tokenize CSS colours" do
+    it 'excludes CSS colours' do
       expect('color: #fee; background: #fad').to have_tokens 'color', 'background'
     end
 
@@ -96,7 +96,7 @@ RSpec.describe Spellr::Token do
       expect("Didn't shouldn't could've o'clock").to have_tokens "Didn't", "shouldn't", "could've", "o'clock"
     end
 
-    it 'splits on wrapping quotes' do
+    it 'excludes wrapping quotes' do
       expect(%{"Didn't" 'shouldn't' <could've> 'o'clock'}).to have_tokens "Didn't", "shouldn't", "could've", "o'clock"
     end
 
@@ -124,15 +124,15 @@ RSpec.describe Spellr::Token do
       expect('HTTParty GoogleAPI').to have_tokens 'HTT', 'Party', 'Google', 'API'
     end
 
-    it "drops 's" do
+    it "excludes 's" do
       expect("do's and don't's").to have_tokens 'and', "don't"
     end
 
-    it "drops 's with all caps" do
+    it "excludes 'S with all caps" do
       expect("DO'S AND DON'T'S").to have_tokens 'AND', "DON'T"
     end
 
-    it "drops 's with all camel case" do
+    it "excludes 's with all camel case" do
       expect("TheThing's").to have_tokens 'The', 'Thing'
     end
   end
