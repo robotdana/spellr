@@ -14,18 +14,13 @@ module Spellr
       @exit_code = 0
     end
 
-    def check # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def check
       Parallel.each(files) do |file|
-        found_words = Set.new
-        missed_words = Set.new
         file.each_token do |token, pos|
-          if check_token(token, found_words, missed_words, file.dictionaries)
-            found_words << token
-          else
-            missed_words << token
-            reporter.call(Spellr::Token.new(token, start: pos, file: file))
-            @exit_code = 1
-          end
+          next if check_token(token, file.dictionaries)
+
+          reporter.call(Spellr::Token.new(token, start: pos, file: file))
+          @exit_code = 1
         end
       rescue ArgumentError => error
         # sometimes files are binary
@@ -37,9 +32,7 @@ module Spellr
 
     private
 
-    def check_token(token, found_words, missed_words, dictionaries)
-      return true if found_words.include?(token)
-      return false if missed_words.include?(token)
+    def check_token(token, dictionaries)
       return true if dictionaries.any? { |d| d.include?(token) }
 
       # TODO: this needs work
