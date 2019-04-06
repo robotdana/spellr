@@ -48,6 +48,21 @@ Spellr.configure do |config|
     }
   end
 
+  config.add_default_dictionary(:html) do |dict|
+    dict.extensions = %w{
+      html
+      hml
+      jsx
+      tsx
+      js
+      ts
+      haml
+      erb
+      rb
+      builder
+    }
+  end
+
   config.add_default_dictionary(:shell) do |dict|
     dict.extensions = %w{
       sh
