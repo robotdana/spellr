@@ -177,6 +177,7 @@ body
 bool
 boolean
 both
+break
 broadaddr
 broadcast
 bsearch
@@ -214,6 +215,7 @@ capitalize
 capitalized
 caption
 captures
+case
 casecmp
 casefold
 cast
@@ -604,6 +606,8 @@ elibmax
 elibscn
 elnrng
 eloop
+else
+elsif
 emacs
 email
 emailbx
@@ -1152,6 +1156,7 @@ keys
 keyusage
 kill
 kind
+klass
 koi
 label
 labels
@@ -1722,6 +1727,7 @@ recvtos
 recvttl
 redirect
 redirection
+redo
 reduce
 ref
 reference
@@ -1769,6 +1775,7 @@ required
 requirement
 requirements
 requires
+rescue
 reserved
 reset
 resolution
@@ -2143,6 +2150,7 @@ text
 textarea
 thai
 that
+then
 this
 thread
 threads
@@ -2242,6 +2250,7 @@ universal
 universalstring
 unix
 unknown
+unless
 unlink
 unlock
 unpack
