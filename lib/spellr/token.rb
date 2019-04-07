@@ -21,7 +21,7 @@ module Spellr
     end
 
     def inspect
-      "#<Spellr::Token #{string}>"
+      "#<#{self.class.name}:#{string}>"
     end
 
     def end

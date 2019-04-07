@@ -1,0 +1,10 @@
+---
+ignore:
+  - /wordlists/
+languages:
+  natural:
+    wordlists:
+      - $PROJECT/dictionary.txt
+  ruby:
+    filenames:
+      - README.md

@@ -1,21 +1,18 @@
 # frozen_string_literal: true
 
-require 'pathname'
 require 'fast_ignore'
+
 module Spellr
   class FileList
-    attr_accessor :globs
     include Enumerable
 
-    def dictionary?(file)
-      @dictionaries ||= Spellr.config.dictionaries.map { |_k, v| v.file.to_s }.sort
-
-      @dictionaries.bsearch { |value| file <=> value }
+    def wordlist?(file)
+      Spellr.config.wordlists.any? { |w| w.path == file }
     end
 
     def each
-      FastIgnore.new(rules: Spellr.config.exclusions).each do |file|
-        next if dictionary?(file)
+      FastIgnore.new(rules: Spellr.config.ignored).each do |file|
+        next if wordlist?(file)
 
         file = Spellr::File.new(file)
         yield(file)

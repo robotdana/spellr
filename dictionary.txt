@@ -1,9 +1,9 @@
-sherson
+checkable
+exitstatus
+gitignored
 ptools
+sherson
+subtoken
 tokenize
 tokenizer
 tokenizes
-exitstatus
-subtoken
-checkable
-gitignored

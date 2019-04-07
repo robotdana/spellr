@@ -1,39 +1,63 @@
 # frozen_string_literal: true
 
+require 'yaml'
+
 module Spellr
   class Config
-    attr_accessor :dictionaries, :exclusions, :reporter
-    attr_accessor :word_minimum_length, :subword_minimum_length
-    attr_accessor :subword_maximum_count, :run_together_words_maximum_length
-
     def initialize
-      @dictionaries = {}
-      @exclusions = []
-      @reporter = Spellr::Reporter
-      @word_minimum_length = 3
-      @subword_minimum_length = 3
-      @subword_maximum_count = 2
-      @run_together_words_maximum_length = 10
+      default_config = load_yaml(__dir__, '..', '.spellr.yml')
+      project_config = load_yaml(Dir.pwd, '.spellr.yml')
+
+      @config = merge_config(default_config, project_config)
     end
 
-    def minimum_dictionary_entry_length
-      [word_minimum_length, subword_minimum_length].min
+    def reporter
+      Spellr::Reporter
     end
 
-    def run_together_words?
-      subword_maximum_count > 1
+    def word_minimum_length
+      @config[:word_minimum_length]
     end
 
-    def add_dictionary(filename)
-      dictionary = Spellr::Dictionary.new(filename)
-      yield dictionary if block_given?
-      dictionaries[dictionary.name.to_s.to_sym] = dictionary
+    def ignored
+      @config[:ignore]
     end
 
-    def add_default_dictionary(name, &block)
-      filename = Spellr::Dictionary::DEFAULT_DIR.join("#{name}.txt")
+    def languages
+      @languages ||= @config[:languages].map do |key, args|
+        [key, Spellr::Language.new(key, args)]
+      end.to_h
+    end
 
-      add_dictionary(filename, &block)
+    def wordlists
+      @wordlists ||= languages.values.flat_map(&:wordlists)
+    end
+
+    def wordlists_for(file)
+      languages.values.flat_map do |l|
+        next [] unless l.matches?(file)
+
+        l.wordlists
+      end
+    end
+
+    private
+
+    def load_yaml(*path)
+      file = ::File.join(*path)
+      return {} unless ::File.exist?(file)
+
+      YAML.safe_load(::File.read(file), symbolize_names: true)
+    end
+
+    def merge_config(default, project)
+      if project.is_a?(Array) && default.is_a?(Array)
+        default | project
+      elsif project.is_a?(Hash) && default.is_a?(Hash)
+        default.merge(project) { |_k, d, p| merge_config(d, p) }
+      else
+        project
+      end
     end
   end
 end

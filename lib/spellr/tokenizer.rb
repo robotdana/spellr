@@ -6,7 +6,7 @@ module Spellr
   class Tokenizer < StringScanner
     def tokenize
       tokens = []
-      each do |token, _start, _end|
+      each do |token, _start|
         tokens << token
       end
       tokens

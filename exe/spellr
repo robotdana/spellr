@@ -16,16 +16,6 @@ OptionParser.new do |opts|
   opts.on_tail('-h', '--help', 'Shows this message') { puts(opts) && exit }
 end.parse!
 
-require_relative '../lib/config'
-require config_file if config_file
-
-# default config file is not required
-begin
-  require './.spellr_config' unless config_file
-rescue LoadError
-  nil
-end
-
 files = Spellr::FileList.new(*ARGV)
 
 if list

@@ -2,7 +2,7 @@
 
 require 'rspec_command'
 module CLIHelper
-  EXE_PATH = File.expand_path('../../exe', __dir__).freeze
+  EXE_PATH = ::File.expand_path('../../exe', __dir__).freeze
 
   def run(cmd)
     @result = command("#{EXE_PATH}/#{cmd}")

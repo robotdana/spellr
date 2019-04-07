@@ -28,9 +28,10 @@ module Spellr
     private
 
     def check_file(file)
-      file.each_line.with_index do |line, _index|
-        Spellr::Tokenizer.new(line).each do |token, _pos|
-          next if file.dictionaries.any? { |d| d.include?(token) }
+      wordlists = Spellr.config.wordlists_for(file)
+      file.each_line.with_index do |line, index|
+        Spellr::Tokenizer.new(line).each do |token, pos|
+          next if wordlists.any? { |d| d.include?(token) }
 
           reporter.call(Spellr::Token.new(token, file: file, line: line, line_number: index + 1, start: pos))
           @exit_code = 1

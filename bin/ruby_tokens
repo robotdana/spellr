@@ -53,6 +53,4 @@ get_everything(Module)
 
 require_relative '../lib/spellr'
 
-Spellr::Dictionary::DEFAULT_DIR
-  .join("ruby#{'.stdlib' if stdlib}#{'.bundler' if bundler}.txt")
-  .write(Spellr::Tokenizer.new(@strings.uniq.join(" ")).map(&:downcase).sort.uniq.join("\n"))
+Spellr::Wordlist.new('$GEM/ruby').clean(@strings.join(" "))

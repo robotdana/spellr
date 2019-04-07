@@ -1,0 +1,59 @@
+---
+word_minimum_length: 3
+
+ignore: # this list is parsed with the .gitignore format
+  - /.git/
+  - .DS_Store
+  - Gemfile.lock
+  - .rspec_status
+  - '*.png'
+  - '*.jpg'
+  - '*.gif'
+  - '*.ico'
+  - .gitkeep
+  - .keep
+
+languages:
+  english:
+    wordlists:
+      - $GEM/scowl.txt
+      - $GEM/supplementary.txt
+  ruby:
+    wordlists:
+      - $GEM/ruby.txt
+    extensions: # these must match what File.extname returns
+      .rb
+      .rake
+      .gemspec
+      .erb
+      .haml
+      .jbuilder
+      .builder
+    filenames: # these must match what File.basename returns
+      - Gemfile
+      - Rakefile
+      - config.ru
+    hashbangs:
+      - ruby
+  html:
+    wordlists:
+      - $GEM/html.txt
+    extensions:
+      - .html
+      - .hml
+      - .jsx
+      - .tsx
+      - .js
+      - .ts
+      - .haml
+      - .erb
+      - .rb
+      - .builder
+  shell:
+    wordlists:
+      - $GEM/shell.txt
+    extensions:
+      - .sh
+    hashbangs:
+      - bash
+      - sh
