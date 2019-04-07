@@ -6,7 +6,7 @@ RSpec.describe 'command line', type: :cli do
       run 'spellr --help'
       expect(exitstatus).to be 0
       expect(stderr).to be_empty
-      expect(stdout.join("\n")).to eq <<~HELP
+      expect(stdout).to eq <<~HELP.split("\n")
         Usage: spellr [options]
                 --list                       List files to be spellchecked
             -i, --interactive                Runs the spell check interactively

@@ -1,30 +1,6 @@
 # frozen_string_literal: true
 
 module StubHelper
-  def stub_file(tokens: [], dictionaries: [])
-    double = instance_double(Spellr::File, dictionaries: dictionaries)
-    allow(double).to receive(:each_line).and_yield(stub_line(tokens: tokens))
-    double
-  end
-
-  def stub_line(tokens: [])
-    double = instance_double(Spellr::Line)
-    allow(double).to receive(:each_token) { |&block| tokens.each(&block) }
-    double
-  end
-
-  def stub_dictionary(lines, only: [], only_hashbangs: [])
-    double = instance_double(Spellr::Dictionary, only: only, only_hashbangs: only_hashbangs)
-    allow(double).to receive(:each) { |&block| lines.each_line(&block) }
-    allow(double).to receive(:bsearch) { |&block| lines.lines.sort.bsearch(&block) }
-    double.extend Enumerable
-    double
-  end
-
-  def stub_reporter
-    class_double(Spellr::Reporter, report: nil)
-  end
-
   def stub_config(**configs)
     allow(Spellr.config).to receive_messages(configs)
   end

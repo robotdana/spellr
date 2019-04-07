@@ -1,40 +1,36 @@
 # frozen_string_literal: true
 
-RSpec::Matchers.define :include_spelling_errors do |*expected|
-  match do |actual|
-    @actual = []
+RSpec.describe Spellr::Wordlist do
+  subject { described_class.new('$PROJECT/wordlist') }
 
-    file = stub_file(tokens: actual.map { |a| Spellr::Token.new(a) }, dictionaries: [dictionary])
-    check = Spellr::Check.new(files: [file])
+  around { |e| with_temp_dir { e.run } }
 
-    allow(check.reporter).to receive(:call) { |arg| @actual << arg }
-    check.check
-
-    expect(@actual).to match(expected)
-  end
-
-  diffable
-end
-
-RSpec.describe Spellr::Check do
-  describe '#check' do
-    let(:dictionary) do
-      stub_dictionary <<~DICTIONARY
+  describe '#include?' do
+    before do
+      stub_fs_file 'wordlist', <<~WORDLIST
         bar
         foo
-      DICTIONARY
+      WORDLIST
     end
 
-    it 'reports missing tokens' do
-      expect(%w{foo bar baz}).to include_spelling_errors 'baz'
+    it 'includes words even when cached' do
+      expect(subject).to include 'bar'
+      expect(subject).to include 'bar'
     end
 
-    it 'reports missing uppercase tokens' do
-      expect(%w{FOO BAR BAZ}).to include_spelling_errors 'BAZ'
+    it 'excludes words even when cached' do
+      expect(subject).not_to include 'baz'
+      expect(subject).not_to include 'baz'
     end
 
-    it 'accepts joint words' do
-      expect(%w{foobar barbaz}).to include_spelling_errors 'barbaz'
+    it 'includes words even with case differences' do
+      expect(subject).to include 'BAR'
+      expect(subject).to include 'BAR'
+    end
+
+    it 'excludes words even with case differences' do
+      expect(subject).not_to include 'BAZ'
+      expect(subject).not_to include 'BAZ'
     end
   end
 end

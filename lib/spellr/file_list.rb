@@ -23,7 +23,10 @@ module Spellr
     end
 
     def each
-      FastIgnore.new(rules: Spellr.config.ignored).each do |file|
+      # TODO: handle no gitignoe
+      gitignore = ::File.join(Dir.pwd, '.gitignore')
+      gitignore = nil unless ::File.exist?(gitignore)
+      FastIgnore.new(rules: Spellr.config.ignored, gitignore: gitignore).each do |file|
         file = Spellr::File.new(file)
         next unless cli_only?(file)
         next if wordlist?(file)
