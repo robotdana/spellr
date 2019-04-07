@@ -25,7 +25,6 @@ module Spellr
 
     def next_token
       skip(%r{[^[:alpha:]/#0-9]+})
-      skip(/[\n\r]+/)
       skip_url
       skip_hex
       skip_email
@@ -42,7 +41,7 @@ module Spellr
     end
 
     def upper_case
-      scan(/[[:upper:]]+(?:'[[:upper:]]+(?<!S))*(?![[:lower:]])/)
+      scan(/[[:upper:]]+(?:'[[:upper:]]+(?<![Ss]))*(?![[:lower:]])/)
     end
 
     def other_case

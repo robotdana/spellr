@@ -135,6 +135,10 @@ RSpec.describe Spellr::Tokenizer do
     it "excludes 's with all camel case" do
       expect("TheThing's").to have_tokens 'The', 'Thing'
     end
+
+    it "excludes 's after all caps" do
+      expect("DVD's and URI's").to have_tokens 'DVD', 'and', 'URI'
+    end
   end
 
   xdescribe '#subwords' do
