@@ -13,7 +13,7 @@ module Spellr
     def dictionaries # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
       @dictionaries ||= Spellr.config.dictionaries.values.select do |dict|
         (dict.extensions.empty? && dict.filenames.empty? && dict.hashbangs.empty?) ||
-          dict.extensions.include?(file.extname) ||
+          dict.extensions.include?(file.extname.delete_prefix('.')) ||
           dict.filenames.include?(file.basename) ||
           (hashbang && dict.hashbangs.any? { |match| hashbang.include?(match) })
       end
