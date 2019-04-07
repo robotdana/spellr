@@ -13,15 +13,13 @@ module Spellr
 
     def check
       files.each do |file|
-        file.each_token do |token, pos|
-          next if check_token(token, file.dictionaries)
-
-          reporter.call(Spellr::Token.new(token, start: pos, file: file))
-          @exit_code = 1
-        end
+        check_file(file)
       rescue ArgumentError => error
         # sometimes files are binary
-        next if error.message =~ /invalid byte sequence/
+        if /invalid byte sequence/.match?(error.message)
+          puts "Skipped invalid file: #{file}"
+          next
+        end
 
         raise
       end
@@ -29,20 +27,15 @@ module Spellr
 
     private
 
-    def check_token(token, dictionaries)
-      return true if dictionaries.any? { |d| d.include?(token) }
+    def check_file(file)
+      file.each_line.with_index do |line, _index|
+        Spellr::Tokenizer.new(line).each do |token, _pos|
+          next if file.dictionaries.any? { |d| d.include?(token) }
 
-      # TODO: this needs work
-      # return false unless Spellr.config.run_together_words?
-
-      # return false if token.length > Spellr.config.run_together_words_maximum_length
-
-      # token.subwords.any? do |subword_set|
-      #   subword_set.all? do |subword|
-      #     subword_string = subword.to_s.downcase + "\n"
-      #     dictionaries.any? { |d| d.bsearch { |value| subword_string <=> value } }
-      #   end
-      # end
+          reporter.call(Spellr::Token.new(token, file: file, line: line, line_number: index + 1, start: pos))
+          @exit_code = 1
+        end
+      end
     end
   end
 end

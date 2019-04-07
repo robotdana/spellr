@@ -51,9 +51,5 @@ module Spellr
 
       super
     end
-
-    def each_token(&block)
-      Spellr::Tokenizer.new(file.read).each(&block)
-    end
   end
 end

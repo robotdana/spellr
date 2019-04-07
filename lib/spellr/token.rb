@@ -2,46 +2,18 @@
 
 module Spellr
   class Token
-    attr_reader :string, :file_start, :file
+    attr_reader :string, :start, :file, :line_number, :line
 
-    def initialize(string, start:, file:)
+    def initialize(string, start: nil, file: nil, line_number: nil, line: nil)
       @string = string
-      @file_start = start
+      @start = start
+      @line_number = line_number
+      @line = line
       @file = file
-    end
-
-    def line
-      @line ||= file.lines[line_number - 1]
-    end
-
-    def line_number
-      @line_number ||= begin
-        if file_before.empty?
-          1
-        else
-          file_before.lines.count
-        end
-      end
     end
 
     def length
       string.length
-    end
-
-    def file_before
-      @file_before ||= file.read.slice(0...file_start)
-    end
-
-    def file_end
-      @file_end ||= file_start + length
-    end
-
-    def file_after
-      @file_after ||= file.read.slice(file_end..-1)
-    end
-
-    def line_start
-      @line_start ||= file_before.lines.last&.length || 0
     end
 
     def to_s
@@ -49,19 +21,19 @@ module Spellr
     end
 
     def inspect
-      "#<Spellr::Token #{string} offset=#{file_start}>"
+      "#<Spellr::Token #{string}>"
     end
 
-    def line_end
-      @line_end ||= line_start + length
+    def end
+      start + length
     end
 
-    def line_before
-      @line_before ||= line.slice(0...line_start)
+    def before
+      @before ||= line.slice(0...start)
     end
 
-    def line_after
-      @line_after ||= line.slice(line_end..-1)
+    def after
+      @after ||= line.slice(self.end..-1)
     end
   end
 end

@@ -55,4 +55,4 @@ require_relative '../lib/spellr'
 
 Spellr::Dictionary::DEFAULT_DIR
   .join("ruby#{'.stdlib' if stdlib}#{'.bundler' if bundler}.txt")
-  .write(Spellr::Token.tokenize(@strings.uniq.join("\n")).map { |w| w.to_s.downcase }.sort.uniq.join("\n"))
+  .write(Spellr::Tokenizer.new(@strings.uniq.join(" ")).map(&:downcase).sort.uniq.join("\n"))
