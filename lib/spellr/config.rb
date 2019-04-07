@@ -19,6 +19,10 @@ module Spellr
       @config[:word_minimum_length]
     end
 
+    def only
+      @config[:only] || []
+    end
+
     def ignored
       @config[:ignore]
     end
