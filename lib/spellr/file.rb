@@ -14,5 +14,9 @@ module Spellr
     def first_line
       @first_line ||= each_line.first
     end
+
+    def fnmatch?(pattern)
+      relative_path_from(Pathname.pwd).fnmatch?(pattern, ::File::FNM_DOTMATCH)
+    end
   end
 end

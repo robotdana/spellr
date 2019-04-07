@@ -1,10 +1,18 @@
 ---
 ignore:
   - /wordlists/
+only:
+  - '*.rb'
+  - '*.yml'
+  - '*.txt'
+  - Rakefile
+  - '*.md'
+  - '*.gemspec'
+  - Gemfile
 languages:
   natural:
     wordlists:
       - $PROJECT/dictionary.txt
   ruby:
-    filenames:
+    only:
       - README.md

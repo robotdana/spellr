@@ -21,15 +21,14 @@ languages:
   ruby:
     wordlists:
       - $GEM/ruby.txt
-    extensions: # these must match what File.extname returns
-      .rb
-      .rake
-      .gemspec
-      .erb
-      .haml
-      .jbuilder
-      .builder
-    filenames: # these must match what File.basename returns
+    only: # Filtered using File.fn_match
+      - '*.rb'
+      - '*.rake'
+      - '*.gemspec'
+      - '*.erb'
+      - '*.haml'
+      - '*.jbuilder'
+      - '*.builder'
       - Gemfile
       - Rakefile
       - config.ru
@@ -38,22 +37,22 @@ languages:
   html:
     wordlists:
       - $GEM/html.txt
-    extensions:
-      - .html
-      - .hml
-      - .jsx
-      - .tsx
-      - .js
-      - .ts
-      - .haml
-      - .erb
-      - .rb
-      - .builder
+    only:
+      - '*.html'
+      - '*.hml'
+      - '*.jsx'
+      - '*.tsx'
+      - '*.js'
+      - '*.ts'
+      - '*.haml'
+      - '*.erb'
+      - '*.rb'
+      - '*.builder'
   shell:
     wordlists:
       - $GEM/shell.txt
-    extensions:
-      - .sh
+    only:
+      - '*.sh'
     hashbangs:
       - bash
       - sh
