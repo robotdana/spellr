@@ -29,6 +29,7 @@ module Spellr
       skip_hex
       skip_email
       skip(%r{[/#0-9]+})
+
       [charpos, title_case || lower_case || upper_case || other_case]
     end
 
