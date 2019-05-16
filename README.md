@@ -40,3 +40,23 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/robotd
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## TODO Before release
+
+- [ ] handle interactive add
+  - [ ] handling wordlists per language better
+      - [ ] global wordlists
+      - [ ] dynamic wordlist (e.g. built from ruby and YOUR Gemfile and stdlib     packages)
+      - [ ] gem committed semi-dynamic wordlist
+      - [ ] gem committed static wordlist
+- [ ] enable/disable
+- [ ] get marketplacer codebase green
+
+## TODO after release
+- [ ] attempt subwords again
+- [ ] attempt key recogniti
+- [ ] (semi)dynamic js wordlist
+- [ ] (semi)dynamic html wordlist
+- [ ] (semi)dynamic bash wordlist
+- [ ] editor plugins
+

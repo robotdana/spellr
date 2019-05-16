@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require 'pathname'
+require 'tmpdir'
+require_relative '../../lib/spellr'
+
 module StubHelper
   def stub_config(**configs)
     allow(Spellr.config).to receive_messages(configs)

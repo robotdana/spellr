@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../lib/spellr/wordlist'
+
 RSpec.describe Spellr::Wordlist do
   subject { described_class.new('$PROJECT/wordlist') }
 

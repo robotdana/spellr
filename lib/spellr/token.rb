@@ -2,14 +2,14 @@
 
 module Spellr
   class Token
-    attr_reader :string, :start, :file, :line_number, :line
+    attr_reader :string, :file, :start_pos, :line_number, :line_start_pos
 
-    def initialize(string, start: nil, file: nil, line_number: nil, line: nil)
+    def initialize(string, file: nil, loc: [])
       @string = string
-      @start = start
-      @line_number = line_number
-      @line = line
       @file = file
+      @start_pos = loc[0]
+      @line_number = loc[1]
+      @line_start_pos = loc[2]
     end
 
     def length
@@ -20,20 +20,42 @@ module Spellr
       string
     end
 
+    def downcase
+      to_s.downcase
+    end
+
     def inspect
       "#<#{self.class.name}:#{string}>"
     end
 
-    def end
-      start + length
+    def column
+      start_pos - line_start_pos
+    end
+
+    def column_end
+      column + length
+    end
+
+    def coordinates
+      [line_number, column]
+    end
+
+    def line
+      @line ||= file.each_line.to_a[line_number - 1]
     end
 
     def before
-      @before ||= line.slice(0...start)
+      @before ||= line.slice(0...column)
     end
 
     def after
-      @after ||= line.slice(self.end..-1)
+      @after ||= line.slice(column_end..-1)
+    end
+
+    def replace(replacement)
+      string = file.read
+      string[start_pos...(start_pos + length)] = replacement
+      file.write(string)
     end
   end
 end

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'pathname'
+require_relative '../lib/spellr/file_list'
+
 RSpec::Matchers.define :match_relative_paths do |*expected|
   match do |actual|
     @actual = actual.map { |a| Pathname.new(a.to_s).relative_path_from(Pathname.pwd).to_s }

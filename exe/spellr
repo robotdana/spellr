@@ -2,28 +2,6 @@
 # frozen_string_literal: true
 
 require_relative '../lib/spellr'
-require 'optparse'
+require_relative '../lib/spellr/cli'
 
-list = false
-interactive = false
-config_file = nil
-
-OptionParser.new do |opts|
-  opts.on('--list', 'List files to be spellchecked') { list = true }
-  opts.on('-i', '--interactive', 'Runs the spell check interactively') { interactive = true }
-  opts.on('-c', '--config FILENAME', String, 'Path to the config file') { |file| Spellr::Config.project_config = file }
-  opts.on_tail('-v', '--version', 'Returns the current version') { puts(Spellr::VERSION); exit }
-  opts.on_tail('-h', '--help', 'Shows this message') { puts(opts); exit }
-end.parse!
-
-files = Spellr::FileList.new(*ARGV)
-
-if list
-  files.each { |f| puts f.relative_path_from(Pathname.pwd) }
-  exit
-end
-
-checker = Spellr::Check.new(files: files)
-checker.check
-
-exit checker.exit_code
+Spellr::CLI.new

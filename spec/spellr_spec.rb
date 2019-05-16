@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe Spellr do
+require_relative '../lib/spellr/version'
+
+RSpec.describe Spellr::VERSION do
   it 'has a version number' do
-    expect(Spellr::VERSION).not_to be nil
+    expect(described_class).not_to be nil
   end
 end

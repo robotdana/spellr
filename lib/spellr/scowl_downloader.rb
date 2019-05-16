@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'pathname'
+require 'net/http'
+
 module Spellr
   class SCOWLDownloader
     def initialize(

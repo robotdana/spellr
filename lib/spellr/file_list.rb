@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'fast_ignore'
-
+require_relative '../spellr'
+require_relative 'file'
 module Spellr
   class FileList
     include Enumerable

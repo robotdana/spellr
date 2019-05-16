@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'wordlist'
+
 module Spellr
   class Language
     attr_reader :wordlists

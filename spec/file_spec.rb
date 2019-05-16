@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+require_relative '../lib/spellr/file'
+
 RSpec.describe Spellr::File do
   describe '#hashbang' do
     subject { described_class.new(path) }

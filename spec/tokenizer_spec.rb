@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+require_relative '../lib/spellr/tokenizer'
+
 RSpec::Matchers.define :have_tokens do |*expected|
   match do |actual|
-    @actual = Spellr::Tokenizer.new(actual).tokenize
+    @actual = Spellr::Tokenizer.new(actual).tokenize.map(&:to_s)
     expect(@actual).to match(expected)
   end
 
@@ -10,18 +13,47 @@ RSpec::Matchers.define :have_tokens do |*expected|
 end
 RSpec::Matchers.alias_matcher :have_no_tokens, :have_tokens
 
-RSpec::Matchers.define :have_subwords do |*expected|
+RSpec::Matchers.define :have_token_positions do |*expected|
   match do |actual|
-    @actual = Spellr::Tokenizer.new(actual).tokenize
-    expect(@actual).to match_array(expected)
+    @actual = Spellr::Tokenizer.new(actual).tokenize.map(&:coordinates)
+    expect(@actual).to match(expected)
   end
 
   diffable
 end
-RSpec::Matchers.alias_matcher :have_no_subwords, :have_subwords
 
 RSpec.describe Spellr::Tokenizer do
-  describe '.tokenize' do
+  describe '#positions' do
+    it 'tracks newlines' do
+      expect("first line\nsecond line").to have_token_positions [1, 0], [1, 6], [2, 0], [2, 7]
+    end
+
+    it 'tracks newlines of only blank lines' do
+      expect("first line\n\nsecond line").to have_token_positions [1, 0], [1, 6], [3, 0], [3, 7]
+    end
+
+    it 'tracks newlines of different line ending styles \r\n' do
+      expect("first line\r\nsecond line").to have_token_positions [1, 0], [1, 6], [2, 0], [2, 7]
+    end
+
+    it 'tracks newlines of different line ending styles \n,\r' do
+      expect("first line\n\rsecond line").to have_token_positions [1, 0], [1, 6], [3, 0], [3, 7]
+    end
+
+    it 'tracks newlines with nonsense at the beginning' do
+      expect("!first line\n!second line").to have_token_positions [1, 1], [1, 7], [2, 1], [2, 8]
+    end
+
+    it 'tracks newlines with nonsense at the end' do
+      expect("!first line!\n!second line!").to have_token_positions [1, 1], [1, 7], [2, 1], [2, 8]
+    end
+
+    it 'tracks newlines with a whole line of nonsense' do
+      expect("!first line!\n!!!!!\n!second line!").to have_token_positions [1, 1], [1, 7], [3, 1], [3, 8]
+    end
+  end
+
+  describe '#tokens' do
     it 'splits tokens by spaces' do
       expect('This line').to have_tokens 'This', 'line'
     end

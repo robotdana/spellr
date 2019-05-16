@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
-require 'yaml'
+require_relative '../spellr'
 
 module Spellr
   class Config
+    attr_writer :reporter
+    attr_reader :config_file
+    attr_accessor :quiet
+    alias_method :quiet?, :quiet
+
     def initialize
-      default_config = load_yaml(__dir__, '..', '.spellr.yml')
-      project_config = load_yaml(Dir.pwd, '.spellr.yml')
-
-      @config = merge_config(default_config, project_config)
-    end
-
-    def reporter
-      Spellr::Reporter
+      @config_file = ::File.join(Dir.pwd, '.spellr.yml')
+      load_config
     end
 
     def word_minimum_length
@@ -28,6 +27,8 @@ module Spellr
     end
 
     def languages
+      require_relative 'language'
+
       @languages ||= @config[:languages].map do |key, args|
         [key, Spellr::Language.new(key, args)]
       end.to_h
@@ -45,13 +46,37 @@ module Spellr
       end
     end
 
+    def config_file=(value)
+      ::File.read(value) # raise Errno::ENOENT if the file dosen't exist
+      @config_file = value
+      load_config
+    end
+
+    def reporter
+      @reporter ||= default_reporter
+    end
+
     private
 
-    def load_yaml(*path)
-      file = ::File.join(*path)
-      return {} unless ::File.exist?(file)
+    def default_reporter
+      require_relative 'reporter'
 
-      YAML.safe_load(::File.read(file), symbolize_names: true)
+      Spellr::Reporter.new
+    end
+
+    def load_config
+      default_config = load_yaml(::File.join(__dir__, '..', '.spellr.yml'))
+      project_config = load_yaml(config_file)
+
+      @config = merge_config(default_config, project_config)
+    end
+
+    def load_yaml(path)
+      require 'yaml'
+
+      return {} unless ::File.exist?(path)
+
+      YAML.safe_load(::File.read(path), symbolize_names: true)
     end
 
     def merge_config(default, project)

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'pathname'
+require_relative '../spellr'
+
 module Spellr
   class Wordlist
     class NotFound < Spellr::Error; end
@@ -37,6 +40,7 @@ module Spellr
     end
 
     def clean(words = read)
+      require_relative 'tokenizer'
       tokens = Spellr::Tokenizer.new(words).tokenize.map(&:downcase).uniq.sort
 
       write(tokens.join("\n") + "\n")

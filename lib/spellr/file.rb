@@ -6,7 +6,7 @@ module Spellr
   class File < Pathname
     def hashbang
       return if extname != ''
-      return unless first_line.start_with?('#!')
+      return unless first_line&.start_with?('#!')
 
       first_line
     end

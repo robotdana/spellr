@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../lib/spellr/version'
+
 RSpec.describe 'command line', type: :cli do
   describe '--help' do
     it 'returns the help' do # rubocop:disable RSpec/ExampleLength
@@ -8,9 +10,11 @@ RSpec.describe 'command line', type: :cli do
       expect(stderr).to be_empty
       expect(stdout).to eq <<~HELP.split("\n")
         Usage: spellr [options]
-                --list                       List files to be spellchecked
+            -w, --wordlist                   Outputs errors in wordlist format
+            -q, --quiet                      Silences all output
             -i, --interactive                Runs the spell check interactively
             -c, --config FILENAME            Path to the config file
+            -l, --list                       List files to be spellchecked
             -v, --version                    Returns the current version
             -h, --help                       Shows this message
       HELP
@@ -60,10 +64,20 @@ RSpec.describe 'command line', type: :cli do
 
     it 'returns the list of files when given no arguments' do
       run 'spellr --list'
-      expect(without_temp_path(stdout)).to match_array [
+      expect(stdout).to match_array [
         'lib/bar.rb',
         'foo.md'
       ]
+    end
+
+    it 'returns the list of files when given an extensions to subset' do
+      run 'spellr --list \*.rb'
+      expect(stdout).to eq 'lib/bar.rb'
+    end
+
+    it 'returns the list of files when given a dir to subset' do
+      run 'spellr --list lib/*'
+      expect(stdout).to eq 'lib/bar.rb'
     end
   end
 
