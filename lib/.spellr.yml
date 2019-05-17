@@ -12,6 +12,7 @@ ignore: # this list is parsed with the .gitignore format
   - '*.ico'
   - .gitkeep
   - .keep
+  - '*.svg'
 
 languages:
   english:

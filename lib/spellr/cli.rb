@@ -87,9 +87,9 @@ module Spellr
     end
 
     def extract_and_write_license(words, wordlist)
-      license, words = words.split('---', 2)
+      words, license = words.split('---', 2).reverse
 
-      fetch_output_dir.join("#{wordlist}.LICENSE.txt").write(license)
+      fetch_output_dir.join("#{wordlist}.LICENSE.txt").write(license) if license
 
       words
     end

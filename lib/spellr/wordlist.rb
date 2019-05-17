@@ -13,9 +13,7 @@ module Spellr
 
     def initialize(file)
       path = @file = file
-      path = path.sub('$GEM', ::File.join(__dir__, '..', '..', 'wordlists'))
-      path = path.sub('$PROJECT', Dir.pwd)
-      @path = Pathname.new(path).expand_path
+      @path = Pathname.pwd.join('.spellr_wordlists').join(path).expand_path
     end
 
     def each(&block)
@@ -29,6 +27,7 @@ module Spellr
     end
 
     # significantly faster than default Enumerable#include?
+    # requires terms to be sorted
     def include?(term)
       term = term.downcase + "\n"
       @include ||= {}
