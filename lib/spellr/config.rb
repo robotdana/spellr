@@ -47,7 +47,7 @@ module Spellr
     end
 
     def config_file=(value)
-      ::File.read(value) # raise Errno::ENOENT if the file dosen't exist
+      ::File.read(value) # raise Errno::ENOENT if the file doesn't exist
       @config_file = value
       load_config
     end

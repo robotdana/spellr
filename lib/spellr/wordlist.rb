@@ -31,7 +31,7 @@ module Spellr
     def include?(term)
       term = term.downcase + "\n"
       @include ||= {}
-      @include[term] ||= to_a.bsearch { |value| term <=> value }
+      @include.fetch(term, to_a.bsearch { |value| term <=> value })
     end
 
     def to_a

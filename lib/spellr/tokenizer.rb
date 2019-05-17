@@ -29,6 +29,7 @@ module Spellr
     def each
       until eos?
         start_pos, token = next_token
+        next if @disabled
         next unless token
         next if token.length < Spellr.config.word_minimum_length
 
@@ -40,12 +41,16 @@ module Spellr
     private
 
     def next_token
-      skip(%r{[^[:alpha:]/#0-9\n\r]+}) # everything that's not covered by further skips
+      skip(%r{[^[:alpha:]/#0-9\n\r\\]+}) # everything that's not covered by further skips
       skip_url
       skip_hex
       skip_email
-      skip(%r{[/#0-9]+}) # everything covered by above
+      skip_backslash_escape
+      skip(%r{[/#0-9\\]+}) # everything covered by above
       skip_and_track_newline
+
+      skip_and_track_enable
+      skip_and_track_disable
 
       [charpos, title_case || lower_case || upper_case || other_case]
     end
@@ -94,6 +99,18 @@ module Spellr
 
     def skip_hex
       skip(/(?:#|0x)(?:\h{6}|\h{3})/)
+    end
+
+    def skip_backslash_escape
+      skip(/(?:\\\w)+/)
+    end
+
+    def skip_and_track_disable
+      skip(/spellr:disable/) && @disabled = true
+    end
+
+    def skip_and_track_enable
+      skip(/spellr:enable/) && @disabled = false
     end
   end
 end

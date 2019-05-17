@@ -10,9 +10,9 @@ only:
   - '*.gemspec'
   - Gemfile
 languages:
-  natural:
+  english:
     wordlists:
-      - $PROJECT/dictionary.txt
+      - dictionary.txt
   ruby:
     only:
       - README.md

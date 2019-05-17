@@ -173,6 +173,7 @@ RSpec.describe Spellr::Tokenizer do
     end
   end
 
+  # spellr:disable
   xdescribe '#subwords' do
     it 'returns nothing for the shortest word' do
       expect('foo').to have_no_subwords
@@ -200,4 +201,5 @@ RSpec.describe Spellr::Tokenizer do
         %w{foob arbazz}, %w{foob arb azz}, %w{fooba rbazz}, %w{foobar bazz}, %w{foobarb azz}
     end
   end
+  # spellr:enable
 end

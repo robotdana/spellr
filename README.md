@@ -44,17 +44,18 @@ The gem is available as open source under the terms of the [MIT License](https:/
 ## TODO Before release
 
 - [ ] handle interactive add
-  - [ ] handling wordlists per language better
-      - [ ] global wordlists
-      - [ ] dynamic wordlist (e.g. built from ruby and YOUR Gemfile and stdlib     packages)
-      - [ ] gem committed semi-dynamic wordlist
-      - [ ] gem committed static wordlist
-- [ ] enable/disable
+  - [x] handling wordlists per language better
+      - [x] global wordlists
+      - [x] dynamic wordlist (e.g. built from ruby and YOUR Gemfile and stdlib packages)
+      - [x] gem committed semi-dynamic wordlist
+      - [x] gem committed static wordlist
+- [x] enable/disable
 - [ ] get marketplacer codebase green
+- [x] escape
 
 ## TODO after release
 - [ ] attempt subwords again
-- [ ] attempt key recogniti
+- [ ] attempt key recognition
 - [ ] (semi)dynamic js wordlist
 - [ ] (semi)dynamic html wordlist
 - [ ] (semi)dynamic bash wordlist
