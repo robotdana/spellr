@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/spellr'
 require_relative '../lib/spellr/cli'
-
-Spellr::CLI.new
+Spellr::CLI.new(ARGV)

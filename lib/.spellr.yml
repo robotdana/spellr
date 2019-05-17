@@ -14,12 +14,10 @@ ignore: # this list is parsed with the .gitignore format
   - .keep
 
 languages:
-  default:
-    wordlists:
-      - $GEM/scowl.txt
+  english:
+    generate: "-gf english"
   ruby:
-    wordlists:
-      - $GENERATED/ruby.txt
+    generate: "-gf ruby"
     only: # Filtered using File.fn_match
       - '*.rb'
       - '*.rake'
@@ -34,8 +32,6 @@ languages:
     hashbangs:
       - ruby
   html:
-    wordlists:
-      - $GEM/html.txt
     only:
       - '*.html'
       - '*.hml'
@@ -48,8 +44,6 @@ languages:
       - '*.rb'
       - '*.builder'
   shell:
-    wordlists:
-      - $GEM/shell.txt
     only:
       - '*.sh'
     hashbangs:

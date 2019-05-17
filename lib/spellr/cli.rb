@@ -6,10 +6,13 @@ require 'pathname'
 require_relative '../spellr'
 
 module Spellr
-  class CLI
+  class CLI # rubocop:disable Metrics/ClassLength
     attr_writer :fetch_output_dir
+    attr_reader :argv
 
-    def initialize
+    def initialize(argv)
+      @argv = argv
+
       parse_options
 
       check
@@ -25,7 +28,7 @@ module Spellr
 
     def files
       require_relative 'file_list'
-      Spellr::FileList.new(*ARGV)
+      Spellr::FileList.new(*argv)
     end
 
     def wordlist_option(_)
@@ -68,17 +71,33 @@ module Spellr
       @fetch_output_dir ||= Pathname.pwd.join('.spellr_wordlists/generated').expand_path
     end
 
-    def fetch_option(wordlist) # rubocop:disable Metrics/AbcSize
+    def fetch_words_for_wordlist(wordlist)
       command = fetch_wordlist_dir.join(wordlist).to_s
       fetch_output_dir.mkpath
 
       require 'shellwords'
-      words = `#{ARGV.to_a.unshift(command).shelljoin}`
+      command_with_args = argv.to_a.unshift(command).shelljoin
+      `#{command_with_args}`
+    end
 
-      puts fetch_output_dir.join(wordlist)
-
+    def replace_wordlist(words, wordlist)
       require_relative '../../lib/spellr/wordlist'
+
       Spellr::Wordlist.new(fetch_output_dir.join("#{wordlist}.txt")).clean(words)
+    end
+
+    def extract_and_write_license(words, wordlist)
+      license, words = words.split('---', 2)
+
+      fetch_output_dir.join("#{wordlist}.LICENSE.txt").write(license)
+
+      words
+    end
+
+    def fetch_option(wordlist)
+      words = fetch_words_for_wordlist(wordlist)
+      words = extract_and_write_license(words, wordlist)
+      replace_wordlist(words, wordlist)
 
       exit
     end
@@ -131,7 +150,7 @@ module Spellr
 
           exit
         end
-      end.parse!
+      end.parse!(argv)
     end
   end
 end
