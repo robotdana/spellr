@@ -49,8 +49,10 @@ module Spellr
     end
 
     def attempt_global_skip(token)
-      global_skips.include?(token.to_s) ||
+      return unless global_skips.include?(token.to_s) ||
         global_insensitive_skips.include?(token.downcase)
+
+      @total_skipped += 1
     end
 
     def attempt_global_replacement(token)
@@ -59,6 +61,7 @@ module Spellr
       return unless global_replacement
 
       token.replace(global_replacement)
+      @total_fixed += 1
       raise Spellr::DidReplacement
     end
 
@@ -84,7 +87,7 @@ module Spellr
         @total_skipped += 1
         return
       when 'R'
-        handle_replacement(token) { |replacement| global_replacements[token] = replacement }
+        handle_replacement(token) { |replacement| global_replacements[token.to_s] = replacement }
       when 'I'
         handle_replacement(token) { |replacement| global_insensitive_replacements[token.downcase] = replacement }
       when 'r'

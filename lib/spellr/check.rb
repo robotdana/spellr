@@ -39,13 +39,14 @@ module Spellr
 
     def check_file(file, start_loc: nil, wordlists: Spellr.config.wordlists_for(file))
       Spellr::Tokenizer.new(file.read, *start_loc).each do |token, *loc|
+        start_loc = loc
         next if wordlists.any? { |d| d.include?(token) }
 
         reporter.call(Spellr::Token.new(token, file: file, loc: loc))
         @exit_code = 1
-      rescue Spellr::DidReplacement # Yeah this is exceptions for control flow, but it makes sense to me
-        check_file(file, start_loc: loc, wordlists: wordlists)
       end
+    rescue Spellr::DidReplacement # Yeah this is exceptions for control flow, but it makes sense to me
+      check_file(file, start_loc: start_loc, wordlists: wordlists)
     end
   end
 end
