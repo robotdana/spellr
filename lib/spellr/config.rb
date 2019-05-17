@@ -34,16 +34,16 @@ module Spellr
       end.to_h
     end
 
+    def languages_for(file)
+      languages.values.select { |l| l.matches?(file) }
+    end
+
     def wordlists
       @wordlists ||= languages.values.flat_map(&:wordlists)
     end
 
     def wordlists_for(file)
-      languages.values.flat_map do |l|
-        next [] unless l.matches?(file)
-
-        l.wordlists
-      end
+      languages_for(file).flat_map(&:wordlists)
     end
 
     def config_file=(value)

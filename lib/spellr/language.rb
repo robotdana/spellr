@@ -4,7 +4,7 @@ require_relative 'wordlist'
 
 module Spellr
   class Language
-    attr_reader :wordlists
+    attr_reader :name
 
     def initialize(name,
       wordlists: [],
@@ -12,7 +12,8 @@ module Spellr
       only: [],
       hashbangs: [])
       @name = name
-      @wordlists = load_wordlists(name, wordlists, generate)
+      @generate = generate
+      @wordlist_paths = wordlists
       @only = only
       @hashbangs = hashbangs
     end
@@ -23,31 +24,85 @@ module Spellr
       return true if file.hashbang && @hashbangs.any? { |h| file.hashbang.include?(h) }
     end
 
-    private
-
-    def load_wordlists(name, paths, generate)
-      wordlists = paths + default_wordlist_paths(name)
-
-      if wordlists.empty? && generate
-        require_relative 'cli'
-        require 'shellwords'
-        warn "Generating wordlist for #{name}"
-
-        Spellr::CLI.new(generate.shellsplit)
-
-        wordlists = paths + default_wordlist_paths(name)
-      end
-
-      wordlists.map { |w| Spellr::Wordlist.new(w) }
+    def config_wordlists
+      @config_wordlists ||= @wordlist_paths.map(&Spellr::Wordlist.method(:new))
     end
 
-    def default_wordlist_paths(name)
-      [
-        Pathname.new(__dir__).parent.parent.join('wordlists', "#{name}.txt"),
-        Pathname.pwd.join('.spellr_wordlists', 'generated', "#{name}.txt"),
+    def wordlists
+      w = config_wordlists + default_wordlists
+      return generate_wordlist if w.empty?
+
+      w
+    end
+
+    def generate_wordlist
+      return [] unless generate
+
+      require_relative 'cli'
+      require 'shellwords'
+      warn "Generating wordlist for #{name}"
+
+      Spellr::CLI.new(generate.shellsplit)
+
+      config_wordlists + default_wordlists
+    end
+
+    def addable_wordlists
+      (config_wordlists - default_wordlists) + [global_wordlist, project_wordlist]
+    end
+
+    def gem_wordlist
+      @gem_wordlist ||= Spellr::Wordlist.new(
+        Pathname.new(__dir__).parent.parent.join('wordlists', "#{name}.txt")
+      )
+    end
+
+    def global_wordlist
+      @global_wordlist ||= Spellr::Wordlist.new(
         Pathname.pwd.join('.spellr_wordlists', "#{name}.txt"),
-        Pathname.new("~/.spellr_wordlists/generated/#{name}.txt").expand_path,
-        Pathname.new("~/.spellr_wordlists/#{name}.txt").expand_path
+        name: "#{name} (global)"
+      )
+    end
+
+    def generated_global_wordlist
+      @generated_global_wordlist ||= Spellr::Wordlist.new(
+        Pathname.pwd.join('.spellr_wordlists', 'generated', "#{name}.txt")
+      )
+    end
+
+    def generated_project_wordlist
+      @generated_project_wordlist ||= Spellr::Wordlist.new(
+        Pathname.new("~/.spellr_wordlists/generated/#{name}.txt").expand_path
+      )
+    end
+
+    def project_wordlist
+      @project_wordlist ||= Spellr::Wordlist.new(
+        Pathname.new("~/.spellr_wordlists/#{name}.txt").expand_path,
+        name: "#{name} (project)"
+      )
+    end
+
+    private
+
+    def load_wordlists(name, paths, _generate)
+      wordlists = paths + default_wordlist_paths(name)
+
+      wordlists.map(&Spellr::Wordlist.method(:new))
+    end
+
+    def custom_addable_wordlists(wordlists)
+      default_paths = default_wordlist_paths
+      wordlists.map { |w| Spellr::Wordlist.new(w) }.reject { |w| default_paths.include?(w.path) }
+    end
+
+    def default_wordlists
+      [
+        gem_wordlist,
+        global_wordlist,
+        generated_global_wordlist,
+        generated_project_wordlist,
+        project_wordlist
       ].select(&:exist?)
     end
   end

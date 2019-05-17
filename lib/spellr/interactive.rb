@@ -74,7 +74,8 @@ module Spellr
         exit 0
       when 'a'
         @total_added += 1
-        raise NotImplementedError
+        handle_add(token)
+        return
       when 's', "\u0004" # ctrl d
         @total_skipped += 1
         return
@@ -97,6 +98,17 @@ module Spellr
       else
         call(token)
       end
+    end
+
+    # TODO: handle more than 10 options
+    def handle_add(token)
+      puts "Add \033[31m#{token}\033[0m to wordlist:"
+      wordlists = Spellr.config.languages_for(token.file).flat_map(&:addable_wordlists)
+
+      wordlists.each_with_index do |wordlist, i|
+        puts "[#{i}] #{wordlist.name}"
+      end
+      wordlists[STDIN.getch.to_i].add(token)
     end
 
     def handle_replacement(token) # rubocop:disable Metrics/MethodLength

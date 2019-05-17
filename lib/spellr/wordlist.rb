@@ -9,11 +9,12 @@ module Spellr
 
     include Enumerable
 
-    attr_reader :path
+    attr_reader :path, :name
 
-    def initialize(file)
+    def initialize(file, name: file)
       path = @file = file
       @path = Pathname.pwd.join('.spellr_wordlists').join(path).expand_path
+      @name = name
     end
 
     def each(&block)
@@ -62,10 +63,20 @@ module Spellr
       @include = nil
     end
 
+    def exist?
+      @path.exist?
+    end
+
+    def add(term)
+      @include[term.downcase + "\n"] = true
+      to_a << term.downcase + "\n"
+      write(to_a.sort.join(''))
+    end
+
     private
 
     def raise_unless_exists?
-      return if @path.exist?
+      return if exist?
 
       raise Spellr::Wordlist::NotFound, "Wordlist file #{@file} doesn't exist at #{@path}"
     end
