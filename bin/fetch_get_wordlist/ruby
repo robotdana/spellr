@@ -1,0 +1,116 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+class RubyWords
+  def initialize
+    prepare_excluded_classes
+
+    parse_options
+
+    puts get_words
+  end
+
+  private
+
+  def prepare_excluded_classes
+    @looked_at = []
+    @looked_at << RubyWords.__id__
+    @looked_at << OptionParser.__id__ # because we're including it here
+  end
+
+  def get_words
+    $VERBOSE=nil
+    @strings = []
+    get_words_for(Module)
+    get_keywords
+    get_convention_words
+  end
+
+  def get_words_for(constant)
+    return if @looked_at.include?(constant.__id__) # to prevent endless loops
+
+    @looked_at << constant.__id__
+
+    get_methods_for(constant)
+    get_child_constants_for(constant)
+  end
+
+  def get_methods_for(constant)
+    @strings |= constant.public_instance_methods(false) if constant.respond_to?(:public_instance_methods)
+    @strings |= constant.public_methods(false) if constant.respond_to?(:public_methods)
+  end
+
+  def get_child_constants_for(constant)
+    return unless constant.respond_to?(:constants)
+
+    constant.constants.each do |child|
+      @strings |= [child]
+      child = constant.const_get(child)
+      get_words_for(child)
+    end
+  end
+
+  def get_keywords
+    @strings |= %w{
+      __ENCODING__ __LINE__ __FILE__ BEGIN END alias and begin break case class def
+      defined? do else elsif end ensure false for if in module next nil not or redo
+      rescue retry return self super then true undef unless until when while yield
+    }
+  end
+
+  def get_convention_words
+    @strings |= %w{
+      klass
+    }
+  end
+
+  def default_options
+    @gems = []
+  end
+
+  def bundler_option(_)
+    require 'bundler/setup'
+    Bundler.require
+  end
+
+  def require_option(gems)
+    @gems += gems
+  end
+
+  def available_stdlibs
+    %w{
+      abbrev base64 benchmark bigdecimal cgi cmath coverage csv date delegate digest
+      drb/drb e2mmap English erb etc expect fcntl fiddle fileutils find forwardable
+      getoptlong io/console io/nonblock io/wait ipaddr irb json logger matrix mkmf
+      monitor mutex_m net/ftp net/http net/imap net/pop net/smtp net/telnet nkf
+      objspace observer open-uri open3 openssl optionparser optparse ostruct pathname
+      pp prettyprint prime pstore psych pty racc/parser readline resolv ripper rss scanf
+      sdbm securerandom set shell shellwords singleton socket stringio strscan sync syslog
+      tempfile thwait time timeout tmpdir tracer tsort uri weakref webrick yaml zlib
+    }
+  end
+
+  def stdlib_option(stdlibs)
+    stdlibs = stdlibs & available_stdlibs
+    stdlibs.each { |p| require p }
+    @strings += stdlibs
+    @looked_at -= [OptionParser.__id__] if stdlibs.include?('optparse') # because they might want it too
+  end
+
+  def parse_options
+    OptionParser.new do |opts| # rubocop:disable Metrics/BlockLength
+      opts.set_program_name 'spellr --fetch ruby'
+
+      opts.on('-b', '--bundler', 'includes methods and constants required by emfile', &method(:bundler_option))
+      opts.on('-r', '--require=x,y,z', Array, 'requires the specified gems', &method(:require_option))
+      opts.on('-s', '--stdlib=x,y,z', Array, 'requires the specified stdlib packages', &method(:stdlib_option))
+      opts.on_tail('-h', '--help', 'Shows this message') do
+        $stderr.puts opts
+        exit 1
+      end
+    end.parse!
+  end
+end
+
+RubyWords.new

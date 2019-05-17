@@ -14,13 +14,12 @@ ignore: # this list is parsed with the .gitignore format
   - .keep
 
 languages:
-  english:
+  default:
     wordlists:
       - $GEM/scowl.txt
-      - $GEM/supplementary.txt
   ruby:
     wordlists:
-      - $GEM/ruby.txt
+      - $GENERATED/ruby.txt
     only: # Filtered using File.fn_match
       - '*.rb'
       - '*.rake'

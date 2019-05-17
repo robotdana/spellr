@@ -116,6 +116,9 @@ Metrics/BlockLength:
 Metrics/LineLength:
   Max: 120
 
+Naming/UncommunicativeMethodParamName:
+  AllowedNames: [_, io, id, to, by, 'on', in, at, ip, db]
+
 RSpec:
   Enabled: true
   Include:
