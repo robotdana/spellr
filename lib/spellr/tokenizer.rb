@@ -55,14 +55,21 @@ module Spellr
       [charpos, title_case || lower_case || upper_case || other_case]
     end
 
+    NOT_EVEN_NON_WORDS_RE = %r{[^[:alpha:]/#0\n\r\\]+}.freeze # everything not covered by more specific skips/scans
+    LEFTOVER_NON_WORD_BITS_RE = %r{[/#0\\]+}.freeze # e.g. a / not starting //a-url.com
+    URL_RE = %r{(?://|https?://|s?ftp://|file:///|mailto:)[[:alnum:]%&.@+=/?#_-]+}.freeze # not precise but quick
+    HEX_RE = /(?:#|0x)(?:\h{6}|\h{3})/.freeze
+    EMAIL_RE = %r{/[[:alnum:]._-]+@[[:alnum:]._-]+/}.freeze # not precise but quick (no looking around)
+    BACKSLASH_ESCAPE_RE = /(?:\\\w)+/.freeze # TODO: hex escapes e.g. \xAA. TODO: language aware escapes
+    REPEATED_SINGLE_LETTERS_RE = /(?:([[:alpha:]])\1+)(?![[:alpha:]])/.freeze # e.g. xxxxxxxx (it's not a word)
     def skip_nonwords
-      skip(%r{[^[:alpha:]/#0-9\n\r\\]+}) # everything that's not covered by further skips
-      skip_url
-      skip_hex
-      skip_email
-      skip_backslash_escape
-      skip(%r{[/#0-9\\]+}) # everything covered by above
-      skip_repeated_single_letters
+      skip(NOT_EVEN_NON_WORDS_RE)
+      skip(URL_RE)
+      skip(HEX_RE)
+      skip(EMAIL_RE)
+      skip(BACKSLASH_ESCAPE_RE)
+      skip(LEFTOVER_NON_WORD_BITS_RE)
+      skip(REPEATED_SINGLE_LETTERS_RE)
     end
 
     # jump to character-aware position
@@ -70,63 +77,46 @@ module Spellr
       skip(/.{#{new_charpos - charpos}}/m)
     end
 
+    NEWLINE_RE = /\n|\r\n?/.freeze
     def skip_and_track_newline
-      return unless skip(/\n|\r\n?/)
+      return unless skip(NEWLINE_RE)
 
       @line_start_pos = charpos
       @line_number += 1
     end
 
-    # e.g. xxxxxxxx (it's not a word, it's decoration)
-    # Doesn't match aardvark or aaaa's
-    def skip_repeated_single_letters
-      skip(/(?:([[:alpha:]])\1+)(?![[:alpha:]])/)
-    end
-
     # [Word], [Word]Word [Word]'s [Wordn't]
+    TITLE_CASE_RE = /[[:upper:]][[:lower:]]+(?:'[[:lower:]]+(?<!s))*/.freeze
     def title_case
-      scan(/[[:upper:]][[:lower:]]+(?:'[[:lower:]]+(?<!s))*/)
+      scan
     end
 
     # [word] [word]'s [wordn't]
+    LOWER_CASE_RE = /[[:lower:]]+(?:'[[:lower:]]+(?<!s))*/.freeze
     def lower_case
-      scan(/[[:lower:]]+(?:'[[:lower:]]+(?<!s))*/)
+      scan(LOWER_CASE_RE)
     end
 
     # [WORD] [WORD]Word [WORDN'T] [WORD]'S [WORD]'s
+    UPPER_CASE_RE = /[[:upper:]]+(?:'[[:upper:]]+(?<![Ss]))*(?![[:lower:]])/.freeze
     def upper_case
-      scan(/[[:upper:]]+(?:'[[:upper:]]+(?<![Ss]))*(?![[:lower:]])/)
+      scan(UPPER_CASE_RE)
     end
 
-    # for characters in :alpha: that aren't in :lower: or :upper: e.g. Arabic
+    # for characters in [:alpha:] that aren't in [:lower:] or [:upper:] e.g. Arabic
+    OTHER_CASE_RE = /[[:alpha:]]+/.freeze
     def other_case
-      scan(/[[:alpha:]]+/)
+      scan(OTHER_CASE_RE)
     end
 
-    # not a perfect URL regexp, but it is fast
-    def skip_url
-      skip(%r{(?://|https?://|s?ftp://|file:///|mailto:)[[:alnum:]%&.@+=/?#_-]+})
-    end
-
-    # not a perfect email regexp, but it is fast
-    def skip_email
-      skip(/[[:alnum:]._-]+@[[:alnum:]._-]+/)
-    end
-
-    def skip_hex
-      skip(/(?:#|0x)(?:\h{6}|\h{3})/)
-    end
-
-    def skip_backslash_escape
-      skip(/(?:\\\w)+/)
-    end
-
+    SPELLR_DISABLE_RE = /spellr:disable/.freeze
     def skip_and_track_disable
-      skip(/spellr:disable/) && @disabled = true
+      skip(SPELLR_DISABLE_RE) && @disabled = true
     end
 
+    SPELLR_ENABLE_RE = /spellr:enable/.freeze
     def skip_and_track_enable
-      skip(/spellr:enable/) && @disabled = false
+      skip(SPELLR_ENABLE_RE) && @disabled = false
     end
   end
 end
