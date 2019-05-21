@@ -30,11 +30,12 @@ module Spellr
     # significantly faster than default Enumerable#include?
     # requires terms to be sorted
     def include?(term)
-      include_cache[term.downcase + "\n"]
+      include_cache[term]
     end
 
     def include_cache
       @include_cache ||= Hash.new do |cache, term|
+        term = Spellr::Token.normalize(term) + "\n"
         cache[term] = to_a.bsearch do |value|
           term <=> value
         end
@@ -47,7 +48,7 @@ module Spellr
 
     def clean(words = read)
       require_relative 'tokenizer'
-      tokens = Spellr::Tokenizer.new(words).tokenize.map(&:downcase).uniq.sort
+      tokens = Spellr::Tokenizer.new(words).normalize.uniq.sort
 
       write(tokens.join("\n") + "\n")
     end
@@ -75,7 +76,7 @@ module Spellr
 
     def add(term)
       touch
-      term = term.downcase + "\n"
+      term = Spellr::Token.normalize(term) + "\n"
       include_cache[term] = true
       to_a << term
       to_a.sort!
