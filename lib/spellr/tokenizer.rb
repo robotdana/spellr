@@ -41,18 +41,28 @@ module Spellr
     private
 
     def next_token
+      skip_nonwords
+      skip_and_track_newline
+
+      skip_and_track_enable
+      skip_and_track_disable
+
+      start_pos_and_word
+    end
+
+    def start_pos_and_word
+      # charpos first because we need the start position of the word
+      [charpos, title_case || lower_case || upper_case || other_case]
+    end
+
+    def skip_nonwords
       skip(%r{[^[:alpha:]/#0-9\n\r\\]+}) # everything that's not covered by further skips
       skip_url
       skip_hex
       skip_email
       skip_backslash_escape
       skip(%r{[/#0-9\\]+}) # everything covered by above
-      skip_and_track_newline
-
-      skip_and_track_enable
-      skip_and_track_disable
-
-      [charpos, title_case || lower_case || upper_case || other_case]
+      skip_repeated_single_letters
     end
 
     # jump to character-aware position
@@ -65,6 +75,12 @@ module Spellr
 
       @line_start_pos = charpos
       @line_number += 1
+    end
+
+    # e.g. xxxxxxxx (it's not a word, it's decoration)
+    # Doesn't match aardvark or aaaa's
+    def skip_repeated_single_letters
+      skip(/(?:([[:alpha:]])\1+)(?![[:alpha:]])/)
     end
 
     # [Word], [Word]Word [Word]'s [Wordn't]
