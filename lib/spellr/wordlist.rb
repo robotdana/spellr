@@ -30,9 +30,15 @@ module Spellr
     # significantly faster than default Enumerable#include?
     # requires terms to be sorted
     def include?(term)
-      term = term.downcase + "\n"
-      @include ||= {}
-      @include.fetch(term, to_a.bsearch { |value| term <=> value })
+      include_cache[term.downcase + "\n"]
+    end
+
+    def include_cache
+      @include_cache ||= Hash.new do |cache, term|
+        cache[term] = to_a.bsearch do |value|
+          term <=> value
+        end
+      end
     end
 
     def to_a
@@ -68,12 +74,23 @@ module Spellr
     end
 
     def add(term)
-      @include[term.downcase + "\n"] = true
-      to_a << term.downcase + "\n"
-      write(to_a.sort.join(''))
+      touch
+      term = term.downcase + "\n"
+      include_cache[term] = true
+      to_a << term
+      to_a.sort!
+      write(@to_a.join)
+      Spellr.config.clear_cache if to_a.length == 1
     end
 
     private
+
+    def touch
+      return if exist?
+
+      @path.dirname.mkpath
+      @path.write('')
+    end
 
     def raise_unless_exists?
       return if exist?

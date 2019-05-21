@@ -47,6 +47,8 @@ module Spellr
       end
     rescue Spellr::DidReplacement # Yeah this is exceptions for control flow, but it makes sense to me
       check_file(file, start_loc: start_loc, wordlists: wordlists)
+    rescue Spellr::DidAdd
+      check_file(file, start_loc: start_loc) # don't cache the wordlists
     end
   end
 end
