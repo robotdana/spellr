@@ -88,7 +88,7 @@ module Spellr
     # [Word], [Word]Word [Word]'s [Wordn't]
     TITLE_CASE_RE = /[[:upper:]][[:lower:]]+(?:'[[:lower:]]+(?<!s))*/.freeze
     def title_case
-      scan
+      scan(TITLE_CASE_RE)
     end
 
     # [word] [word]'s [wordn't]
