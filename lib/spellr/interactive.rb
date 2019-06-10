@@ -41,7 +41,7 @@ module Spellr
     end
 
     def prompt(token)
-      print "\033[0;1m[a,s,S,i,r,R,I,?]\033[0m"
+      print "\033[0;1m[a,s,S,i,r,R,I,e,?]\033[0m"
 
       handle_response(token)
     rescue Interrupt
@@ -93,6 +93,8 @@ module Spellr
         handle_replacement(token) { |replacement| global_insensitive_replacements[token.downcase] = replacement }
       when 'r'
         handle_replacement(token)
+      when 'e'
+        handle_replace_line(token)
       when '?'
         handle_help(token)
       else
@@ -101,35 +103,51 @@ module Spellr
     end
 
     # TODO: handle more than 10 options
-    def handle_add(token)
+    def handle_add(token) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       puts "Add \033[31m#{token}\033[0m to wordlist:"
       wordlists = Spellr.config.languages_for(token.file).flat_map(&:addable_wordlists)
 
       wordlists.each_with_index do |wordlist, i|
         puts "[#{i}] #{wordlist.name}"
       end
-      wordlists[STDIN.getch.to_i].add(token)
-      @total_added += 1
-      raise Spellr::DidAdd
+      choice = STDIN.getch
+      case choice
+      when "\u0003" # ctrl c
+        call(token)
+      when /\d/
+        wordlists[choice.to_i].add(token)
+        @total_added += 1
+        raise Spellr::DidAdd
+      else
+        handle_add(token)
+      end
     end
 
-    def handle_replacement(token) # rubocop:disable Metrics/MethodLength
+    def handle_replacement(token, original_token: token, prompt: "\033[31m#{token}") # rubocop:disable Metrics/MethodLength, Metrics/LineLength
       readline_editable_print(token)
-      replacement = Readline.readline("\033[31m#{token}\033[0m => ")
+      replacement = Readline.readline("#{prompt}\033[0m\033[36m => \033[0m")
       if replacement.empty?
         call(token)
       else
         token.replace(replacement)
         yield replacement if block_given?
         @total_fixed += 1
-        raise Spellr::DidReplacement
+        raise Spellr::DidReplacement, token
       end
     rescue Interrupt
       print "\r"
-      call(token)
+      call(original_token)
     end
 
-    def handle_help(token)
+    def handle_replace_line(token)
+      handle_replacement(
+        token.line_token,
+        original_token: token,
+        prompt: "#{token.before.lstrip}\033[31m#{token}\033[0m#{token.after.chomp}"
+      )
+    end
+
+    def handle_help(token) # rubocop:disable Metrics/MethodLength
       puts "\033[0;1m[r]\033[0;0m Replace \033[31m#{token}"
       puts "\033[0;1m[R]\033[0;0m Replace all future instances of \033[31m#{token}"
       puts "\033[0;1m[I]\033[0;0m Replace all future instances of \033[31m#{token}\033[0m case insensitively"
@@ -137,6 +155,7 @@ module Spellr
       puts "\033[0;1m[S]\033[0;0m Skip all future instances of \033[31m#{token}"
       puts "\033[0;1m[i]\033[0;0m Skip all future instances of \033[31m#{token}\033[0m case insensitively"
       puts "\033[0;1m[a]\033[0;0m Add \033[31m#{token}\033[0m to a word list"
+      puts "\033[0;1m[e]\033[0;0m Edit the whole line"
       puts "\033[0;1m[?]\033[0;0m Show this help"
       puts "\033[0m"
       handle_response(token)

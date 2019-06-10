@@ -45,8 +45,8 @@ module Spellr
         reporter.call(Spellr::Token.new(token, file: file, loc: loc))
         @exit_code = 1
       end
-    rescue Spellr::DidReplacement # Yeah this is exceptions for control flow, but it makes sense to me
-      check_file(file, start_loc: start_loc, wordlists: wordlists)
+    rescue Spellr::DidReplacement => e # Yeah this is exceptions for control flow, but it makes sense to me
+      check_file(file, start_loc: e&.token&.loc || start_loc, wordlists: wordlists)
     rescue Spellr::DidAdd
       check_file(file, start_loc: start_loc) # don't cache the wordlists
     end

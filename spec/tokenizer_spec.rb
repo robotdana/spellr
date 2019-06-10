@@ -119,6 +119,18 @@ RSpec.describe Spellr::Tokenizer do
       expect('to be or not to be').to have_tokens 'not'
     end
 
+    it 'excludes hex codes' do
+      expect('#bac 0xfed').to have_no_tokens
+    end
+
+    it 'excludes url encoded things' do
+      expect('search%5Baccount_type').to have_tokens 'search', 'account', 'type'
+    end
+
+    it "doesn't exclude hex codes that are just part of words" do
+      expect('#background').to have_tokens 'background'
+    end
+
     it 'can configure how short a short word is' do
       stub_config(word_minimum_length: 2)
 
@@ -189,6 +201,10 @@ RSpec.describe Spellr::Tokenizer do
       expect("TheThing's").to have_tokens 'The', 'Thing'
     end
 
+    it 'splits single-letter camel case' do
+      expect('MAssetUploader').to have_tokens 'Asset', 'Uploader'
+    end
+
     it "excludes 's after all caps" do
       expect("DVD's and URI's").to have_tokens 'DVD', 'and', 'URI'
     end
@@ -199,6 +215,8 @@ RSpec.describe Spellr::Tokenizer do
 
     it 'excludes tokens that look like keys' do
       expect('a0abcdeA12a2ABaAabAaA0ABCDEaABCaABaAaABabcA1a012Aa').to have_no_tokens
+      expect('AB/abcABCa0abAaABC0bAaABaABC').to have_no_tokens
+      expect('SG.AAaA0a0AAA0a_aaA00a0aa.00AaaaaAAAA0AAAAAAaAAAAAA0aAa0aaaAAAaa0AAAA').to have_no_tokens
     end
   end
 

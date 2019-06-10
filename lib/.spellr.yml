@@ -13,6 +13,10 @@ ignore: # this list is parsed with the .gitignore format
   - .gitkeep
   - .keep
   - '*.svg'
+  - '*.eot'
+  - '*.ttf'
+  - '*.woff'
+  - '*.woff2'
 
 languages:
   english:
@@ -45,6 +49,10 @@ languages:
       - '*.erb'
       - '*.rb'
       - '*.builder'
+      - '*.css'
+      - '*.scss'
+      - '*.sass'
+      - '*.less'
   js:
     only:
       - '*.html'
@@ -62,3 +70,11 @@ languages:
     hashbangs:
       - bash
       - sh
+  dockerfile:
+    only:
+      - Dockerfile
+  css:
+    only:
+      - '*.css'
+      - '*.sass'
+      - '*.scss'

@@ -16,6 +16,10 @@ module Spellr
       @line_start_pos = loc[2]
     end
 
+    def loc
+      [start_pos, line_number, line_start_pos]
+    end
+
     def length
       string.length
     end
@@ -50,6 +54,17 @@ module Spellr
 
     def line
       @line ||= file.each_line.to_a[line_number - 1]
+    end
+
+    def line_token
+      indent = line.length - line.lstrip.length
+      Token.new(line.strip,
+        file: file,
+        loc: [
+          line_start_pos + indent,
+          line_number,
+          line_start_pos
+        ])
     end
 
     def before
