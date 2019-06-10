@@ -85,6 +85,8 @@ module Spellr
 
     private
 
+    attr_reader :generate
+
     def load_wordlists(name, paths, _generate)
       wordlists = paths + default_wordlist_paths(name)
 
