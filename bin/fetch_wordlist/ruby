@@ -4,9 +4,12 @@
 require 'optparse'
 class RubyWords
   def initialize
+    @strings = []
     prepare_excluded_classes
 
     parse_options
+
+    prepare_post_excluded_classes
 
     puts get_words
   end
@@ -45,9 +48,16 @@ class RubyWords
     return unless constant.respond_to?(:constants)
 
     constant.constants.each do |child|
+      if autoload?(child)
+        $stderr.puts "Skipping autoload constant #{constant}::#{child}"
+        next
+      end
+
       @strings |= [child]
       child = constant.const_get(child)
       get_words_for(child)
+    rescue StandardError, LoadError => e
+      $stderr.puts "Error loading #{constant}::#{child} => #{e.message}"
     end
   end
 
@@ -65,17 +75,41 @@ class RubyWords
     }
   end
 
-  def default_options
-    @gems = []
+  # badly behaved classes that I'll always have to exclude
+  # TODO: use the full class name rather than __id__ so i don't have to load anything
+  def prepare_post_excluded_classes
+    %w{RSpec::Core::Runner I18n::Tests}.each do |exclude|
+      @looked_at << Module.const_get(exclude).__id__
+    rescue StandardError, LoadError
+    end
+  end
+
+  def exclude_option(excludes, quiet: false)
+    excludes.each do |exclude|
+      @looked_at << Module.const_get(exclude).__id__
+    rescue StandardError, LoadError => e
+      $stderr.puts "Error excluding #{exclude} => #{e.message}" unless quiet
+    end
   end
 
   def bundler_option(_)
     require 'bundler/setup'
-    Bundler.require
+    require_each Bundler.setup.requires.values.flatten(1)
+  end
+
+  def require_each(requirables)
+    requirables.each(&method(:soft_require))
+  end
+
+  def soft_require(requireable)
+    require requireable
+  rescue LoadError => e
+    $stderr.puts "Error requiring #{requireable} => #{e.message}"
   end
 
   def require_option(gems)
-    @gems += gems
+    soft_require 'bundler/setup'
+    require_each(gems)
   end
 
   def available_stdlibs
@@ -102,9 +136,10 @@ class RubyWords
     OptionParser.new do |opts| # rubocop:disable Metrics/BlockLength
       opts.set_program_name 'spellr --fetch ruby'
 
-      opts.on('-b', '--bundler', 'includes methods and constants required by emfile', &method(:bundler_option))
       opts.on('-r', '--require=x,y,z', Array, 'requires the specified gems', &method(:require_option))
       opts.on('-s', '--stdlib=x,y,z', Array, 'requires the specified stdlib packages', &method(:stdlib_option))
+      opts.on('-b', '--bundler', 'includes methods and constants required by emfile', &method(:bundler_option))
+      opts.on('-x', '--exclude=x,y,z', Array, 'exclude listing these constants and their methods', &method(:exclude_option))
       opts.on_tail('-h', '--help', 'Shows this message') do
         $stderr.puts opts
         exit 1
