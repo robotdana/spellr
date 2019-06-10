@@ -40,10 +40,22 @@ languages:
       - '*.tsx'
       - '*.js'
       - '*.ts'
+      - '*.coffee'
       - '*.haml'
       - '*.erb'
       - '*.rb'
       - '*.builder'
+  js:
+    only:
+      - '*.html'
+      - '*.hml'
+      - '*.jsx'
+      - '*.tsx'
+      - '*.js'
+      - '*.ts'
+      - '*.coffee'
+      - '*.haml'
+      - '*.erb'
   shell:
     only:
       - '*.sh'

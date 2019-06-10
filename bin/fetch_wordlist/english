@@ -32,7 +32,7 @@ class SCOWLDownloader
       opts.on('-s', '--max-size', '=SIZE', String, SIZE_OPTIONS, "Wordlist size. Options: 10 (~5,000 words), 20, 35, 40, 50 (default), 60, 70 (~170,000 words)") { |i| @options[:max_size] = i }
       opts.on('-v', '--max-variants', '=VARIANTS', String, VARIANT_OPTIONS, "Spelling variants. Options: none (default), common, acceptable, seldom-used") { |i| @options[:max_variant] = VARIANT_OPTIONS.index(i) }
       opts.on('-d', '--diacritic', '=DIACRITIC', String, DIACRITIC_OPTIONS, "Include diacritics in words. Options: strip (café becomes cafe), keep, both (default. cafe & café)") { |s| @options[:diacritic] = s }
-      opts.on('-l', '--language', '=LANGUAGES', Array, SPELLING_LANGUAGE_OPTIONS, "Comma separated list of English variations. Options: US (default), GBs (GB with -ise), GBz (GB with -ize), CA, AU") do |a|
+      opts.on('-l', '--language=x,y,z', Array, "Comma separated list of English variations. Options: US (default), GBs (GB with -ise), GBz (GB with -ize), CA, AU") do |a|
         raise ArgumentError unless (a - SPELLING_LANGUAGE_OPTIONS).empty?
 
         @options[:spelling] = a

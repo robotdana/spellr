@@ -26,6 +26,11 @@ module Spellr
       @config[:ignore]
     end
 
+    def clear_cache
+      remove_instance_variable(:@wordlists)
+      remove_instance_variable(:@languages)
+    end
+
     def languages
       require_relative 'language'
 

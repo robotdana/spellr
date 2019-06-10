@@ -4,6 +4,10 @@ module Spellr
   class Token
     attr_reader :string, :file, :start_pos, :line_number, :line_start_pos
 
+    def self.normalize(string)
+      string.downcase.unicode_normalize.tr('‘’', "''")
+    end
+
     def initialize(string, file: nil, loc: [])
       @string = string
       @file = file
@@ -22,6 +26,10 @@ module Spellr
 
     def downcase
       to_s.downcase
+    end
+
+    def normalize
+      self.class.normalize(to_s)
     end
 
     def inspect

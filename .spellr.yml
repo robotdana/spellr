@@ -1,6 +1,6 @@
 ---
 ignore:
-  - /wordlists/
+  - '*.spellr_wordlists'
 only:
   - '*.rb'
   - '*.yml'

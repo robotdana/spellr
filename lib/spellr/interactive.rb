@@ -109,6 +109,8 @@ module Spellr
         puts "[#{i}] #{wordlist.name}"
       end
       wordlists[STDIN.getch.to_i].add(token)
+      @total_added += 1
+      raise Spellr::DidAdd
     end
 
     def handle_replacement(token) # rubocop:disable Metrics/MethodLength

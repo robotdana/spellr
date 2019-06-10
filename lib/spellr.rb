@@ -3,6 +3,7 @@
 module Spellr
   class Error < StandardError; end
   class DidReplacement < Spellr::Error; end
+  class DidAdd < Spellr::Error; end
 
   module_function
 

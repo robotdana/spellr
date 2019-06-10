@@ -4,7 +4,7 @@ require_relative 'wordlist'
 
 module Spellr
   class Language
-    attr_reader :name
+    attr_reader :name, :generate
 
     def initialize(name,
       wordlists: [],
@@ -48,7 +48,7 @@ module Spellr
     end
 
     def addable_wordlists
-      (config_wordlists - default_wordlists) + [global_wordlist, project_wordlist]
+      ((config_wordlists - default_wordlists) + [project_wordlist, global_wordlist]).uniq(&:path)
     end
 
     def gem_wordlist
@@ -57,29 +57,29 @@ module Spellr
       )
     end
 
-    def global_wordlist
-      @global_wordlist ||= Spellr::Wordlist.new(
+    def project_wordlist
+      @project_wordlist ||= Spellr::Wordlist.new(
         Pathname.pwd.join('.spellr_wordlists', "#{name}.txt"),
-        name: "#{name} (global)"
-      )
-    end
-
-    def generated_global_wordlist
-      @generated_global_wordlist ||= Spellr::Wordlist.new(
-        Pathname.pwd.join('.spellr_wordlists', 'generated', "#{name}.txt")
+        name: "#{name} (project)"
       )
     end
 
     def generated_project_wordlist
       @generated_project_wordlist ||= Spellr::Wordlist.new(
+        Pathname.pwd.join('.spellr_wordlists', 'generated', "#{name}.txt")
+      )
+    end
+
+    def generated_global_wordlist
+      @generated_global_wordlist ||= Spellr::Wordlist.new(
         Pathname.new("~/.spellr_wordlists/generated/#{name}.txt").expand_path
       )
     end
 
-    def project_wordlist
-      @project_wordlist ||= Spellr::Wordlist.new(
+    def global_wordlist
+      @global_wordlist ||= Spellr::Wordlist.new(
         Pathname.new("~/.spellr_wordlists/#{name}.txt").expand_path,
-        name: "#{name} (project)"
+        name: "#{name} (global)"
       )
     end
 

@@ -82,8 +82,29 @@ RSpec.describe Spellr::Tokenizer do
       expect('query https://the-google.com?query-string=whatever%2Bthing').to have_tokens 'query'
     end
 
+    it 'excludes URLs with paths and no scheme' do
+      expect('whatever.com/whatever').to have_no_tokens
+    end
+
+    it "doesn't exclude only hostnames because they could be method chains" do
+      expect('whatever.com(this)').to have_tokens 'whatever', 'com', 'this'
+      expect('whatever.co.nz(this)').to have_tokens 'whatever', 'this'
+    end
+
+    it 'excludes localhost without any tlds' do
+      expect('localhost:80/whatever').to have_no_tokens
+    end
+
+    it 'excludes IP URLs' do
+      expect('127.0.0.1:80/whatever').to have_no_tokens
+    end
+
     it 'excludes URLs with no scheme' do
       expect('click here //google.com').to have_tokens 'click', 'here'
+    end
+
+    it "doesn't excludes things just starting with //" do
+      expect('this//that').to have_tokens('this', 'that')
     end
 
     it 'excludes mailto: email links' do
@@ -170,6 +191,14 @@ RSpec.describe Spellr::Tokenizer do
 
     it "excludes 's after all caps" do
       expect("DVD's and URI's").to have_tokens 'DVD', 'and', 'URI'
+    end
+
+    it 'excludes sole s after all caps' do
+      expect('DVDs and URIs').to have_tokens 'DVD', 'and', 'URI'
+    end
+
+    it 'excludes tokens that look like keys' do
+      expect('a0abcdeA12a2ABaAabAaA0ABCDEaABCaABaAaABabcA1a012Aa').to have_no_tokens
     end
   end
 
