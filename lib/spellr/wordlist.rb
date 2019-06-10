@@ -68,8 +68,11 @@ module Spellr
     end
 
     def add(term)
-      @include[term.downcase + "\n"] = true
-      to_a << term.downcase + "\n"
+      term = term.downcase + "\n"
+      @include ||= {}
+      @include[term] = true
+      @to_a ||= []
+      to_a << term
       write(to_a.sort.join(''))
     end
 

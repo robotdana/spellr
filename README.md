@@ -43,7 +43,7 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## TODO Before release
 
-- [ ] handle interactive add
+- [x] handle interactive add
   - [x] handling wordlists per language better
       - [x] global wordlists
       - [x] dynamic wordlist (e.g. built from ruby and YOUR Gemfile and stdlib packages)
