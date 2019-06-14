@@ -35,7 +35,7 @@ module Spellr
 
     def include_cache
       @include_cache ||= Hash.new do |cache, term|
-        term = Spellr::Token.normalize(term) + "\n"
+        term = Spellr::Token.normalize(term)
         cache[term] = to_a.bsearch do |value|
           term <=> value
         end
@@ -46,11 +46,25 @@ module Spellr
       @to_a ||= super
     end
 
-    def clean(words = read)
+    def clean(words = read) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       require_relative 'tokenizer'
-      tokens = Spellr::Tokenizer.new(words).normalize.uniq.sort
+      require_relative 'token'
+      puts "tokenizing #{name} wordlist"
 
-      write(tokens.join("\n") + "\n")
+      # tokenizer is way to slow with large files currently
+      # tokens = Spellr::Tokenizer.new(words).words
+
+      puts "stripping trailing bits from #{name} wordlist"
+      tokens = words.each_line.map { |x| x.strip.gsub("'s", '') }
+      puts "normalizing #{name} wordlist"
+      tokens = tokens.map { |t| Spellr::Token.normalize(t) }
+      puts "Removing short words from #{name} wordlist"
+      tokens = tokens.reject { |x| x.length < Spellr.config.word_minimum_length + 1 } # the plus 1 is the newline
+
+      puts "sorting #{name} wordlist"
+      tokens = tokens.uniq.sort
+      puts "writing #{name} wordlist"
+      write(tokens.join(''))
     end
 
     def write(content)
@@ -76,7 +90,7 @@ module Spellr
 
     def add(term)
       touch
-      term = Spellr::Token.normalize(term) + "\n"
+      term = Spellr::Token.normalize(term)
       include_cache[term] = true
       to_a << term
       to_a.sort!

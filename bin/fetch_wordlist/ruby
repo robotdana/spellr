@@ -11,7 +11,10 @@ class RubyWords
 
     prepare_post_excluded_classes
 
-    puts get_words
+    # puts get_words
+
+    require_relative '../../lib/spellr/tokenizer'
+    puts Spellr::Tokenizer.new(get_words.join(' ')).words.join("\n")
   end
 
   private

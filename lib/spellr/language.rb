@@ -4,14 +4,16 @@ require_relative 'wordlist'
 
 module Spellr
   class Language
-    attr_reader :name, :generate
+    attr_reader :name
 
-    def initialize(name,
+    def initialize(name, # rubocop:disable Metrics/ParameterLists
       wordlists: [],
       generate: nil,
       only: [],
+      description: '',
       hashbangs: [])
       @name = name
+      @description = description
       @generate = generate
       @wordlist_paths = wordlists
       @only = only

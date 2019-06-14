@@ -5,7 +5,7 @@ module Spellr
     attr_reader :string, :file, :start_pos, :line_number, :line_start_pos
 
     def self.normalize(string)
-      string.downcase.unicode_normalize.tr('‘’', "''")
+      string.downcase.unicode_normalize.tr('’', "'") + "\n"
     end
 
     def initialize(string, file: nil, loc: [])

@@ -17,6 +17,10 @@ ignore: # this list is parsed with the .gitignore format
   - '*.ttf'
   - '*.woff'
   - '*.woff2'
+  - '*.zip'
+  - '*.pdf'
+  - '*.xlsx'
+  - '*.gz'
 
 languages:
   english:
@@ -64,9 +68,11 @@ languages:
       - '*.coffee'
       - '*.haml'
       - '*.erb'
+      - '*.json'
   shell:
     only:
       - '*.sh'
+      - Dockerfile
     hashbangs:
       - bash
       - sh
@@ -78,3 +84,10 @@ languages:
       - '*.css'
       - '*.sass'
       - '*.scss'
+  xml:
+    only:
+      - '*.xml'
+      - '*.html'
+      - '*.haml'
+      - '*.hml'
+      - '*.svg'

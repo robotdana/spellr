@@ -32,6 +32,10 @@ module Spellr
       map { |token| Spellr::Token.normalize(token) }
     end
 
+    def words
+      map { |x| x }
+    end
+
     def map(&block)
       enum_for(:each).map(&block)
     end
@@ -51,13 +55,13 @@ module Spellr
     private
 
     def next_token
-      skip_nonwords
-      skip_and_track_newline
+      skip_nonwords ||
+        skip_and_track_newline ||
 
-      skip_and_track_enable
-      skip_and_track_disable
+        skip_and_track_enable ||
+        skip_and_track_disable ||
 
-      start_pos_and_word
+        start_pos_and_word
     end
 
     def start_pos_and_word
@@ -66,39 +70,40 @@ module Spellr
     end
 
     NOT_EVEN_NON_WORDS_RE = %r{[^[:alpha:]/%#0-9\n\r\\]+}.freeze # everything not covered by more specific skips/scans
-    LEFTOVER_NON_WORD_BITS_RE = %r{[/%#0-9\\]+}.freeze # e.g. a / not starting //a-url.com
+    LEFTOVER_NON_WORD_BITS_RE = %r{[/%#0-9\\]}.freeze # e.g. a / not starting //a-url.com
     HEX_RE = /(?:#(?:\h{6}|\h{3})|0x\h+)(?![[:alpha:]])/.freeze
-    EMAIL_RE = /[[:alnum:]._-]+@[[:alnum:].-]+/.freeze # not precise but quick (no looking around)
-    BACKSLASH_ESCAPE_RE = /(?:\\\w)+/.freeze # TODO: hex escapes e.g. \xAA. TODO: language aware escapes
+    SHELL_COLOR_ESCAPE_RE = /\\(e|033)\[\d+(;\d+)*m/.freeze
+    BACKSLASH_ESCAPE_RE = /\\[a-zA-Z]/.freeze # TODO: hex escapes e.g. \xAA. TODO: language aware escapes
     REPEATED_SINGLE_LETTERS_RE = /(?:([[:alpha:]])\1+)(?![[:alpha:]])/.freeze # e.g. xxxxxxxx (it's not a word)
     # https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding
     # Only the necessary percent encoding that actually ends in letters
-    URL_ENCODED_ENTITES_RE = /%(3A|2F|3F|5B|5D|%2A|%2B|%2C|%3B|%3D)/i.freeze
+    # URL_ENCODED_ENTITIES_RE = /%(3A|2F|3F|5B|5D|%2A|%2B|%2C|%3B|%3D)/i.freeze
+    URL_ENCODED_ENTITIES_RE = /%[0-8A-F]{2}/.freeze
     # There's got to be a better way of writing this
     SEQUENTIAL_LETTERS_RE = /a(b(c(d(e(f(g(h(i(j(k(l(m(n(o(p(q(r(s(t(u(v(w(x(y(z)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?(?![[:alpha:]])/i.freeze # rubocop:disable Metrics/LineLength
 
-    def skip_nonwords
-      skip(NOT_EVEN_NON_WORDS_RE)
-      skip_uri_heuristically
-      skip_key_heuristically
-      # skip(EMAIL_RE)
-      skip(HEX_RE)
-      skip(URL_ENCODED_ENTITES_RE)
-      skip(BACKSLASH_ESCAPE_RE)
-      skip(LEFTOVER_NON_WORD_BITS_RE)
-      skip(REPEATED_SINGLE_LETTERS_RE)
-      skip(SEQUENTIAL_LETTERS_RE)
+    def skip_nonwords # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      skip(NOT_EVEN_NON_WORDS_RE) ||
+        skip_uri_heuristically ||
+        skip_key_heuristically ||
+        skip(HEX_RE) ||
+        skip(URL_ENCODED_ENTITIES_RE) ||
+        skip(SHELL_COLOR_ESCAPE_RE) ||
+        skip(BACKSLASH_ESCAPE_RE) ||
+        skip(LEFTOVER_NON_WORD_BITS_RE) ||
+        skip(REPEATED_SINGLE_LETTERS_RE) ||
+        skip(SEQUENTIAL_LETTERS_RE)
     end
 
     # I didn't want to do this myself. BUT i need something to heuristically match on, and it's difficult
     URL_RE = %r{
       (?<scheme>//|https?://|s?ftp://|mailto:)?
       (?<userinfo>[[:alnum:]]+(?::[[:alnum:]]+)?@)?
-      (?<hostname>(?:[[:alnum:]-]+(?:\.[[:alnum:]-]+)+|localhost|\d{1,3}(?:.\d{1,3}){3}))
+      (?<hostname>(?:[[:alnum:]-]+(?:\\?\.[[:alnum:]-]+)+|localhost|\d{1,3}(?:.\d{1,3}){3}))
       (?<port>:\d+)?
-      (?<path>/(?:[[:alnum:]=!$&\-/.]|%\h{2})+)?
-      (?<query>\?(?:[[:alnum:]=!$\-/.]|%\h{2})+(?:&(?:[[:alnum:]=!$\-/.]|%\h{2})+)*)?
-      (?<fragment>\#(?:[[:alnum:]=!$&\-/.]|%\h{2})+)?
+      (?<path>/(?:[[:alnum:]=!$&\-/._\\]|%\h{2})+)?
+      (?<query>\?(?:[[:alnum:]=!$\-/.\\]|%\h{2})+(?:&(?:[[:alnum:]=!$\-/.\\]|%\h{2})+)*)?
+      (?<fragment>\#(?:[[:alnum:]=!$&\-/.\\]|%\h{2})+)?
     }x.freeze
     # unfortunately i have to match this regex a couple times because stringscanner doesn't give me matchdata
     def skip_uri_heuristically
@@ -125,7 +130,6 @@ module Spellr
       return unless matches.length >= 3 # number chosen arbitrarily
 
       skip(KEY_FULL_RE)
-      skip_key_heuristically
     end
 
     # jump to character-aware position

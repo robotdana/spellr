@@ -45,6 +45,7 @@ module Spellr
 
       handle_response(token)
     rescue Interrupt
+      puts '^C again to exit'
       print "\r"
     end
 
@@ -102,20 +103,24 @@ module Spellr
       end
     end
 
-    # TODO: handle more than 10 options
+    # TODO: handle more than 16 options
     def handle_add(token) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       puts "Add \033[31m#{token}\033[0m to wordlist:"
       wordlists = Spellr.config.languages_for(token.file).flat_map(&:addable_wordlists)
 
       wordlists.each_with_index do |wordlist, i|
-        puts "[#{i}] #{wordlist.name}"
+        puts "[#{i.to_s(16)}] #{wordlist.name}"
       end
       choice = STDIN.getch
       case choice
       when "\u0003" # ctrl c
+        puts '^C again to exit'
         call(token)
-      when /\d/
-        wordlists[choice.to_i].add(token)
+      when /\h/
+        wl = wordlists[choice.to_i(16)]
+        return handle_add(token) unless wl
+
+        wl.add(token)
         @total_added += 1
         raise Spellr::DidAdd
       else
@@ -123,9 +128,9 @@ module Spellr
       end
     end
 
-    def handle_replacement(token, original_token: token, prompt: "\033[31m#{token}") # rubocop:disable Metrics/MethodLength, Metrics/LineLength
+    def handle_replacement(token, original_token: token, prompt: "\033[36m>> \033[31m#{token}\n") # rubocop:disable Metrics/MethodLength, Metrics/LineLength
       readline_editable_print(token)
-      replacement = Readline.readline("#{prompt}\033[0m\033[36m => \033[0m")
+      replacement = Readline.readline("#{prompt}\033[36m=> \033[0m")
       if replacement.empty?
         call(token)
       else
@@ -136,6 +141,7 @@ module Spellr
       end
     rescue Interrupt
       print "\r"
+      puts '^C again to exit'
       call(original_token)
     end
 
@@ -143,7 +149,7 @@ module Spellr
       handle_replacement(
         token.line_token,
         original_token: token,
-        prompt: "#{token.before.lstrip}\033[31m#{token}\033[0m#{token.after.chomp}"
+        prompt: ">> #{token.before.lstrip}\033[31m#{token}\033[0m#{token.after.chomp}\n"
       )
     end
 

@@ -95,8 +95,11 @@ module Spellr
     end
 
     def fetch_option(wordlist)
+      puts "Fetching #{wordlist} wordlist"
       words = fetch_words_for_wordlist(wordlist)
+      puts "Preparing #{wordlist} wordlist"
       words = extract_and_write_license(words, wordlist)
+      puts "cleaning #{wordlist} wordlist"
       replace_wordlist(words, wordlist)
 
       exit

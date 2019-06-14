@@ -82,6 +82,13 @@ RSpec.describe Spellr::Tokenizer do
       expect('query https://the-google.com?query-string=whatever%2Bthing').to have_tokens 'query'
     end
 
+    it 'excludes URLs with underscores in the path' do
+      expect('https://external.xx.fbcdn.net/safe_image.php').to have_no_tokens
+    end
+    it 'excludes URLs with backslash escaped characters' do
+      expect('https://external.xx.fbcdn.net/safe_image.php?d=AQAFZTJMZJhBrrPa&w=158&h=158&url=https\\u00253A\\u00252F\\u00252F').to have_no_tokens # rubocop:disable Metrics/LineLength
+    end
+
     it 'excludes URLs with paths and no scheme' do
       expect('whatever.com/whatever').to have_no_tokens
     end
@@ -217,6 +224,14 @@ RSpec.describe Spellr::Tokenizer do
       expect('a0abcdeA12a2ABaAabAaA0ABCDEaABCaABaAaABabcA1a012Aa').to have_no_tokens
       expect('AB/abcABCa0abAaABC0bAaABaABC').to have_no_tokens
       expect('SG.AAaA0a0AAA0a_aaA00a0aa.00AaaaaAAAA0AAAAAAaAAAAAA0aAa0aaaAAAaa0AAAA').to have_no_tokens
+    end
+
+    it 'excludes from the token escape code characters' do
+      expect('\never \rate /\Atheist\Seat/ \there').to have_tokens 'ever', 'ate', 'theist', 'eat', 'here'
+    end
+
+    it 'excludes the color escape code character' do
+      expect('\033[0mother \e[36;1meat').to have_tokens 'other', 'eat'
     end
   end
 
