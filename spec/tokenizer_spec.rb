@@ -233,6 +233,14 @@ RSpec.describe Spellr::Tokenizer do
     it 'excludes the color escape code character' do
       expect('\033[0mother \e[36;1meat').to have_tokens 'other', 'eat'
     end
+
+    it 'excludes terms between spellr:disable and spellr:enable' do
+      expect('this spellr:disable and spellr:enable that').to have_tokens 'this', 'that'
+    end
+
+    it 'excludes terms between spellr:disable and spellr:enable across multiple lines' do
+      expect("this\nspellr:disable\nand\nspellr:enable\nthat").to have_tokens 'this', 'that'
+    end
   end
 
   # spellr:disable

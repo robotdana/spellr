@@ -2,22 +2,21 @@
 
 require 'strscan'
 require_relative '../spellr'
-require_relative 'tokenizer'
 require_relative 'column_location'
 require_relative 'token'
 
 module Spellr
   class LineTokenizer < StringScanner # rubocop:disable Metrics/ClassLength
     attr_reader :line
-    attr_reader :tokenizer
+    attr_accessor :disabled
+    alias_method :disabled?, :disabled
     attr_accessor :skip_uri
     alias_method :skip_uri?, :skip_uri
     attr_accessor :skip_key
     alias_method :skip_key?, :skip_key
 
-    def initialize(*line, tokenizer: Spellr::Tokenizer.new(line), skip_uri: true, skip_key: true)
+    def initialize(*line, skip_uri: true, skip_key: true)
       @line = Spellr::Token.wrap(line.first)
-      @tokenizer = tokenizer
       @skip_uri = skip_uri
       @skip_key = skip_key
 
@@ -32,8 +31,8 @@ module Spellr
     def each_term
       until eos?
         term = next_term
-
         next unless term
+        next if disabled?
 
         yield term
       end
@@ -43,6 +42,7 @@ module Spellr
       until eos?
         term = next_term
         next unless term
+        next if disabled?
 
         yield Token.new(term, line: line, location: column_location(term))
       end
@@ -68,9 +68,7 @@ module Spellr
       (skip_nonwords_and_flags && next_term) || scan_term || next_term
     end
 
-    def scan_term # rubocop:disable Metrics/CyclomaticComplexity
-      return if tokenizer.disabled?
-
+    def scan_term
       term = title_case || lower_case || upper_case || other_case
 
       return term if term && term.length >= Spellr.config.word_minimum_length
@@ -172,12 +170,12 @@ module Spellr
 
     SPELLR_DISABLE_RE = /spellr:disable/.freeze
     def skip_and_track_disable
-      skip(SPELLR_DISABLE_RE) && tokenizer.disabled = true
+      skip(SPELLR_DISABLE_RE) && self.disabled = true
     end
 
     SPELLR_ENABLE_RE = /spellr:enable/.freeze
     def skip_and_track_enable
-      skip(SPELLR_ENABLE_RE) && tokenizer.disabled = false
+      skip(SPELLR_ENABLE_RE) && self.disabled = false
     end
   end
 end
