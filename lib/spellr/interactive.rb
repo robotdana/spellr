@@ -4,6 +4,7 @@ require 'io/console'
 require 'readline'
 require_relative '../spellr'
 require_relative 'reporter'
+
 module Spellr
   class Interactive # rubocop:disable Metrics/ClassLength
     attr_reader :global_replacements, :global_skips
@@ -51,19 +52,19 @@ module Spellr
 
     def attempt_global_skip(token)
       return unless global_skips.include?(token.to_s) ||
-        global_insensitive_skips.include?(token.downcase)
+        global_insensitive_skips.include?(token.normalize)
 
       @total_skipped += 1
     end
 
     def attempt_global_replacement(token)
       global_replacement = global_replacements[token.to_s]
-      global_replacement ||= global_insensitive_replacements[token.downcase]
+      global_replacement ||= global_insensitive_replacements[token.normalize]
       return unless global_replacement
 
       token.replace(global_replacement)
       @total_fixed += 1
-      raise Spellr::DidReplacement
+      raise Spellr::DidReplacement, token
     end
 
     def handle_response(token) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
@@ -91,7 +92,7 @@ module Spellr
       when 'R'
         handle_replacement(token) { |replacement| global_replacements[token.to_s] = replacement }
       when 'I'
-        handle_replacement(token) { |replacement| global_insensitive_replacements[token.downcase] = replacement }
+        handle_replacement(token) { |replacement| global_insensitive_replacements[token.normalize] = replacement }
       when 'r'
         handle_replacement(token)
       when 'e'
@@ -106,7 +107,7 @@ module Spellr
     # TODO: handle more than 16 options
     def handle_add(token) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       puts "Add \033[31m#{token}\033[0m to wordlist:"
-      wordlists = Spellr.config.languages_for(token.file).flat_map(&:addable_wordlists)
+      wordlists = Spellr.config.languages_for(token.location.file).flat_map(&:addable_wordlists)
 
       wordlists.each_with_index do |wordlist, i|
         puts "[#{i.to_s(16)}] #{wordlist.name}"
@@ -128,9 +129,10 @@ module Spellr
       end
     end
 
-    def handle_replacement(token, original_token: token, prompt: "\033[36m>> \033[31m#{token}\n") # rubocop:disable Metrics/MethodLength, Metrics/LineLength
+    def handle_replacement(token, original_token: token) # rubocop:disable Metrics/MethodLength
       readline_editable_print(token)
-      replacement = Readline.readline("#{prompt}\033[36m=> \033[0m")
+      prompt = "\033[36m>> #{token.highlight(token)}\n\033[36m=> \033[0m"
+      replacement = Readline.readline(prompt)
       if replacement.empty?
         call(token)
       else
@@ -147,9 +149,8 @@ module Spellr
 
     def handle_replace_line(token)
       handle_replacement(
-        token.line_token,
-        original_token: token,
-        prompt: ">> #{token.before.lstrip}\033[31m#{token}\033[0m#{token.after.chomp}\n"
+        token.line,
+        original_token: token
       )
     end
 

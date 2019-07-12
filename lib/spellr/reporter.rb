@@ -13,14 +13,10 @@ module Spellr
     end
 
     AQUA = "\033[36m"
-    RED = "\033[1;31m"
     RESET = "\033[0m"
 
     def call(token)
-      location = "#{token.file}:#{token.line_number}:#{token.column}"
-      line = "#{token.before}#{RED}#{token}#{RESET}#{token.after}".strip
-
-      puts "#{AQUA}#{location}#{RESET} #{line}"
+      puts "#{AQUA}#{token.location}#{RESET} #{token.line.highlight(token.char_range)}"
 
       @total += 1
     end

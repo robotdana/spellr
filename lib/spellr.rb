@@ -9,7 +9,13 @@ module Spellr
       @token = token
     end
   end
-  class DidAdd < Spellr::Error; end
+  class DidAdd < Spellr::Error
+    attr_reader :token
+
+    def initialize(token = nil)
+      @token = token
+    end
+  end
 
   module_function
 

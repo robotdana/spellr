@@ -1,13 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+
 require 'net/http'
 require 'optparse'
 
 class SCOWLDownloader
-  SIZE_OPTIONS=%w{10 20 35 40 50 55 60 70 80 95}.freeze
-  VARIANT_OPTIONS=%w{none common acceptable seldom-used}.freeze
-  DIACRITIC_OPTIONS=%w{strip keep both}.freeze
-  SPELLING_LANGUAGE_OPTIONS=%w{US GBs GBz CA AU}.freeze
+  SIZE_OPTIONS = %w{10 20 35 40 50 55 60 70 80 95}.freeze
+  VARIANT_OPTIONS = %w{none common acceptable seldom-used}.freeze
+  DIACRITIC_OPTIONS = %w{strip keep both}.freeze
+  SPELLING_LANGUAGE_OPTIONS = %w{US GBs GBz CA AU}.freeze
 
   def initialize
     set_default_options
@@ -27,22 +28,25 @@ class SCOWLDownloader
     }
   end
 
-  def parse_options
+  def parse_options # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    # rubocop:disable Metrics/LineLength
     OptionParser.new do |opts|
-      opts.on('-s', '--max-size', '=SIZE', String, SIZE_OPTIONS, "Wordlist size. Options: 10 (~5,000 words), 20, 35, 40, 50 (default), 60, 70 (~170,000 words)") { |i| @options[:max_size] = i }
-      opts.on('-v', '--max-variants', '=VARIANTS', String, VARIANT_OPTIONS, "Spelling variants. Options: none (default), common, acceptable, seldom-used") { |i| @options[:max_variant] = VARIANT_OPTIONS.index(i) }
-      opts.on('-d', '--diacritic', '=DIACRITIC', String, DIACRITIC_OPTIONS, "Include diacritics in words. Options: strip (café becomes cafe), keep, both (default. cafe & café)") { |s| @options[:diacritic] = s }
-      opts.on('-l', '--language=x,y,z', Array, "Comma separated list of English variations. Options: US (default), GBs (GB with -ise), GBz (GB with -ize), CA, AU") do |a|
+      opts.banner = 'Usage: spellr [options] fetch english [wordlist options]'
+      opts.on('-s', '--max-size', '=SIZE', String, SIZE_OPTIONS, 'Wordlist size. Options: 10 (~5,000 words), 20, 35, 40, 50 (default), 60, 70 (~170,000 words)') { |i| @options[:max_size] = i }
+      opts.on('-v', '--max-variants', '=VARIANTS', String, VARIANT_OPTIONS, 'Spelling variants. Options: none (default), common, acceptable, seldom-used') { |i| @options[:max_variant] = VARIANT_OPTIONS.index(i) }
+      opts.on('-d', '--diacritic', '=DIACRITIC', String, DIACRITIC_OPTIONS, 'Include diacritics in words. Options: strip (café becomes cafe), keep, both (default. cafe & café)') { |s| @options[:diacritic] = s }
+      opts.on('-l', '--language=x,y,z', Array, 'Comma separated list of English variations. Options: US (default), GBs (GB with -ise), GBz (GB with -ize), CA, AU') do |a|
         raise ArgumentError unless (a - SPELLING_LANGUAGE_OPTIONS).empty?
 
         @options[:spelling] = a
       end
-      opts.on('-p', '--[no-]programming', "include common programming terms like grep (default true)") { |h| @options[:special] = :hacker if h }
+      opts.on('-p', '--[no-]programming', 'include common programming terms like grep (default true)') { |h| @options[:special] = :hacker if h }
       opts.on_tail('-h', '--help') do
-        $stderr.puts opts.to_s
+        warn opts.to_s
         exit 1
       end
     end.parse!
+    # rubocop:enable Metrics/LineLength
   end
 
   attr_reader :options

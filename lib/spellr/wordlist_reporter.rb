@@ -1,18 +1,21 @@
 # frozen_string_literal: true
 
+require 'set'
+
 module Spellr
   class WordlistReporter
     attr_reader :words
+
     def initialize
-      @words = []
+      @words = Set.new
     end
 
-    def finish(_) # rubocop:disable Naming/UncommunicativeMethodParamName
-      puts words.sort.uniq.join("\n")
+    def finish(_checked)
+      puts words.sort.join
     end
 
     def call(token)
-      words << token.downcase
+      words << token.normalize
     end
   end
 end

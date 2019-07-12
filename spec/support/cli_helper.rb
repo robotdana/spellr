@@ -1,40 +1,29 @@
 # frozen_string_literal: true
 
-require 'rspec_command'
+require 'open3'
+
 module CLIHelper
   EXE_PATH = ::File.expand_path('../../exe', __dir__).freeze
 
-  def run(cmd)
-    @result = command("#{EXE_PATH}/#{cmd}")
-  end
+  attr_reader :result
 
-  def result
-    @result
+  def run(cmd)
+    @stdout, @stderr, @status = Open3.capture3("#{EXE_PATH}/#{cmd}")
   end
 
   def stdout
-    format_output(@result.stdout)
+    @stdout.chomp
   end
 
   def stderr
-    format_output(@result.stderr)
+    @stderr.chomp
   end
 
   def exitstatus
-    @result.exitstatus
-  end
-
-  def format_output(output)
-    array = output.lines.map(&:chomp)
-    array.length == 1 ? array.first : array
-  end
-
-  def without_temp_path(files)
-    files.map { |file| file.sub("/private#{temp_path}/", '') }
+    @status.exitstatus
   end
 end
 
 RSpec.configure do |c|
-  c.include RSpecCommand, type: :cli
   c.include CLIHelper, type: :cli
 end

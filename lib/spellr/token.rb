@@ -1,84 +1,79 @@
 # frozen_string_literal: true
 
+require_relative 'column_location'
+
 module Spellr
-  class Token
-    attr_reader :string, :file, :start_pos, :line_number, :line_start_pos
+  class Token < String
+    attr_reader :location, :line
 
-    def self.normalize(string)
-      string.downcase.unicode_normalize.tr('’', "'") + "\n"
+    def self.normalize(value)
+      return value.normalize if value.is_a?(Spellr::Token)
+
+      value.strip.downcase.unicode_normalize.tr('’', "'") + "\n"
     end
 
-    def initialize(string, file: nil, loc: [])
-      @string = string
-      @file = file
-      @start_pos = loc[0]
-      @line_number = loc[1]
-      @line_start_pos = loc[2]
+    def self.wrap(value)
+      return value if value.is_a?(Spellr::Token)
+
+      Spellr::Token.new(value || '')
     end
 
-    def loc
-      [start_pos, line_number, line_start_pos]
+    def initialize(string, line: string, location: ColumnLocation.new)
+      @location = location
+      @line = line
+      super(string)
     end
 
-    def length
-      string.length
+    def strip
+      @strip ||= begin
+        lstripped = lstrip
+        new_column_location = lstripped_column_location(lstripped)
+        Token.new(lstripped.rstrip, line: line, location: new_column_location)
+      end
     end
 
-    def to_s
-      string
-    end
-
-    def downcase
-      to_s.downcase
+    def lstripped_column_location(lstripped)
+      ColumnLocation.new(
+        byte_offset: bytesize - lstripped.bytesize,
+        char_offset: length - lstripped.length,
+        line_location: location.line_location
+      )
     end
 
     def normalize
-      self.class.normalize(to_s)
+      @normalize ||= self.class.normalize(to_s)
     end
 
     def inspect
-      "#<#{self.class.name}:#{string}>"
+      "#<#{self.class.name} #{to_s.inspect} @#{location}>"
     end
 
-    def column
-      start_pos - line_start_pos
+    def char_range
+      @char_range ||= location.char_offset...(location.char_offset + length)
     end
 
-    def column_end
-      column + length
+    def byte_range
+      @byte_range ||= location.byte_offset...(location.byte_offset + bytesize)
     end
 
     def coordinates
-      [line_number, column]
+      location.coordinates
     end
 
-    def line
-      @line ||= file.each_line.to_a[line_number - 1]
-    end
-
-    def line_token
-      indent = line.length - line.lstrip.length
-      Token.new(line.strip,
-        file: file,
-        loc: [
-          line_start_pos + indent,
-          line_number,
-          line_start_pos
-        ])
-    end
-
-    def before
-      @before ||= line.slice(0...column)
-    end
-
-    def after
-      @after ||= line.slice(column_end..-1)
+    def highlight(range)
+      @highlight ||= {}
+      @highlight[range] ||= "#{slice(0...range.begin)}\033[1;31m#{slice(range)}\033[0m#{slice(range.end..-1)}"
     end
 
     def replace(replacement)
-      string = file.read
-      string[start_pos...(start_pos + length)] = replacement
-      file.write(string)
+      f = Pathname.new(file_name)
+      body = f.read
+      body[location.absolute_char_offset...(location.absolute_char_offset + length)] = replacement
+      f.write(body)
+    end
+
+    def file_name
+      location.file_name
     end
   end
 end

@@ -3,6 +3,7 @@
 require 'spec_helper'
 require_relative '../lib/spellr/token'
 require_relative '../lib/spellr/tokenizer'
+require_relative '../lib/spellr/file'
 
 RSpec.describe Spellr::Token do
   describe '#replace' do
@@ -14,7 +15,7 @@ RSpec.describe Spellr::Token do
     end
 
     let(:tokens) do
-      Spellr::Tokenizer.new(file.read, file: file).tokenize
+      Spellr::Tokenizer.new(file).enum_for(:each_token).to_a
     end
 
     it 'can replace a token at the beginning' do

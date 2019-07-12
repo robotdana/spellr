@@ -3,7 +3,7 @@
 require_relative '../lib/spellr/wordlist'
 
 RSpec.describe Spellr::Wordlist do
-  subject { described_class.new('$PROJECT/wordlist') }
+  subject { described_class.new(Pathname.pwd.join('wordlist').to_s) }
 
   around { |e| with_temp_dir { e.run } }
 

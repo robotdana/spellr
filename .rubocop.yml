@@ -159,6 +159,9 @@ Style/Documentation:
 Style/MultipleComparison:
   Enabled: false
 
+Style/NumericPredicate:
+  Enabled: false
+
 # we use %w{} pretty frequently
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:

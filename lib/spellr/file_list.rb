@@ -3,6 +3,7 @@
 require 'fast_ignore'
 require_relative '../spellr'
 require_relative 'file'
+
 module Spellr
   class FileList
     include Enumerable
@@ -12,7 +13,7 @@ module Spellr
     end
 
     def wordlist?(file)
-      Spellr.config.wordlists.any? { |w| w.path == file }
+      Spellr.config.all_wordlist_paths.any? { |w| w == file }
     end
 
     def config_only?(file)

@@ -47,6 +47,10 @@ module Spellr
       @wordlists ||= languages.values.flat_map(&:wordlists)
     end
 
+    def all_wordlist_paths
+      languages.values.flat_map(&:all_wordlist_paths)
+    end
+
     def wordlists_for(file)
       languages_for(file).flat_map(&:wordlists)
     end

@@ -3,6 +3,8 @@
 require_relative '../spellr'
 require_relative 'tokenizer'
 require_relative 'token'
+require_relative 'column_location'
+require_relative 'line_location'
 
 module Spellr
   class InvalidByteSequence
@@ -37,18 +39,18 @@ module Spellr
 
     private
 
-    def check_file(file, start_loc: nil, wordlists: Spellr.config.wordlists_for(file))
-      Spellr::Tokenizer.new(file.read, *start_loc).each do |token, *loc|
-        start_loc = loc
+    def check_file(file, start_at: nil, wordlists: Spellr.config.wordlists_for(file))
+      Spellr::Tokenizer.new(file, start_at: start_at).each_token do |token|
         next if wordlists.any? { |d| d.include?(token) }
 
-        reporter.call(Spellr::Token.new(token, file: file, loc: loc))
+        start_at = token.location
+        reporter.call(token)
         @exit_code = 1
       end
     rescue Spellr::DidReplacement => e # Yeah this is exceptions for control flow, but it makes sense to me
-      check_file(file, start_loc: e&.token&.loc || start_loc, wordlists: wordlists)
-    rescue Spellr::DidAdd
-      check_file(file, start_loc: start_loc) # don't cache the wordlists
+      check_file(file, start_at: e.token.location, wordlists: wordlists)
+    rescue Spellr::DidAdd => e
+      check_file(file, start_at: e.token.location) # don't cache the wordlists
     end
   end
 end

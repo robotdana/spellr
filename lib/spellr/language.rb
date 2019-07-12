@@ -30,8 +30,12 @@ module Spellr
       @config_wordlists ||= @wordlist_paths.map(&Spellr::Wordlist.method(:new))
     end
 
+    def all_wordlist_paths
+      @wordlist_paths + default_wordlists.map(&:path)
+    end
+
     def wordlists
-      w = config_wordlists + default_wordlists
+      w = config_wordlists + default_wordlists.select(&:exist?)
       return generate_wordlist if w.empty?
 
       w
@@ -50,7 +54,7 @@ module Spellr
     end
 
     def addable_wordlists
-      ((config_wordlists - default_wordlists) + [project_wordlist, global_wordlist]).uniq(&:path)
+      ((config_wordlists - default_wordlists) + [project_wordlist]).uniq(&:path)
     end
 
     def gem_wordlist
@@ -72,19 +76,6 @@ module Spellr
       )
     end
 
-    def generated_global_wordlist
-      @generated_global_wordlist ||= Spellr::Wordlist.new(
-        Pathname.new("~/.spellr_wordlists/generated/#{name}.txt").expand_path
-      )
-    end
-
-    def global_wordlist
-      @global_wordlist ||= Spellr::Wordlist.new(
-        Pathname.new("~/.spellr_wordlists/#{name}.txt").expand_path,
-        name: "#{name} (global)"
-      )
-    end
-
     private
 
     attr_reader :generate
@@ -103,11 +94,9 @@ module Spellr
     def default_wordlists
       [
         gem_wordlist,
-        global_wordlist,
-        generated_global_wordlist,
         generated_project_wordlist,
         project_wordlist
-      ].select(&:exist?)
+      ]
     end
   end
 end
