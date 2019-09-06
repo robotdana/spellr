@@ -26,9 +26,13 @@ module Spellr
       @config[:ignore]
     end
 
+    def color
+      @config[:color]
+    end
+
     def clear_cache
-      remove_instance_variable(:@wordlists)
-      remove_instance_variable(:@languages)
+      remove_instance_variable(:@wordlists) if defined?(@wordlists)
+      remove_instance_variable(:@languages) if defined?(@languages)
     end
 
     def languages

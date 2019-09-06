@@ -15,9 +15,11 @@ module Spellr
     alias_method :disabled?, :disabled
 
     def initialize(file, start_at: nil, skip_uri: true, skip_key: true)
+      # $stderr.puts start_at if start_at
       @start_at = start_at || ColumnLocation.new(line_location: LineLocation.new(file))
       @file = file.is_a?(StringIO) || file.is_a?(IO) ? file : ::File.new(file)
       @file.pos = @start_at.line_location.byte_offset
+
       @line_tokenizer = LineTokenizer.new(skip_uri: skip_uri, skip_key: skip_key)
     end
 
@@ -35,14 +37,16 @@ module Spellr
       end
     end
 
-    def each_token(&block)
-      char_offset = 0
+    def each_token(&block) # rubocop:disable Metrics/AbcSize
+      char_offset = @start_at.line_location.char_offset
+      byte_offset = @start_at.line_location.byte_offset
 
       each_line_with_offset do |line, line_number|
-        line_location = LineLocation.new(file, line_number, byte_offset: file.pos, char_offset: char_offset)
+        line_location = LineLocation.new(file, line_number, byte_offset: byte_offset, char_offset: char_offset)
         char_offset += line.length
+        byte_offset += line.bytesize
         line = Token.new(line, location: ColumnLocation.new(line_location: line_location))
-        prepare_tokenizer_for_line(line.strip, line_number).each_token(&block)
+        prepare_tokenizer_for_line(line, line_number).each_token(&block)
       end
     end
 
@@ -58,9 +62,10 @@ module Spellr
       file.each_line.with_index(@start_at.line_number, &block)
     end
 
-    def prepare_tokenizer_for_line(line, line_number)
+    def prepare_tokenizer_for_line(line, _line_number)
       line_tokenizer.string = line
-      line_tokenizer.pos = @start_at.byte_offset if line_number == @start_at.line_number
+      line_tokenizer.pos = 0
+      # line_tokenizer.pos = @start_at.byte_offset if line_number == @start_at.line_number
       line_tokenizer
     end
   end

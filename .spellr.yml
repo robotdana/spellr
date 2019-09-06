@@ -1,6 +1,7 @@
 ---
 ignore:
   - '*.spellr_wordlists'
+  - wordlists/*
 only:
   - '*.rb'
   - '*.yml'
@@ -16,3 +17,7 @@ languages:
   ruby:
     only:
       - README.md
+  lorem:
+    only:
+      - spec/*
+      - .spellr.yml

@@ -1,3 +1,4 @@
+abc
 addable
 arg
 args
@@ -18,9 +19,11 @@ def
 dict
 diffable
 diffs
+dockerfile
 downloader
 env
 eos
+eot
 erb
 exclusions
 exe
@@ -42,7 +45,9 @@ haml
 hashbang
 hashbangs
 hashbangs
+heuristically
 hml
+hostnames
 href
 htt
 ico
@@ -51,6 +56,8 @@ jbuilder
 jpg
 jsx
 klass
+localhost
+lstripped
 mailto
 marketplacer
 matcher
@@ -60,6 +67,7 @@ merchantability
 multiline
 newlines
 noninfringement
+nonwords
 optparse
 org
 param
@@ -74,6 +82,7 @@ repo
 rspec
 rubocop
 rvm
+scss
 shelljoin
 shellsplit
 shellwords
@@ -83,18 +92,22 @@ stderr
 stdlib
 stdout
 str
+stringscanner
 strscan
 sublicense
 subwords
 sudo
 svg
 thu
+tlds
 tmp
 todo
 tokenize
 tokenizes
 tsx
+ttf
 txt
+uploader
 uri
 usr
 utf

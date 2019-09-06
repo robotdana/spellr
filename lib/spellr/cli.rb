@@ -110,8 +110,6 @@ module Spellr
       words = extract_and_write_license(words, wordlist)
       puts "cleaning #{wordlist} wordlist"
       replace_wordlist(words, wordlist)
-
-      exit
     end
 
     def output_option(dir)

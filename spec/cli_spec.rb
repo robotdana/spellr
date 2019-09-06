@@ -113,9 +113,6 @@ RSpec.describe 'command line', type: :cli do
   end
 
   context 'with files with errors' do
-    # otherwise the default config fetches them
-    let(:config) { Pathname.new(__dir__).join('support', '.spellr.yml') }
-
     around do |example|
       with_temp_dir { example.run }
     end
@@ -129,60 +126,405 @@ RSpec.describe 'command line', type: :cli do
       stub_fs_file 'check.txt', <<~FILE
         lorem ipsum dolor
 
-        sit amet
+          dolor amet
+      FILE
+
+      stub_fs_file '.spellr.yml', <<~FILE
+        color: true
+        ignore:
+          - .spellr.yml
       FILE
     end
 
     describe '--wordlist' do
-      it 'returns the list of unmached words' do # rubocop:disable RSpec/ExampleLength
-        run "spellr --wordlist -c #{config}"
+      it 'returns the list of unmatched words' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr --wordlist'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
         expect(stdout).to eq <<~WORDS.chomp
           amet
           dolor
-          sit
         WORDS
       end
     end
 
     describe 'spellr' do
-      it 'returns the list of unmached words and their locations' do # rubocop:disable RSpec/ExampleLength
-        run "spellr -c #{config}"
+      it 'returns the list of unmatched words and their locations' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
         expect(stdout).to eq <<~WORDS.chomp
-          \033[36mcheck.txt:1:12\033[0m lorem ipsum \033[1;31mdolor\033[0m
-          \033[36mcheck.txt:3:0\033[0m \033[1;31msit\033[0m amet
-          \033[36mcheck.txt:3:4\033[0m sit \033[1;31mamet\033[0m
+          #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+          #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+          #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
 
           1 file checked
           3 errors found
         WORDS
       end
     end
-  end
 
-  context 'when in an empty dir' do
-    # otherwise the default config fetches them
-    let(:config) { Pathname.new(__dir__).join('support', '.spellr.yml') }
+    describe '--interactive' do
+      it 'returns the first unmatched term and a prompt' do
+        run 'spellr -i' do |stdout, _stdin|
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+        end
+      end
 
-    around do |example|
-      with_temp_dir { example.run }
-    end
+      it 'returns the interactive command help' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr -i' do |stdout, stdin|
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
 
-    it 'does not return the version' do # rubocop:disable RSpec/ExampleLength
-      run("spellr -c #{config}")
+          stdin.print '?'
 
-      expect(stderr).to be_empty
-      expect(exitstatus).to eq 0
-      expect(stdout).to eq <<~STDOUT.chomp
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[r]'} Replace #{red 'dolor'}
+            #{bold '[R]'} Replace all future instances of #{red 'dolor'}
+            #{bold '[s]'} Skip #{red 'dolor'}
+            #{bold '[S]'} Skip all future instances of #{red 'dolor'}
+            #{bold '[a]'} Add #{red 'dolor'} to a word list
+            #{bold '[e]'} Edit the whole line
+            #{bold '[?]'} Show this help
+          STDOUT
+        end
+      end
 
-        0 files checked
-        0 errors found
-      STDOUT
+      it 'exits when ctrl C' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr -i' do |stdout, stdin, pid|
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.puts "\u0003" # ctrl c
+
+          expect { PTY.check(pid)&.exitstatus }.to eventually(eq 1)
+        end
+      end
+
+      it 'returns the next unmatched term and a prompt after skipping' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr -i' do |stdout, stdin|
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 's'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 's'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 's'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+
+            1 file checked
+            3 errors found
+            3 errors skipped
+
+          STDOUT
+        end
+      end
+
+      it 'returns the next unmatched term and a prompt after skipping with S' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr -i' do |stdout, stdin|
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 'S'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 'S'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+
+            1 file checked
+            3 errors found
+            3 errors skipped
+
+          STDOUT
+        end
+      end
+
+      it 'returns the next unmatched term and a prompt after adding with a' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr -i' do |stdout, stdin|
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 'a'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            Add #{red 'dolor'} to wordlist:
+            [0] english
+          STDOUT
+
+          stdin.print '0'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            Add #{red 'dolor'} to wordlist:
+            [0] english
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 's'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            Add #{red 'dolor'} to wordlist:
+            [0] english
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+
+            1 file checked
+            2 errors found
+            1 error skipped
+            1 word added
+          STDOUT
+        end
+      end
+
+      it 'returns the next unmatched term and a prompt after replacing with R' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr -i' do |stdout, stdin|
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 'R'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolor
+          STDOUT
+
+          stdin.print "es\n"
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolores
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 'a'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolores
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            Add #{red 'dolores'} to wordlist:
+            [0] english
+          STDOUT
+
+          stdin.print '0'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolores
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            Add #{red 'dolores'} to wordlist:
+            [0] english
+            #{aqua 'check.txt:3:10'} dolores #{red 'amet'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 's'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolores
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            Add #{red 'dolores'} to wordlist:
+            [0] english
+            #{aqua 'check.txt:3:10'} dolores #{red 'amet'}
+
+            1 file checked
+            4 errors found
+            1 error skipped
+            2 errors fixed
+            1 word added
+          STDOUT
+        end
+      end
+
+      it 'returns the next unmatched term and a prompt after replacing with r' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr -i' do |stdout, stdin|
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 'r'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolor
+          STDOUT
+
+          stdin.print "es\n"
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolores
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 'a'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolores
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            Add #{red 'dolores'} to wordlist:
+            [0] english
+          STDOUT
+
+          stdin.print '0'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolores
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            Add #{red 'dolores'} to wordlist:
+            [0] english
+            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 's'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolores
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            Add #{red 'dolores'} to wordlist:
+            [0] english
+            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 's'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
+            #{aqua '=>'} dolores
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            Add #{red 'dolores'} to wordlist:
+            [0] english
+            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+
+            1 file checked
+            4 errors found
+            2 errors skipped
+            1 error fixed
+            1 word added
+          STDOUT
+        end
+      end
+
+      it 'returns the next unmatched term and a prompt after replacing with e' do # rubocop:disable RSpec/ExampleLength
+        run 'spellr -i' do |stdout, stdin|
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 'e'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} lorem ipsum #{red 'dolor'}
+            #{aqua '=>'} lorem ipsum dolor
+          STDOUT
+          stdin.print "\b" * 17
+          stdin.print "lorem lorem lorem\n"
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} lorem ipsum #{red 'dolor'}
+            #{aqua '=>'} lorem lorem lorem
+            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 's'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} lorem ipsum #{red 'dolor'}
+            #{aqua '=>'} lorem lorem lorem
+            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            #{bold '[a,s,S,r,R,e,?]'}
+          STDOUT
+
+          stdin.print 's'
+
+          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} lorem ipsum #{red 'dolor'}
+            #{aqua '=>'} lorem lorem lorem
+            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+
+            1 file checked
+            3 errors found
+            2 errors skipped
+            1 error fixed
+          STDOUT
+        end
+      end
     end
   end
 end

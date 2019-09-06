@@ -11,10 +11,7 @@ class RubyWords # rubocop:disable Metrics/ClassLength
 
     prepare_post_excluded_classes
 
-    puts get_words
-
-    require_relative '../../lib/spellr/tokenizer'
-    puts Spellr::Tokenizer.new(get_words.join(' ')).words.join("\n")
+    puts generate_words
   end
 
   private

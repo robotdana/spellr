@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+# frozen string_literal: true
+
 require_relative 'column_location'
+require_relative 'string_format'
 
 module Spellr
   class Token < String
     attr_reader :location, :line
-
     def self.normalize(value)
       return value.normalize if value.is_a?(Spellr::Token)
 
@@ -60,16 +62,18 @@ module Spellr
       location.coordinates
     end
 
-    def highlight(range)
-      @highlight ||= {}
-      @highlight[range] ||= "#{slice(0...range.begin)}\033[1;31m#{slice(range)}\033[0m#{slice(range.end..-1)}"
+    def highlight(range = char_range)
+      "#{slice(0...(range.first))}#{Spellr::StringFormat.red slice(range)}#{slice(range.last..-1)}"
     end
 
     def replace(replacement)
-      f = Pathname.new(file_name)
-      body = f.read
-      body[location.absolute_char_offset...(location.absolute_char_offset + length)] = replacement
-      f.write(body)
+      ::File.open(file_name, 'r+') do |f|
+        body = f.read
+        body[location.absolute_char_offset...(location.absolute_char_offset + length)] = replacement
+        f.rewind
+        f.truncate(0)
+        f.write(body)
+      end
     end
 
     def file_name

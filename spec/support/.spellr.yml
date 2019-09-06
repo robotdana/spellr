@@ -1,5 +1,0 @@
-languages:
-  english:
-    generate: false
-  ruby:
-    generate: false

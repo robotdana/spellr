@@ -22,6 +22,8 @@ module Spellr
 
     def matches?(file)
       return true if @only.empty?
+
+      file = Spellr::File.wrap(file)
       return true if @only.any? { |o| file.fnmatch?(o) }
       return true if file.hashbang && @hashbangs.any? { |h| file.hashbang.include?(h) }
     end
@@ -66,7 +68,7 @@ module Spellr
     def project_wordlist
       @project_wordlist ||= Spellr::Wordlist.new(
         Pathname.pwd.join('.spellr_wordlists', "#{name}.txt"),
-        name: "#{name} (project)"
+        name: name
       )
     end
 

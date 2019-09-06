@@ -112,6 +112,7 @@ Metrics/BlockLength:
     - configure
     - describe
     - context
+    - it
 
 Metrics/LineLength:
   Max: 120

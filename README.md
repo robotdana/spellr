@@ -50,14 +50,15 @@ The gem is available as open source under the terms of the [MIT License](https:/
       - [x] gem committed semi-dynamic wordlist
       - [x] gem committed static wordlist
 - [x] enable/disable
-- [ ] get marketplacer codebase green
+- [x] get marketplacer codebase green
 - [x] escape
-
+- [ ] remove default dynamic wordlist nonsense
+- [x] fix bugs, have specs
+- [x] attempt key recognition
 ## TODO after release
+- [ ] throw instead of raise for flow control
 - [ ] attempt subwords again
-- [ ] attempt key recognition
 - [ ] (semi)dynamic js wordlist
 - [ ] (semi)dynamic html wordlist
 - [ ] (semi)dynamic bash wordlist
 - [ ] editor plugins
-

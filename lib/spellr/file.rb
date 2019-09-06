@@ -4,6 +4,10 @@ require 'pathname'
 
 module Spellr
   class File < Pathname
+    def self.wrap(file)
+      file.is_a?(Spellr::File) ? file : Spellr::File.new(file)
+    end
+
     def hashbang
       return if extname != ''
       return unless first_line&.start_with?('#!')
