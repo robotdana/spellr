@@ -25,9 +25,8 @@ ignore: # this list is parsed with the .gitignore format
 languages:
   english:
     generate: "fetch english"
-  # TODO: don't generate the ruby file until you actually need one
+    # TODO: don't generate the ruby file until you actually need one
   ruby:
-    generate: "fetch ruby"
     only: # Filtered using File.fn_match
       - '*.rb'
       - '*.rake'
