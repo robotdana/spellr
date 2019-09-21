@@ -31,7 +31,7 @@ module CLIHelper
     end
 
     stdout.flush
-  rescue Timeout::Error, EOFError
+  rescue Timeout::Error, EOFError, Errno::EIO
     retry if @s.empty?
     return @s unless parse
 
