@@ -24,7 +24,11 @@ module CLIHelper
   def accumulate_io(stdout, ignore_color: false, parse: true) # rubocop:disable Metrics/MethodLength
     @s ||= ''
     stdout.flush
-    stdout.rewind
+    begin
+      stdout.rewind
+    rescue Errno::ESPIPE
+      nil
+    end
     Timeout.timeout(0.01) do
       loop do
         @s += stdout.getc.to_s
