@@ -21,16 +21,17 @@ module CLIHelper
     end
   end
 
-  def accumulate_io(stdout, ignore_color: false, parse: false) # rubocop:disable Metrics/MethodLength
+  def accumulate_io(io, ignore_color: false, parse: true) # rubocop:disable Metrics/MethodLength
     @s ||= ''
-    stdout.flush
+    io.flush
+
     Timeout.timeout(0.1) do
       loop do
-        @s += stdout.getc.to_s
+        @s += io.getc.to_s
       end
     end
 
-    stdout.flush
+    io.flush
   rescue Timeout::Error, EOFError, Errno::EIO
     retry if @s.empty?
     return @s unless parse

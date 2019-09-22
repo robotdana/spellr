@@ -332,6 +332,7 @@ RSpec.describe 'command line', type: :cli do
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
+            #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolor
           STDOUT
 
