@@ -115,7 +115,7 @@ module Spellr
       return unless skip_uri?
       return unless match?(URL_RE)
 
-      captures = URL_RE.match(matched).named_captures
+      captures = URL_RE.match(matched)
       skip(URL_RE) if captures['scheme'] || captures['userinfo'] || captures['path']
     end
 
