@@ -29,9 +29,6 @@ module Spellr
       files.each do |file|
         check_file(file)
         checked += 1
-      rescue InvalidByteSequence
-        # sometimes files are binary
-        puts "Skipped unreadable file: #{file}" unless Spellr.config.quiet?
       end
 
       reporter.finish(checked) if reporter.respond_to?(:finish)
@@ -39,7 +36,7 @@ module Spellr
 
     private
 
-    def check_file(file, start_at: nil, wordlists: Spellr.config.wordlists_for(file))
+    def check_file(file, start_at: nil, wordlists: Spellr.config.wordlists_for(file)) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/LineLength
       Spellr::Tokenizer.new(file, start_at: start_at).each_token do |token|
         next if wordlists.any? { |d| d.include?(token) }
 
@@ -51,6 +48,9 @@ module Spellr
       check_file(file, start_at: e.token.location, wordlists: wordlists)
     rescue Spellr::DidAdd => e
       check_file(file, start_at: e.token.location) # don't cache the wordlists
+    rescue InvalidByteSequence
+      # sometimes files are binary
+      puts "Skipped unreadable file: #{file}" unless Spellr.config.quiet?
     end
   end
 end

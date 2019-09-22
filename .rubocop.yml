@@ -69,15 +69,15 @@ Layout/FirstHashElementLineBreak:
   Enabled: true
 
 # to match our preference for consistent indentation
-Layout/FirstParameterIndentation:
+Layout/IndentFirstArgument:
   EnforcedStyle: consistent
 
 # to match our preference for consistent indentation
-Layout/IndentArray:
+Layout/IndentFirstArrayElement:
   EnforcedStyle: consistent
 
 # to match our preference for consistent indentation
-Layout/IndentHash:
+Layout/IndentFirstHashElement:
   EnforcedStyle: consistent
 
 # to match our preference for consistent indentation

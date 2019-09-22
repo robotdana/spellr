@@ -89,7 +89,24 @@ module Spellr
 
       return {} unless ::File.exist?(path)
 
-      YAML.safe_load(::File.read(path), symbolize_names: true)
+      if RUBY_VERSION >= '2.5'
+        YAML.safe_load(::File.read(path), symbolize_names: true)
+      else
+        symbolize_names!(YAML.safe_load(::File.read(path)))
+      end
+    end
+
+    def symbolize_names!(obj)
+      case obj
+      when Hash
+        obj.keys.each do |key|
+          value = obj.delete(key)
+          obj[key.to_sym] = symbolize_names!(value)
+        end
+      when Array
+        obj.map! { |ea| symbolize_names!(ea) }
+      end
+      obj
     end
 
     def merge_config(default, project)
