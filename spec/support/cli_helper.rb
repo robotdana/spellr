@@ -3,8 +3,8 @@
 require 'open3'
 require 'pty'
 require_relative '../../lib/spellr/string_format'
-require_relative 'tty_string'
 require 'rspec/eventually'
+require 'tty_string'
 
 module CLIHelper
   EXE_PATH = ::File.expand_path('../../exe', __dir__).freeze
@@ -36,7 +36,7 @@ module CLIHelper
     retry if @s.empty?
     return @s unless parse
 
-    TTYString.new(@s, ignore_color: ignore_color).to_s
+    TTYString.new(@s, clear_style: ignore_color).to_s
   end
 
   def stdout
