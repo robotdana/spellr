@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spellr (0.2.0)
+    spellr (0.3.0)
       fast_ignore
       parallel
 
