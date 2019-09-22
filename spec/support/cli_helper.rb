@@ -21,7 +21,7 @@ module CLIHelper
     end
   end
 
-  def accumulate_io(stdout, ignore_color: false, parse: true) # rubocop:disable Metrics/MethodLength
+  def accumulate_io(stdout, ignore_color: false, parse: false) # rubocop:disable Metrics/MethodLength
     @s ||= ''
     stdout.flush
     Timeout.timeout(0.1) do
