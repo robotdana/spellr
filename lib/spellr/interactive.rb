@@ -143,7 +143,8 @@ module Spellr
     def handle_replacement(token, original_token: token) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       readline_editable_print(token.chomp)
       highlighted_token = token == original_token ? red(token) : token.highlight(original_token.char_range)
-      prompt = "#{aqua '>>'} #{highlighted_token.chomp}\n#{aqua '=>'} "
+      puts "#{aqua '>>'} #{highlighted_token.chomp}"
+      prompt = "#{aqua '=>'} "
       replacement = Readline.readline(prompt)
       if replacement.empty?
         call(token)
