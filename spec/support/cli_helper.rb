@@ -2,9 +2,32 @@
 
 require 'open3'
 require 'pty'
-require_relative '../../lib/spellr/string_format'
-require 'rspec/eventually'
 require 'tty_string'
+require_relative '../../lib/spellr/string_format'
+
+RSpec::Matchers.define :print do |expected|
+  match do |actual|
+    loop_within_or_match(2, expected) do
+      @actual = render_io(actual)
+    end
+
+    expect(@actual).to eq(expected)
+  end
+
+  diffable
+end
+
+RSpec::Matchers.define :have_exitstatus do |expected|
+  match do |actual|
+    loop_within_or_match(2, expected) do
+      @actual = PTY.check(actual)&.exitstatus
+    end
+
+    expect(@actual).to eq(expected)
+  end
+
+  diffable
+end
 
 module CLIHelper
   EXE_PATH = ::File.expand_path('../../exe', __dir__).freeze
@@ -21,22 +44,48 @@ module CLIHelper
     end
   end
 
-  def accumulate_io(io, ignore_color: false, parse: true) # rubocop:disable Metrics/MethodLength
-    @s ||= ''
-    io.flush
-
-    Timeout.timeout(0.1) do
-      loop do
-        @s += io.getc.to_s
-      end
+  def loop_within_or_match(seconds, value)
+    loop_within(seconds) do
+      output = yield
+      return output if output == value
     end
+  end
 
-    io.flush
-  rescue Timeout::Error, EOFError, Errno::EIO
-    retry if @s.empty?
-    return @s unless parse
+  def loop_within(seconds)
+    # timeout is just because it gets stuck sometimes
+    Timeout.timeout(seconds * 10) do
+      start_time = monotonic_time
+      yield until start_time + seconds < monotonic_time
+    end
+  end
 
-    TTYString.new(@s, clear_style: ignore_color).to_s
+  def monotonic_time
+    Process.clock_gettime(Process::CLOCK_MONOTONIC)
+  end
+
+  def render_io(io, clear_style: false, process_cursor: true)
+    string = accumulate_io(io)
+    return string unless process_cursor
+
+    TTYString.new(string, clear_style: clear_style).to_s
+  end
+
+  def accumulate_io(io)
+    @accumulate_io ||= {}
+    @accumulate_io[io] ||= ''
+    @accumulate_io[io] += read_while_readable(io)
+  end
+
+  def read_while_readable(io, str = '')
+    str += io.read_nonblock(4096)
+  rescue IO::WaitReadable
+    (readable?(io) && retry) || str
+  rescue EOFError, Errno::EIO
+    str
+  end
+
+  def readable?(io)
+    IO.select([io], nil, nil, 0)
   end
 
   def stdout
