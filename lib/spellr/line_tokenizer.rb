@@ -89,12 +89,12 @@ module Spellr
 
     def skip_nonwords # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       skip(NOT_EVEN_NON_WORDS_RE) ||
-        skip_uri_heuristically ||
-        skip_key_heuristically ||
-        skip(HEX_RE) ||
-        skip(URL_ENCODED_ENTITIES_RE) ||
         skip(SHELL_COLOR_ESCAPE_RE) ||
         skip(BACKSLASH_ESCAPE_RE) ||
+        skip(URL_ENCODED_ENTITIES_RE) ||
+        skip(HEX_RE) ||
+        skip_key_heuristically ||
+        skip_uri_heuristically ||
         skip(LEFTOVER_NON_WORD_BITS_RE) ||
         skip(REPEATED_SINGLE_LETTERS_RE) ||
         skip(SEQUENTIAL_LETTERS_RE)
@@ -102,21 +102,26 @@ module Spellr
 
     # I didn't want to do this myself. BUT i need something to heuristically match on, and it's difficult
     URL_RE = %r{
-      (?<scheme>//|https?://|s?ftp://|mailto:)?
-      (?<userinfo>[[:alnum:]]+(?::[[:alnum:]]+)?@)?
-      (?<hostname>(?:[[:alnum:]-]+(?:\\?\.[[:alnum:]-]+)+|localhost|\d{1,3}(?:.\d{1,3}){3}))
-      (?<port>:\d+)?
-      (?<path>/(?:[[:alnum:]=!$&\-/._\\]|%\h{2})+)?
-      (?<query>\?(?:[[:alnum:]=!$\-/.\\]|%\h{2})+(?:&(?:[[:alnum:]=!$\-/.\\]|%\h{2})+)*)?
-      (?<fragment>\#(?:[[:alnum:]=!$&\-/.\\]|%\h{2})+)?
+      (//|https?://|s?ftp://|mailto:)? # 0 scheme
+      ([[:alnum:]]+(?::[[:alnum:]]+)?@)? # 1 userinfo
+      (?:(?:[[:alnum:]-]+(?:\\?\.[[:alnum:]-]+)+|localhost|\d{1,3}(?:.\d{1,3}){3})) # 2 hostname
+      (?::\d+)? # 3 port
+      (/(?:[[:alnum:]=!$&\-/._\\]|%\h{2})+)? # 4 path
+      (?:\?(?:[[:alnum:]=!$\-/.\\]|%\h{2})+(?:&(?:[[:alnum:]=!$\-/.\\]|%\h{2})+)*)? # 5 query
+      (?:\#(?:[[:alnum:]=!$&\-/.\\]|%\h{2})+)? # 6 fragment
     }x.freeze
-    # unfortunately i have to match this regex a couple times because stringscanner doesn't give me matchdata
     def skip_uri_heuristically
       return unless skip_uri?
-      return unless match?(URL_RE)
+      return unless scan(URL_RE)
 
-      captures = URL_RE.match(matched)
-      skip(URL_RE) if captures['scheme'] || captures['userinfo'] || captures['path']
+      heuristic_failed = if RUBY_VERSION >= '2.5'
+        captures.all?(&:empty?)
+      else
+        # unfortunately i have to match this regex again because stringscanner doesn't give me matchdata
+        matched.match(URL_RE).captures.compact.all?(&:empty?)
+      end
+
+      unscan && false if heuristic_failed
     end
 
     # url unsafe base64 or url safe base64
