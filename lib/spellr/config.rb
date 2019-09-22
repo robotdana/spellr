@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../spellr'
+require_relative 'config_loader'
 
 module Spellr
   class Config
@@ -10,8 +11,25 @@ module Spellr
     alias_method :quiet?, :quiet
 
     def initialize
-      @config_file = ::File.join(Dir.pwd, '.spellr.yml')
-      load_config
+      @config = ConfigLoader.new
+    end
+
+    def valid?
+      only_has_one_key_per_language
+      keys_are_single_characters
+      errors.empty?
+    end
+
+    def print_errors
+      if $stderr.tty?
+        errors.each { |e| warn "\e[31m#{e}\e[0m" }
+      else
+        errors.each { |e| warn e }
+      end
+    end
+
+    def errors
+      @errors ||= []
     end
 
     def word_minimum_length
@@ -33,26 +51,23 @@ module Spellr
     def clear_cache
       remove_instance_variable(:@wordlists) if defined?(@wordlists)
       remove_instance_variable(:@languages) if defined?(@languages)
+      remove_instance_variable(:@errors) if defined?(@errors)
     end
 
     def languages
       require_relative 'language'
 
       @languages ||= @config[:languages].map do |key, args|
-        [key, Spellr::Language.new(key, args)]
-      end.to_h
+        Spellr::Language.new(key, args)
+      end
     end
 
     def languages_for(file)
-      languages.values.select { |l| l.matches?(file) }
+      languages.select { |l| l.matches?(file) }
     end
 
     def wordlists
-      @wordlists ||= languages.values.flat_map(&:wordlists)
-    end
-
-    def all_wordlist_paths
-      languages.values.flat_map(&:all_wordlist_paths)
+      @wordlists ||= languages.flat_map(&:wordlists)
     end
 
     def wordlists_for(file)
@@ -61,8 +76,7 @@ module Spellr
 
     def config_file=(value)
       ::File.read(value) # raise Errno::ENOENT if the file doesn't exist
-      @config_file = value
-      load_config
+      @config = ConfigLoader.new(value)
     end
 
     def reporter
@@ -71,52 +85,33 @@ module Spellr
 
     private
 
+    def only_has_one_key_per_language
+      conflicting_languages = languages
+        .group_by(&:key)
+        .values.select { |g| g.length > 1 }
+
+      return if conflicting_languages.empty?
+
+      conflicting_languages.each do |conflicts|
+        errors << "Error: #{conflicts.map(&:name).join(' & ')} share the same language key (#{conflicts.first.key}). "\
+          'Please define one to be different with `key:`'
+      end
+    end
+
+    def keys_are_single_characters
+      bad_languages = languages.select { |l| l.key.length > 1 }
+      return if bad_languages.empty?
+
+      bad_languages.each do |language|
+        errors << "Error: #{language.name} defines a key that is too long (#{language.key}). "\
+          'Please change it to be a single character'
+      end
+    end
+
     def default_reporter
       require_relative 'reporter'
 
       Spellr::Reporter.new
-    end
-
-    def load_config
-      default_config = load_yaml(::File.join(__dir__, '..', '.spellr.yml'))
-      project_config = load_yaml(config_file)
-
-      @config = merge_config(default_config, project_config)
-    end
-
-    def load_yaml(path)
-      require 'yaml'
-
-      return {} unless ::File.exist?(path)
-
-      if RUBY_VERSION >= '2.5'
-        YAML.safe_load(::File.read(path), symbolize_names: true)
-      else
-        symbolize_names!(YAML.safe_load(::File.read(path)))
-      end
-    end
-
-    def symbolize_names!(obj)
-      case obj
-      when Hash
-        obj.keys.each do |key|
-          value = obj.delete(key)
-          obj[key.to_sym] = symbolize_names!(value)
-        end
-      when Array
-        obj.map! { |ea| symbolize_names!(ea) }
-      end
-      obj
-    end
-
-    def merge_config(default, project)
-      if project.is_a?(Array) && default.is_a?(Array)
-        default | project
-      elsif project.is_a?(Hash) && default.is_a?(Hash)
-        default.merge(project) { |_k, d, p| merge_config(d, p) }
-      else
-        project
-      end
     end
   end
 end

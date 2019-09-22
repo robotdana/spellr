@@ -262,13 +262,16 @@ RSpec.describe Spellr::Tokenizer do
     end
 
     it 'splits into three for three times the longest word, and also has all possible pairs' do
-      expect('foobarbaz').to have_subwords %w{foo bar baz}, %w{foob arbaz}, %w{fooba rbaz},
-        %w{foobar baz}, %w{foo barbaz}
+      expect('foobarbaz').to have_subwords(
+        %w{foo bar baz}, %w{foob arbaz}, %w{fooba rbaz}, %w{foobar baz}, %w{foo barbaz}
+      )
     end
 
     it 'just keeps going' do
-      expect('foobarbazz').to have_subwords %w{foo barbazz}, %w{foo bar bazz}, %w{foo barb azz},
-        %w{foob arbazz}, %w{foob arb azz}, %w{fooba rbazz}, %w{foobar bazz}, %w{foobarb azz}
+      expect('foobarbazz').to have_subwords(
+        %w{foo barbazz}, %w{foo bar bazz}, %w{foo barb azz}, %w{foob arbazz},
+        %w{foob arb azz}, %w{fooba rbazz}, %w{foobar bazz}, %w{foobarb azz}
+      )
     end
   end
   # spellr:enable

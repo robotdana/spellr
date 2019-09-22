@@ -12,10 +12,6 @@ module Spellr
       @patterns = patterns
     end
 
-    def wordlist?(file)
-      Spellr.config.all_wordlist_paths.any? { |w| w == file }
-    end
-
     def config_only?(file)
       Spellr.config.only.empty? || Spellr.config.only.any? { |o| file.fnmatch?(o) }
     end
@@ -31,7 +27,6 @@ module Spellr
       FastIgnore.new(rules: Spellr.config.ignored, gitignore: gitignore).each do |file|
         file = Spellr::File.new(file)
         next unless cli_only?(file)
-        next if wordlist?(file)
         next unless config_only?(file)
 
         yield(file)
