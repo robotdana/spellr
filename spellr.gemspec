@@ -32,5 +32,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-rspec'
   spec.add_development_dependency 'tty_string'
   spec.add_dependency 'fast_ignore'
-  spec.add_dependency 'parallel'
 end

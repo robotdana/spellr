@@ -3,7 +3,6 @@ PATH
   specs:
     spellr (0.3.0)
       fast_ignore
-      parallel
 
 GEM
   remote: https://rubygems.org/
