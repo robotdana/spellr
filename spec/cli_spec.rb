@@ -332,7 +332,6 @@ RSpec.describe 'command line', type: :cli do
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolor
           STDOUT
 
@@ -340,7 +339,6 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
@@ -352,7 +350,6 @@ RSpec.describe 'command line', type: :cli do
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
@@ -363,7 +360,6 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
@@ -377,7 +373,6 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
@@ -406,7 +401,6 @@ RSpec.describe 'command line', type: :cli do
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolor
           STDOUT
 
@@ -414,7 +408,6 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
@@ -426,7 +419,6 @@ RSpec.describe 'command line', type: :cli do
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
@@ -437,7 +429,6 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
@@ -451,7 +442,6 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
@@ -466,7 +456,6 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
@@ -496,7 +485,6 @@ RSpec.describe 'command line', type: :cli do
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem ipsum dolor
           STDOUT
           stdin.print "\b" * 17
@@ -504,7 +492,6 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
@@ -515,7 +502,6 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
