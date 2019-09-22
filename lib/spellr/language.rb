@@ -5,17 +5,18 @@ require_relative 'wordlist'
 module Spellr
   class Language
     attr_reader :name
+    attr_reader :key
 
     def initialize(name, # rubocop:disable Metrics/ParameterLists
-      wordlists: [],
+      key: name[0],
       generate: nil,
       only: [],
       description: '',
       hashbangs: [])
       @name = name
+      @key = key
       @description = description
       @generate = generate
-      @wordlist_paths = wordlists
       @only = only
       @hashbangs = hashbangs
     end
@@ -28,19 +29,9 @@ module Spellr
       return true if file.hashbang && @hashbangs.any? { |h| file.hashbang.include?(h) }
     end
 
-    def config_wordlists
-      @config_wordlists ||= @wordlist_paths.map(&Spellr::Wordlist.method(:new))
-    end
-
-    def all_wordlist_paths
-      @wordlist_paths + default_wordlists.map(&:path)
-    end
-
     def wordlists
-      w = config_wordlists + default_wordlists.select(&:exist?)
-      return generate_wordlist if w.empty?
-
-      w
+      generate_wordlist unless generated_project_wordlist.exist?
+      default_wordlists.select(&:exist?)
     end
 
     def generate_wordlist
@@ -52,11 +43,7 @@ module Spellr
 
       Spellr::CLI.new(generate.shellsplit)
 
-      config_wordlists + default_wordlists
-    end
-
-    def addable_wordlists
-      ((config_wordlists - default_wordlists) + [project_wordlist]).uniq(&:path)
+      default_wordlists
     end
 
     def gem_wordlist
@@ -86,11 +73,6 @@ module Spellr
       wordlists = paths + default_wordlist_paths(name)
 
       wordlists.map(&Spellr::Wordlist.method(:new))
-    end
-
-    def custom_addable_wordlists(wordlists)
-      default_paths = default_wordlist_paths
-      wordlists.map { |w| Spellr::Wordlist.new(w) }.reject { |w| default_paths.include?(w.path) }
     end
 
     def default_wordlists

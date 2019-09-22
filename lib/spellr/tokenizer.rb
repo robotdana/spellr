@@ -51,7 +51,7 @@ module Spellr
     end
 
     def normalized_terms
-      enum_for(:each_term).lazy.map { |t| Token.normalize(t) }.uniq.sort
+      enum_for(:each_term).map { |t| Token.normalize(t) }.uniq.sort
     end
 
     private

@@ -19,6 +19,11 @@ module Spellr
 
     def check
       require_relative 'check'
+      unless Spellr.config.valid?
+        Spellr.config.print_errors
+        exit 1
+      end
+
       checker = Spellr::Check.new(files: files)
       checker.check
 

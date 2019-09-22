@@ -1,6 +1,5 @@
 ---
 ignore:
-  - '*.spellr_wordlists'
   - wordlists/*
 only:
   - '*.rb'
@@ -11,9 +10,6 @@ only:
   - '*.gemspec'
   - Gemfile
 languages:
-  english:
-    wordlists:
-      - dictionary.txt
   ruby:
     only:
       - README.md

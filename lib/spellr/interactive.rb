@@ -117,10 +117,10 @@ module Spellr
     # TODO: handle more than 16 options
     def handle_add(token) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       puts "Add #{red(token)} to wordlist:"
-      wordlists = Spellr.config.languages_for(token.location.file).flat_map(&:addable_wordlists)
+      languages = Spellr.config.languages_for(token.location.file)
 
-      wordlists.each_with_index do |wordlist, i|
-        puts "[#{i.to_s(16)}] #{wordlist.name}"
+      languages.each do |wordlist|
+        puts "[#{wordlist.key}] #{wordlist.name}"
       end
       choice = STDIN.getch
       clear_current_line
@@ -128,9 +128,8 @@ module Spellr
       when "\u0003" # ctrl c
         puts '^C again to exit'
         call(token)
-      when /\h/
-        wl = wordlists[choice.to_i(16)]
-        return handle_add(token) unless wl
+      when *languages.map(&:key)
+        wl = languages.find { |w| w.key == choice }.project_wordlist
 
         wl.add(token)
         self.total_added += 1

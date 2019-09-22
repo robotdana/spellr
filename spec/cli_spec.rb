@@ -133,6 +133,9 @@ RSpec.describe 'command line', type: :cli do
         color: true
         ignore:
           - .spellr.yml
+        languages:
+          english:
+            generate: false
       FILE
     end
 
@@ -291,15 +294,15 @@ RSpec.describe 'command line', type: :cli do
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             Add #{red 'dolor'} to wordlist:
-            [0] english
+            [e] english
           STDOUT
 
-          stdin.print '0'
+          stdin.print 'e'
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             Add #{red 'dolor'} to wordlist:
-            [0] english
+            [e] english
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -309,7 +312,7 @@ RSpec.describe 'command line', type: :cli do
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             Add #{red 'dolor'} to wordlist:
-            [0] english
+            [e] english
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
 
             1 file checked
@@ -353,10 +356,10 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
-            [0] english
+            [e] english
           STDOUT
 
-          stdin.print '0'
+          stdin.print 'e'
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
@@ -364,7 +367,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
-            [0] english
+            [e] english
             #{aqua 'check.txt:3:10'} dolores #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -377,7 +380,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
-            [0] english
+            [e] english
             #{aqua 'check.txt:3:10'} dolores #{red 'amet'}
 
             1 file checked
@@ -422,10 +425,10 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
-            [0] english
+            [e] english
           STDOUT
 
-          stdin.print '0'
+          stdin.print 'e'
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
@@ -433,7 +436,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
-            [0] english
+            [e] english
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -446,7 +449,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
-            [0] english
+            [e] english
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
@@ -460,7 +463,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} dolores
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
-            [0] english
+            [e] english
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
 

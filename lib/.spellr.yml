@@ -3,6 +3,7 @@ word_minimum_length: 3
 
 ignore: # this list is parsed with the .gitignore format
   - /.git/
+  - .spellr_wordlists/
   - .DS_Store
   - Gemfile.lock
   - .rspec_status
