@@ -496,6 +496,7 @@ RSpec.describe 'command line', type: :cli do
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem ipsum dolor
           STDOUT
           stdin.print "\b" * 17
@@ -503,6 +504,7 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
@@ -513,6 +515,7 @@ RSpec.describe 'command line', type: :cli do
 
           expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
