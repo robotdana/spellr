@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spellr (0.3.0)
+    spellr (0.3.1)
       fast_ignore
 
 GEM

@@ -1,3 +1,6 @@
+# v0.3.1
+- remove unnecessary files
+
 # v0.3.0
 - interactive add to wordlist uses consistent letters rather than random numbers as keys
 - additional wordlists per language can no longer be defined
