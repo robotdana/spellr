@@ -27,7 +27,7 @@ jobs:
       language: ruby
       deploy:
         provider: script
-        script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && docker build -t robotdana/spellr:$TRAVIS_TAG . && docker push robotdana/spellr:$TRAVIS_TAG
+        script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && docker build -t robotdana/spellr . && docker push robotdana/spellr:$TRAVIS_TAG && docker push robotdana/spellr:latest
         on:
           tags: true
           repo: robotdana/spellr
