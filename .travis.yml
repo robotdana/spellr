@@ -11,12 +11,13 @@ before_install: gem install bundler
 jobs:
   include:
     - stage: deploy
+      script: skip
       language: ruby
       rvm: 2.5
       if: fork = false AND tag IS present
       language: ruby
       cache: bundler
-      before_install: gem install bundler
+      before_install: gem install bundler && bundle install
       deploy:
         - provider: rubygems
           api_key:
