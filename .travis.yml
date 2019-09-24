@@ -17,7 +17,7 @@ jobs:
       if: fork = false AND tag IS present
       language: ruby
       cache: bundler
-      before_deploy: gem install bundler && bundle install
+      before_deploy: gem install fast_ignore
       deploy:
         - provider: rubygems
           api_key:
