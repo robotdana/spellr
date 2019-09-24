@@ -16,9 +16,42 @@ Gem::Specification.new do |spec|
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files = Dir.chdir(::File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  end
+  # TODO: use .dockerignore to exclude files from this list
+  spec.files = %w{
+    CHANGELOG.md
+    Gemfile
+    Gemfile.lock
+    LICENSE.txt
+    README.md
+    bin/fetch_wordlist/english
+    bin/fetch_wordlist/ruby
+    exe/spellr
+    lib/.spellr.yml
+    lib/spellr.rb
+    lib/spellr/check.rb
+    lib/spellr/cli.rb
+    lib/spellr/column_location.rb
+    lib/spellr/config.rb
+    lib/spellr/config_loader.rb
+    lib/spellr/file.rb
+    lib/spellr/file_list.rb
+    lib/spellr/interactive.rb
+    lib/spellr/language.rb
+    lib/spellr/line_location.rb
+    lib/spellr/line_tokenizer.rb
+    lib/spellr/reporter.rb
+    lib/spellr/string_format.rb
+    lib/spellr/token.rb
+    lib/spellr/tokenizer.rb
+    lib/spellr/version.rb
+    lib/spellr/wordlist.rb
+    lib/spellr/wordlist_reporter.rb
+    wordlists/dockerfile.txt
+    wordlists/html.txt
+    wordlists/javascript.txt
+    wordlists/ruby.txt
+    wordlists/shell.txt
+  }
   spec.bindir = 'exe'
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
