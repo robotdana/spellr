@@ -8,3 +8,16 @@ rvm:
   - 2.5
   - 2.6
 before_install: gem install bundler
+deploy:
+  - provider: rubygems
+    api_key:
+      secure: M5YMuFd9v8JMQH8GNZoI8S4dKFsE+uJWLdEqPvWavDsjv1sx6xKwFVllkW6wlVnP5xI2kK2zeZnmoRJc2d1cm36xUz/5fyyKppMTIcgeQhnOZhC+jasBmpTm1u3f1w9dcl6de8ykPqFCoaEmUs8DWxek9g3UgnoGSKJ1hVDpgs2RyUkRSoMYZeZOC2/09Ukg7zxN7XtFE3yDoxWbMIRdh1kQez5Ypux03NPeaU5beJ5tvvW+nqp7vndhZtiymoIaaNuXh6q/+OruDMMmcnAEG9uJpNwTW/eFru0MlZhowMgvo7vNwPNPM3jtp+rTKaIs2CmbV5G7+lPTXkREkwrBGOsNx+S1j/GvYYsNH+wgicm07ZBfOPHjyAxDlnk9Y9/6zzVNdTjT19JNPq498pfaFD1DJGuJQHLvlSLbT8hLoZ4qAEm580gWL0jPng7OXTFaSydnhng/96fTlkiLQpJo+2c4TtvoTo7eUm6g1XHRd0kh2qxh+xJowvC/U4UVKTmm0vNZoSFM9bZGZrzA25xMOpf0TsXRkYMQDwn66Bn1cUXqzX2OVFG5iSx6n4RA1se27f3X6csWLG2mNFRhtromL/6q+9BYkwsrsanMpxbkcrwyTh4SNe8lEcmhoG09YpMulVmvXMyUo/TgRbJhBJCtokIzpwdUEAzb8n8jlstPBpQ=
+    gem: spellr
+    on:
+      tags: true
+      repo: robotdana/spellr
+  - provider: script
+    script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && docker push robotdana/spellr:$TRAVIS_TAG
+    on:
+      tags: true
+      repo: robotdana/spellr
