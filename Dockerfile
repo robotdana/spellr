@@ -1,5 +1,6 @@
 FROM ruby:2.6-alpine
-WORKDIR /app
+WORKDIR /spellr
 COPY . .
 RUN gem install bundler && bundle install --without=development
-ENTRYPOINT ["exe/spellr"]
+WORKDIR /app
+ENTRYPOINT ["/spellr/exe/spellr"]

@@ -11,3 +11,4 @@ spec/
 .travis.yml
 Dockerfile
 Rakefile
+vendor
