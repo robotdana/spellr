@@ -3,7 +3,6 @@
 lib = ::File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'spellr/version'
-require 'fast_ignore'
 
 Gem::Specification.new do |spec|
   spec.name = 'spellr'
@@ -15,7 +14,14 @@ Gem::Specification.new do |spec|
   spec.homepage = 'http://github.com/robotdana/spellr'
   spec.license = 'MIT'
 
-  spec.files = FastIgnore.new(files: [File.join(Dir.pwd, '.dockerignore')], relative: true).to_a
+  spec.files = Dir.glob("{lib,exe,bin/fetch_wordlist,wordlists}/**/{*,.*}") + %w{
+    CHANGELOG.md
+    Gemfile
+    Gemfile.lock
+    LICENSE.txt
+    README.md
+    spellr.gemspec
+  }
   spec.bindir = 'exe'
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
