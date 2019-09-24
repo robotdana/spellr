@@ -13,7 +13,6 @@ jobs:
     - stage: rubygems
       script: skip
       if: fork = false AND tag IS present
-      before_install: skip
       deploy:
         provider: rubygems
         api_key:
@@ -26,7 +25,6 @@ jobs:
       script: skip
       if: fork = false AND tag IS present
       language: ruby
-      before_install: skip
       deploy:
         provider: script
         script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && docker build -t robotdana/spellr:$TRAVIS_TAG . && docker push robotdana/spellr:$TRAVIS_TAG
