@@ -39,5 +39,11 @@ module Spellr
 
       "\e[1;31m#{text}#{normal}"
     end
+
+    def green(text)
+      return text unless Spellr::StringFormat.color_enabled?
+
+      "\e[1;32m#{text}#{normal}"
+    end
   end
 end
