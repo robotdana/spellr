@@ -7,7 +7,7 @@ require_relative 'string_format'
 
 module Spellr
   class Token < String
-    attr_reader :location, :line
+    attr_reader :location, :line, :replacement
     def self.normalize(value)
       return value.normalize if value.is_a?(Spellr::Token)
 
@@ -67,6 +67,7 @@ module Spellr
     end
 
     def replace(replacement)
+      @replacement = replacement
       ::File.open(file_name, 'r+') do |f|
         body = f.read
         body[location.absolute_char_offset...(location.absolute_char_offset + length)] = replacement
