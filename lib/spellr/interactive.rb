@@ -73,7 +73,7 @@ module Spellr
       token.replace(global_replacement)
       self.total_fixed += 1
       puts "Automatically replaced #{red(token)} with #{green(global_replacement)}"
-      raise Spellr::DidReplacement, token
+      throw :check_file_from, token
     end
 
     def clear_current_line
@@ -137,7 +137,7 @@ module Spellr
         wl.add(token)
         self.total_added += 1
         puts "Added #{red(token)} to #{wl.name} wordlist"
-        raise Spellr::DidAdd, token
+        throw :check_file_from, token
       else
         handle_add(token)
       end
@@ -157,7 +157,7 @@ module Spellr
         yield replacement if block_given?
         self.total_fixed += 1
         puts "Replaced #{red(token.chomp)} with #{green(replacement.chomp)}"
-        raise Spellr::DidReplacement, token
+        throw :check_file_from, token
       end
     rescue Interrupt
       puts '^C again to exit'
