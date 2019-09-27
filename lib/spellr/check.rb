@@ -36,7 +36,7 @@ module Spellr
 
     private
 
-    def check_file(file, start_at: nil, wordlists: Spellr.config.wordlists_for(file)) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/LineLength
+    def check_file(file, start_at: nil, wordlists: Spellr.config.wordlists_for(file)) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       Spellr::Tokenizer.new(file, start_at: start_at).each_token do |token|
         next if wordlists.any? { |d| d.include?(token) }
 

@@ -1,3 +1,5 @@
 /.spellr_wordlists/generated/*
 .rspec_status
 pkg
+/vendor/
+/.bundle/

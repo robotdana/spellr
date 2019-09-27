@@ -89,10 +89,10 @@ RSpec.describe 'command line', type: :cli do
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout.split("\n")).to match_array [
+      expect(stdout.split("\n")).to contain_exactly(
         'lib/bar.rb',
         'foo.md'
-      ]
+      )
     end
 
     it 'returns the list of files when given an extensions to subset' do
@@ -171,8 +171,8 @@ RSpec.describe 'command line', type: :cli do
 
     describe '--interactive' do
       it 'returns the first unmatched term and a prompt' do
-        run 'spellr -i' do |stdout, _stdin|
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+        run 'spellr -i' do |stdout, _|
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -181,14 +181,14 @@ RSpec.describe 'command line', type: :cli do
 
       it 'returns the interactive command help' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print '?'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+          expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[r]'} Replace #{red 'dolor'}
             #{bold '[R]'} Replace all future instances of #{red 'dolor'}
@@ -203,27 +203,27 @@ RSpec.describe 'command line', type: :cli do
 
       it 'exits when ctrl C' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin, pid|
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.puts "\u0003" # ctrl c
 
-          expect { PTY.check(pid)&.exitstatus }.to eventually(eq 1)
+          expect(pid).to have_exitstatus(1)
         end
       end
 
       it 'returns the next unmatched term and a prompt after skipping' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
             #{bold '[a,s,S,r,R,e,?]'}
@@ -231,7 +231,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
@@ -240,7 +240,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
@@ -255,14 +255,14 @@ RSpec.describe 'command line', type: :cli do
 
       it 'returns the next unmatched term and a prompt after skipping with S' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'S'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
@@ -270,7 +270,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'S'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
 
@@ -284,14 +284,14 @@ RSpec.describe 'command line', type: :cli do
 
       it 'returns the next unmatched term and a prompt after adding with a' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'a'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+          expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             Add #{red 'dolor'} to wordlist:
             [e] english
@@ -299,7 +299,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'e'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             Add #{red 'dolor'} to wordlist:
             [e] english
@@ -309,7 +309,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+          expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             Add #{red 'dolor'} to wordlist:
             [e] english
@@ -325,14 +325,14 @@ RSpec.describe 'command line', type: :cli do
 
       it 'returns the next unmatched term and a prompt after replacing with R' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'R'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolor
@@ -340,7 +340,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "es\n"
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
@@ -350,7 +350,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'a'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+          expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
@@ -361,7 +361,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'e'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
@@ -374,7 +374,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+          expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
@@ -394,14 +394,14 @@ RSpec.describe 'command line', type: :cli do
 
       it 'returns the next unmatched term and a prompt after replacing with r' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'r'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolor
@@ -409,7 +409,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "es\n"
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
@@ -419,7 +419,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'a'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+          expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
@@ -430,7 +430,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'e'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
@@ -443,7 +443,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
@@ -457,7 +457,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+          expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
@@ -478,14 +478,14 @@ RSpec.describe 'command line', type: :cli do
 
       it 'returns the next unmatched term and a prompt after replacing with e' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'e'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem ipsum dolor
@@ -493,7 +493,7 @@ RSpec.describe 'command line', type: :cli do
           stdin.print "\b" * 17
           stdin.print "lorem lorem lorem\n"
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem
@@ -503,7 +503,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT.chomp)
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem
@@ -514,7 +514,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect { accumulate_io(stdout) }.to eventually(eq <<~STDOUT)
+          expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem

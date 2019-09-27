@@ -116,6 +116,7 @@ Metrics/BlockLength:
 
 Metrics/LineLength:
   Max: 120
+  IgnoreCopDirectives: true
 
 Naming/UncommunicativeMethodParamName:
   AllowedNames: [_, io, id, to, by, 'on', in, at, ip, db]
