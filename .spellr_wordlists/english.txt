@@ -19,7 +19,9 @@ def
 dict
 diffable
 diffs
+docker
 dockerfile
+dockerhub
 downloader
 env
 eos
@@ -80,8 +82,10 @@ rdoc
 readme
 redisplay
 repo
+robotdana
 rspec
 rubocop
+rubygems
 rvm
 scss
 shelljoin
@@ -90,6 +94,7 @@ shellwords
 sherson
 spellr
 stderr
+stdin
 stdlib
 stdout
 str
@@ -108,6 +113,8 @@ tokenizes
 tsx
 ttf
 txt
+unrecognised
+unscan
 uploader
 uri
 usr
