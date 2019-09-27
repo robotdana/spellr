@@ -61,6 +61,7 @@ module Spellr
       return unless global_skips.include?(token.to_s) ||
         global_insensitive_skips.include?(token.normalize)
 
+      puts "Automatically skipped #{red(token)}"
       self.total_skipped += 1
     end
 
@@ -71,6 +72,7 @@ module Spellr
 
       token.replace(global_replacement)
       self.total_fixed += 1
+      puts "Automatically replaced #{red(token)} with #{green(global_replacement)}"
       raise Spellr::DidReplacement, token
     end
 
@@ -112,6 +114,7 @@ module Spellr
     def handle_skip(token)
       self.total_skipped += 1
       yield token if block_given?
+      puts "Skipped #{red(token)}"
     end
 
     # TODO: handle more than 16 options
@@ -133,6 +136,7 @@ module Spellr
 
         wl.add(token)
         self.total_added += 1
+        puts "Added #{red(token)} to #{wl.name} wordlist"
         raise Spellr::DidAdd, token
       else
         handle_add(token)
@@ -152,6 +156,7 @@ module Spellr
         token.replace(full_replacement)
         yield replacement if block_given?
         self.total_fixed += 1
+        puts "Replaced #{red(token.chomp)} with #{green(replacement.chomp)}"
         raise Spellr::DidReplacement, token
       end
     rescue Interrupt

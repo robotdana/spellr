@@ -225,6 +225,7 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            Skipped #{red 'dolor'}
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -233,7 +234,9 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            Skipped #{red 'dolor'}
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            Skipped #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -242,8 +245,11 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            Skipped #{red 'dolor'}
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            Skipped #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Skipped #{red 'amet'}
 
             1 file checked
             3 errors found
@@ -264,6 +270,8 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            Skipped #{red 'dolor'}
+            Automatically skipped #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -272,7 +280,10 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            Skipped #{red 'dolor'}
+            Automatically skipped #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Skipped #{red 'amet'}
 
             1 file checked
             3 errors found
@@ -303,6 +314,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             Add #{red 'dolor'} to wordlist:
             [e] english
+            Added #{red 'dolor'} to english wordlist
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -313,7 +325,9 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             Add #{red 'dolor'} to wordlist:
             [e] english
+            Added #{red 'dolor'} to english wordlist
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Skipped #{red 'amet'}
 
             1 file checked
             2 errors found
@@ -344,6 +358,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
+            Replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -354,6 +369,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
+            Replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
             [e] english
@@ -365,9 +381,12 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
+            Replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
             [e] english
+            Added #{red('dolores')} to english wordlist
+            Automatically replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:3:10'} dolores #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -378,10 +397,14 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
+            Replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
             [e] english
+            Added #{red('dolores')} to english wordlist
+            Automatically replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:3:10'} dolores #{red 'amet'}
+            Skipped #{red('amet')}
 
             1 file checked
             4 errors found
@@ -393,7 +416,7 @@ RSpec.describe 'command line', type: :cli do
       end
 
       it 'returns the next unmatched term and a prompt after replacing with r' do # rubocop:disable RSpec/ExampleLength
-        run 'spellr -i' do |stdout, stdin|
+        run 'spellr -i' do |stdout, stdin| # rubocop:disable Metrics/BlockLength
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{bold '[a,s,S,r,R,e,?]'}
@@ -413,6 +436,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
+            Replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -423,6 +447,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
+            Replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
             [e] english
@@ -434,9 +459,11 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
+            Replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
             [e] english
+            Added #{red 'dolores'} to english wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -447,10 +474,13 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
+            Replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
             [e] english
+            Added #{red 'dolores'} to english wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            Skipped #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -461,11 +491,15 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} #{red 'dolor'}
             #{aqua '=>'} dolores
+            Replaced #{red('dolor')} with #{green('dolores')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
             Add #{red 'dolores'} to wordlist:
             [e] english
+            Added #{red 'dolores'} to english wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            Skipped #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Skipped #{red 'amet'}
 
             1 file checked
             4 errors found
@@ -497,6 +531,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem
+            Replaced #{red 'lorem ipsum dolor'} with #{green('lorem lorem lorem')}
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -507,7 +542,9 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem
+            Replaced #{red 'lorem ipsum dolor'} with #{green('lorem lorem lorem')}
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            Skipped #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
@@ -518,8 +555,11 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
             #{aqua '>>'} lorem ipsum #{red 'dolor'}
             #{aqua '=>'} lorem lorem lorem
+            Replaced #{red 'lorem ipsum dolor'} with #{green('lorem lorem lorem')}
             #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            Skipped #{red 'dolor'}
             #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Skipped #{red 'amet'}
 
             1 file checked
             3 errors found
