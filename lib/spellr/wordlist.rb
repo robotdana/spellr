@@ -6,8 +6,6 @@ require_relative 'token'
 
 module Spellr
   class Wordlist
-    class NotFound < Spellr::Error; end
-
     include Enumerable
 
     attr_reader :path, :name

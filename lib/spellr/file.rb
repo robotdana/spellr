@@ -20,8 +20,12 @@ module Spellr
     end
 
     def fnmatch?(pattern)
-      relative_path_from(Pathname.pwd).fnmatch?(pattern, ::File::FNM_DOTMATCH) ||
+      relative_path.fnmatch?(pattern, ::File::FNM_DOTMATCH) ||
         Pathname.new(basename).fnmatch?(pattern, ::File::FNM_DOTMATCH)
+    end
+
+    def relative_path
+      @relative_path ||= relative_path_from(Spellr.config.pwd)
     end
   end
 end

@@ -2,6 +2,9 @@
 
 require_relative '../spellr'
 require_relative 'config_loader'
+require_relative 'language'
+require_relative 'reporter'
+require 'pathname'
 
 module Spellr
   class Config
@@ -55,11 +58,13 @@ module Spellr
     end
 
     def languages
-      require_relative 'language'
-
       @languages ||= @config[:languages].map do |key, args|
         Spellr::Language.new(key, args)
       end
+    end
+
+    def pwd
+      @pwd ||= Pathname.pwd
     end
 
     def languages_for(file)
@@ -109,8 +114,6 @@ module Spellr
     end
 
     def default_reporter
-      require_relative 'reporter'
-
       Spellr::Reporter.new
     end
   end
