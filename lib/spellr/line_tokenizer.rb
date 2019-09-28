@@ -101,27 +101,27 @@ module Spellr
     end
 
     # I didn't want to do this myself. BUT i need something to heuristically match on, and it's difficult
-    URL_RE = %r{
-      (//|https?://|s?ftp://|mailto:)? # 0 scheme
-      ([[:alnum:]]+(?::[[:alnum:]]+)?@)? # 1 userinfo
-      (?:(?:[[:alnum:]-]+(?:\\?\.[[:alnum:]-]+)+|localhost|\d{1,3}(?:.\d{1,3}){3})) # 2 hostname
-      (?::\d+)? # 3 port
-      (/(?:[[:alnum:]=!$&\-/._\\]|%\h{2})+)? # 4 path
-      (?:\?(?:[[:alnum:]=!$\-/.\\]|%\h{2})+(?:&(?:[[:alnum:]=!$\-/.\\]|%\h{2})+)*)? # 5 query
-      (?:\#(?:[[:alnum:]=!$&\-/.\\]|%\h{2})+)? # 6 fragment
-    }x.freeze
+    URL_SCHEME = '(//|https?://|s?ftp://|mailto:)'
+    URL_USERINFO = '([[:alnum:]]+(?::[[:alnum:]]+)?@)'
+    URL_HOSTNAME = '(?:(?:[[:alnum:]-]+(?:\\\\?\\.[[:alnum:]-]+)+|localhost|\\d{1,3}(?:.\\d{1,3}){3}))'
+    URL_PORT = '(?::\\d+)'
+    URL_PATH = '(/(?:[[:alnum:]=!$&\\-/._\\\\]|%\h{2})+)'
+    URL_QUERY = '(?:\\?(?:[[:alnum:]=!$\\-/.\\\\]|%\\h{2})+(?:&(?:[[:alnum:]=!$\\-/.\\\\]|%\\h{2})+)*)'
+    URL_FRAGMENT = '(?:\\#(?:[[:alnum:]=!$&\\-/.\\\\]|%\\h{2})+)'
+    URL_RE = /
+      (?:
+        #{URL_SCHEME}#{URL_USERINFO}?#{URL_HOSTNAME}#{URL_PORT}?#{URL_PATH}?
+        |
+        #{URL_SCHEME}?#{URL_USERINFO}#{URL_HOSTNAME}#{URL_PORT}?#{URL_PATH}?
+        |
+        #{URL_SCHEME}?#{URL_USERINFO}?#{URL_HOSTNAME}#{URL_PORT}?#{URL_PATH}
+      )
+      #{URL_QUERY}?#{URL_FRAGMENT}?
+    /x.freeze
     def skip_uri_heuristically
       return unless skip_uri?
-      return unless scan(URL_RE)
 
-      heuristic_failed = if RUBY_VERSION >= '2.5'
-        captures.all?(&:empty?)
-      else
-        # unfortunately i have to match this regex again because stringscanner doesn't give me matchdata
-        matched.match(URL_RE).captures.compact.all?(&:empty?)
-      end
-
-      unscan && false if heuristic_failed
+      skip(URL_RE)
     end
 
     # url unsafe base64 or url safe base64
