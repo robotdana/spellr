@@ -85,16 +85,48 @@ module Spellr
     SEQUENTIAL_LETTERS_RE = /a(?:b(?:c(?:d(?:e(?:f(?:g(?:h(?:i(?:j(?:k(?:l(?:m(?:n(?:o(?:p(?:q(?:r(?:s(?:t(?:u(?:v(?:w(?:x(?:yz?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?(?![[:alpha:]])/i.freeze # rubocop:disable Metrics/LineLength
 
     def skip_nonwords # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      skip(NOT_EVEN_NON_WORDS_RE) ||
-        skip(SHELL_COLOR_ESCAPE_RE) ||
-        skip(BACKSLASH_ESCAPE_RE) ||
-        skip(URL_ENCODED_ENTITIES_RE) ||
-        skip(HEX_RE) ||
+      skip_not_even_non_words_re ||
+        skip_shell_color_escape_re ||
+        skip_backslash_escape_re ||
+        skip_url_encoded_entities_re ||
+        skip_hex_re ||
         skip_key_heuristically ||
         skip_uri_heuristically ||
-        skip(LEFTOVER_NON_WORD_BITS_RE) ||
-        skip(REPEATED_SINGLE_LETTERS_RE) ||
-        skip(SEQUENTIAL_LETTERS_RE)
+        skip_leftover_non_word_bits_re ||
+        skip_repeated_single_letters_re ||
+        skip_sequential_letters_re
+    end
+
+    def skip_not_even_non_words_re
+      skip(NOT_EVEN_NON_WORDS_RE)
+    end
+
+    def skip_shell_color_escape_re
+      skip(SHELL_COLOR_ESCAPE_RE)
+    end
+
+    def skip_backslash_escape_re
+      skip(BACKSLASH_ESCAPE_RE)
+    end
+
+    def skip_url_encoded_entities_re
+      skip(URL_ENCODED_ENTITIES_RE)
+    end
+
+    def skip_hex_re
+      skip(HEX_RE)
+    end
+
+    def skip_leftover_non_word_bits_re
+      skip(LEFTOVER_NON_WORD_BITS_RE)
+    end
+
+    def skip_repeated_single_letters_re
+      skip(REPEATED_SINGLE_LETTERS_RE)
+    end
+
+    def skip_sequential_letters_re
+      skip(SEQUENTIAL_LETTERS_RE)
     end
 
     # I didn't want to do this myself. BUT i need something to heuristically match on, and it's difficult
