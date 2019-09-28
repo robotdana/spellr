@@ -148,6 +148,10 @@ RSpec.describe Spellr::Tokenizer do
       expect('http://www.the4wd.com').to have_no_tokens
     end
 
+    it 'excludes URLs with @ in the path' do
+      expect('https://medium.com/@jessebeach/beware-smushed-off-screen-accessible-text-5952a4c2cbfe').to have_no_tokens
+    end
+
     it 'excludes numbers only' do
       expect('3.14 100 4,000').to have_no_tokens
     end

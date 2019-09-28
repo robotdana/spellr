@@ -77,15 +77,12 @@ module Spellr
     NOT_EVEN_NON_WORDS_RE = %r{[^[:alpha:]/%#0-9\\]+}.freeze # everything not covered by more specific skips/scans
     LEFTOVER_NON_WORD_BITS_RE = %r{[/%#0-9\\]}.freeze # e.g. a / not starting //a-url.com
     HEX_RE = /(?:#(?:\h{6}|\h{3})|0x\h+)(?![[:alpha:]])/.freeze
-    SHELL_COLOR_ESCAPE_RE = /\\(e|033)\[\d+(;\d+)*m/.freeze
+    SHELL_COLOR_ESCAPE_RE = /\\(?:e|0?33)\[\d+(;\d+)*m/.freeze
     BACKSLASH_ESCAPE_RE = /\\[a-zA-Z]/.freeze # TODO: hex escapes e.g. \xAA. TODO: language aware escapes
     REPEATED_SINGLE_LETTERS_RE = /(?:([[:alpha:]])\1+)(?![[:alpha:]])/.freeze # e.g. xxxxxxxx (it's not a word)
-    # https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding
-    # Only the necessary percent encoding that actually ends in letters
-    # URL_ENCODED_ENTITIES_RE = /%(3A|2F|3F|5B|5D|%2A|%2B|%2C|%3B|%3D)/i.freeze
     URL_ENCODED_ENTITIES_RE = /%[0-8A-F]{2}/.freeze
     # There's got to be a better way of writing this
-    SEQUENTIAL_LETTERS_RE = /a(b(c(d(e(f(g(h(i(j(k(l(m(n(o(p(q(r(s(t(u(v(w(x(y(z)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?(?![[:alpha:]])/i.freeze # rubocop:disable Metrics/LineLength
+    SEQUENTIAL_LETTERS_RE = /a(?:b(?:c(?:d(?:e(?:f(?:g(?:h(?:i(?:j(?:k(?:l(?:m(?:n(?:o(?:p(?:q(?:r(?:s(?:t(?:u(?:v(?:w(?:x(?:yz?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?(?![[:alpha:]])/i.freeze # rubocop:disable Metrics/LineLength
 
     def skip_nonwords # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       skip(NOT_EVEN_NON_WORDS_RE) ||
@@ -103,11 +100,11 @@ module Spellr
     # I didn't want to do this myself. BUT i need something to heuristically match on, and it's difficult
     URL_SCHEME = '(//|https?://|s?ftp://|mailto:)'
     URL_USERINFO = '([[:alnum:]]+(?::[[:alnum:]]+)?@)'
-    URL_HOSTNAME = '(?:(?:[[:alnum:]-]+(?:\\\\?\\.[[:alnum:]-]+)+|localhost|\\d{1,3}(?:.\\d{1,3}){3}))'
-    URL_PORT = '(?::\\d+)'
-    URL_PATH = '(/(?:[[:alnum:]=!$&\\-/._\\\\]|%\h{2})+)'
-    URL_QUERY = '(?:\\?(?:[[:alnum:]=!$\\-/.\\\\]|%\\h{2})+(?:&(?:[[:alnum:]=!$\\-/.\\\\]|%\\h{2})+)*)'
-    URL_FRAGMENT = '(?:\\#(?:[[:alnum:]=!$&\\-/.\\\\]|%\\h{2})+)'
+    URL_HOSTNAME = '((?:[[:alnum:]-]+(?:\\\\?\\.[[:alnum:]-]+)+|localhost|\\d{1,3}(?:\\.\\d{1,3}){3}))'
+    URL_PORT = '(:\\d+)'
+    URL_PATH = '(/(?:[[:alnum:]=@!$&\\-/._\\\\]|%\h{2})+)'
+    URL_QUERY = '(\\?(?:[[:alnum:]=!$\\-/.\\\\]|%\\h{2})+(?:&(?:[[:alnum:]=!$\\-/.\\\\]|%\\h{2})+)*)'
+    URL_FRAGMENT = '(\\#(?:[[:alnum:]=!$&\\-/.\\\\]|%\\h{2})+)'
     URL_RE = /
       (?:
         #{URL_SCHEME}#{URL_USERINFO}?#{URL_HOSTNAME}#{URL_PORT}?#{URL_PATH}?
@@ -126,7 +123,7 @@ module Spellr
 
     # url unsafe base64 or url safe base64
     # TODO: character distribution heuristic
-    KEY_FULL_RE = %r{([A-Za-z\d+/]|[A-Za-z\d\-_])+[=.]*}.freeze
+    KEY_FULL_RE = %r{(?:[A-Za-z\d+/]|[A-Za-z\d\-_])+[=.]*}.freeze
     KEY_RE = %r{
       (?:
         [A-Za-z\-_+/=]+|
@@ -162,7 +159,7 @@ module Spellr
     end
 
     # [WORD] [WORD]Word [WORDN'T] [WORD]'S [WORD]'s [WORD]s
-    UPPER_CASE_RE = /[[:upper:]]+(?:['’][[:upper:]]+(?<!['’][Ss]))*((?![[:lower:]])|(?=s(?![[:lower:]])))/.freeze
+    UPPER_CASE_RE = /[[:upper:]]+(?:['’][[:upper:]]+(?<!['’][Ss]))*(?:(?![[:lower:]])|(?=s(?![[:lower:]])))/.freeze
     def upper_case
       scan(UPPER_CASE_RE)
     end
