@@ -153,7 +153,7 @@ module Spellr
     N = NaiveBayes.new
     def skip_key_heuristically # rubocop:disable Metrics/MethodLength
       return unless scan(KEY_RE)
-      # i've come across some large base64 strings by this point they're definitely base64.
+      # I've come across some large base64 strings by this point they're definitely base64.
       return true if matched.length > 200
 
       if key_roughly?(matched)

@@ -89,7 +89,7 @@ module Spellr
 
       @path.dirname.mkpath
       @path.write('')
-      remove_instance_varible(:@exist)
+      remove_instance_variable(:@exist)
     end
 
     def raise_unless_exists?

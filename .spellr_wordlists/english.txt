@@ -1,5 +1,6 @@
 abc
 addable
+alnum
 arg
 args
 baz
@@ -43,6 +44,7 @@ github
 gitignore
 gitignored
 gitkeep
+gtm
 haml
 hashbang
 hashbangs
@@ -52,12 +54,14 @@ hml
 hostnames
 href
 htt
+hyperwallet
 ico
 inclusions
 jbuilder
 jpg
 json
 jsx
+keydata
 klass
 localhost
 lstripped
@@ -71,11 +75,14 @@ multiline
 newlines
 noninfringement
 nonwords
+num
 optparse
 org
 param
 params
 png
+prg
+punycode
 pwd
 rakefile
 rdoc
@@ -88,6 +95,7 @@ rubocop
 rubygems
 rvm
 scss
+sendgrid
 shelljoin
 shellsplit
 shellwords
