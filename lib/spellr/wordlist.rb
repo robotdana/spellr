@@ -29,7 +29,7 @@ module Spellr
     # significantly faster than default Enumerable#include?
     # requires terms to be sorted
     def include?(term)
-      include_cache[Spellr::Token.normalize(term)]
+      include_cache[term.normalize]
     end
 
     def include_cache
@@ -72,7 +72,7 @@ module Spellr
 
     def add(term)
       touch
-      term = Spellr::Token.normalize(term)
+      term = term.normalize
       include_cache[term] = true
       to_a << term
       to_a.sort!
