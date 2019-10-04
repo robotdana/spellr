@@ -64,9 +64,11 @@ module Spellr
     end
 
     def next_term
-      return if eos?
-
-      (skip_nonwords_and_flags && next_term) || scan_term || next_term
+      if skip_nonwords_and_flags
+        nil
+      else
+        scan_term
+      end
     end
 
     def scan_term
