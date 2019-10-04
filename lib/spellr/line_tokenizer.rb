@@ -71,8 +71,19 @@ module Spellr
       end
     end
 
+    # [Word], [Word]Word [Word]'s [Wordn't]
+    TITLE_CASE_RE = /[[:upper:]][[:lower:]]+(?:['’][[:lower:]]+(?<!['’]s))*/.freeze
+    # [WORD] [WORD]Word [WORDN'T] [WORD]'S [WORD]'s [WORD]s
+    UPPER_CASE_RE = /[[:upper:]]+(?:['’][[:upper:]]+(?<!['’][Ss]))*(?:(?![[:lower:]])|(?=s(?![[:lower:]])))/.freeze
+    # [word] [word]'s [wordn't]
+    LOWER_CASE_RE = /[[:lower:]]+(?:['’][[:lower:]]+(?<!['’]s))*/.freeze
+    # for characters in [:alpha:] that aren't in [:lower:] or [:upper:] e.g. Arabic
+    OTHER_CASE_RE = /(?:[[:alpha:]](?<![[:lower:][:upper:]]))+/.freeze
+
+    TERM_RE = Regexp.union(TITLE_CASE_RE, UPPER_CASE_RE, LOWER_CASE_RE, OTHER_CASE_RE)
+
     def scan_term
-      term = title_case || lower_case || upper_case || other_case
+      term = scan(TERM_RE)
 
       return term if term && term.length >= Spellr.config.word_minimum_length
     end
@@ -87,56 +98,6 @@ module Spellr
     URL_ENCODED_ENTITIES_RE = /%[0-8A-F]{2}/.freeze
     # There's got to be a better way of writing this
     SEQUENTIAL_LETTERS_RE = /a(?:b(?:c(?:d(?:e(?:f(?:g(?:h(?:i(?:j(?:k(?:l(?:m(?:n(?:o(?:p(?:q(?:r(?:s(?:t(?:u(?:v(?:w(?:x(?:yz?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?(?![[:alpha:]])/i.freeze # rubocop:disable Metrics/LineLength
-
-    def skip_nonwords # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
-      skip_not_even_non_words_re ||
-        skip_shell_color_escape_re ||
-        skip_backslash_escape_re ||
-        skip_url_encoded_entities_re ||
-        skip_hex_re ||
-        skip_uri_heuristically ||
-        skip_punycode ||
-        skip_key_heuristically ||
-        skip_leftover_non_word_bits_re ||
-        skip_repeated_single_letters_re ||
-        skip_sequential_letters_re
-    end
-
-    def skip_not_even_non_words_re
-      skip(NOT_EVEN_NON_WORDS_RE)
-    end
-
-    def skip_punycode
-      skip(PUNYCODE_RE)
-    end
-
-    def skip_shell_color_escape_re
-      skip(SHELL_COLOR_ESCAPE_RE)
-    end
-
-    def skip_backslash_escape_re
-      skip(BACKSLASH_ESCAPE_RE)
-    end
-
-    def skip_url_encoded_entities_re
-      skip(URL_ENCODED_ENTITIES_RE)
-    end
-
-    def skip_hex_re
-      skip(HEX_RE)
-    end
-
-    def skip_leftover_non_word_bits_re
-      skip(LEFTOVER_NON_WORD_BITS_RE)
-    end
-
-    def skip_repeated_single_letters_re
-      skip(REPEATED_SINGLE_LETTERS_RE)
-    end
-
-    def skip_sequential_letters_re
-      skip(SEQUENTIAL_LETTERS_RE)
-    end
 
     # I didn't want to do this myself. BUT i need something to heuristically match on, and it's difficult
     URL_SCHEME = '(//|https?://|s?ftp://|mailto:)'
@@ -156,10 +117,26 @@ module Spellr
       )
       #{URL_QUERY}?#{URL_FRAGMENT}?
     /x.freeze
-    def skip_uri_heuristically
-      return unless skip_uri?
 
-      skip(URL_RE)
+    SKIPS = Regexp.union(
+      NOT_EVEN_NON_WORDS_RE,
+      SHELL_COLOR_ESCAPE_RE,
+      BACKSLASH_ESCAPE_RE,
+      URL_ENCODED_ENTITIES_RE,
+      HEX_RE,
+      URL_RE # 2%
+    ).freeze
+
+    AFTER_KEY_SKIPS = Regexp.union(
+      LEFTOVER_NON_WORD_BITS_RE,
+      REPEATED_SINGLE_LETTERS_RE,
+      SEQUENTIAL_LETTERS_RE
+    )
+
+    def skip_nonwords
+      skip(SKIPS) ||
+        skip_key_heuristically || # 5%
+        skip(AFTER_KEY_SKIPS)
     end
 
     KEY_RE = %r{[A-Za-z0-9]([A-Za-z0-9+/\-_]*)=*(?![[:alnum:]])}.freeze
@@ -208,30 +185,6 @@ module Spellr
     # jump to character-aware position
     def charpos=(new_charpos)
       skip(/.{#{new_charpos - charpos}}/m)
-    end
-
-    # [Word], [Word]Word [Word]'s [Wordn't]
-    TITLE_CASE_RE = /[[:upper:]][[:lower:]]+(?:['’][[:lower:]]+(?<!['’]s))*/.freeze
-    def title_case
-      scan(TITLE_CASE_RE)
-    end
-
-    # [word] [word]'s [wordn't]
-    LOWER_CASE_RE = /[[:lower:]]+(?:['’][[:lower:]]+(?<!['’]s))*/.freeze
-    def lower_case
-      scan(LOWER_CASE_RE)
-    end
-
-    # [WORD] [WORD]Word [WORDN'T] [WORD]'S [WORD]'s [WORD]s
-    UPPER_CASE_RE = /[[:upper:]]+(?:['’][[:upper:]]+(?<!['’][Ss]))*(?:(?![[:lower:]])|(?=s(?![[:lower:]])))/.freeze
-    def upper_case
-      scan(UPPER_CASE_RE)
-    end
-
-    # for characters in [:alpha:] that aren't in [:lower:] or [:upper:] e.g. Arabic
-    OTHER_CASE_RE = /[[:alpha:]]+/.freeze
-    def other_case
-      scan(OTHER_CASE_RE)
     end
 
     SPELLR_DISABLE_RE = /spellr:disable/.freeze
