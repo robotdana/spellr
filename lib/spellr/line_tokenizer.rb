@@ -149,7 +149,7 @@ module Spellr
       data:[a-z/;0-9\-]+;base64,[A-Za-z0-9+/]+=*(?![[:alnum:]])
     )}x.freeze
     N = NaiveBayes.new
-    def skip_key_heuristically # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/AbcSize,
+    def skip_key_heuristically # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity
       return true if skip(KNOWN_KEY_PATTERNS_RE)
       return unless scan(KEY_RE)
       # i've come across some large base64 strings by this point they're definitely base64.
@@ -157,10 +157,8 @@ module Spellr
 
       if key_roughly?(matched)
         if N.key?(matched)
-          puts "\e[31mk: #{matched}\e[0m"
           true
         else
-          puts "\e[32mn: #{matched}\e[0m"
           unscan
           false
         end

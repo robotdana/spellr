@@ -65,7 +65,6 @@ module Spellr
     def prepare_tokenizer_for_line(line, _line_number)
       line_tokenizer.string = line
       line_tokenizer.pos = 0
-      # line_tokenizer.pos = @start_at.byte_offset if line_number == @start_at.line_number
       line_tokenizer
     end
   end
