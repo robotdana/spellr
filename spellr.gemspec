@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.homepage = 'http://github.com/robotdana/spellr'
   spec.license = 'MIT'
 
-  spec.files = Dir.glob("{lib,exe,bin/fetch_wordlist,wordlists}/**/{*,.*}") + %w{
+  spec.files = Dir.glob('{lib,exe,bin/fetch_wordlist,wordlists}/**/{*,.*}') + %w{
     CHANGELOG.md
     Gemfile
     Gemfile.lock
@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec-eventually'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-rspec'
-  spec.add_development_dependency 'tty_string'
   spec.add_development_dependency 'terminal-table'
+  spec.add_development_dependency 'tty_string'
   spec.add_dependency 'fast_ignore'
 end
