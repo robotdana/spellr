@@ -193,11 +193,15 @@ module Spellr
 
     SPELLR_DISABLE_RE = /spellr:disable/.freeze
     def skip_and_track_disable
+      return if disabled?
+
       skip(SPELLR_DISABLE_RE) && self.disabled = true
     end
 
     SPELLR_ENABLE_RE = /spellr:enable/.freeze
     def skip_and_track_enable
+      return unless disabled?
+
       skip(SPELLR_ENABLE_RE) && self.disabled = false
     end
   end
