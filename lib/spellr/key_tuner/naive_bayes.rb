@@ -11,7 +11,6 @@ class NaiveBayes # rubocop:disable Metrics/ClassLength
 
   YAML_PATH = File.join(__dir__, 'data.yml')
 
-  WEIGHT = 5
   def training_data
     @training_data ||= begin
       PossibleKey.load
@@ -138,7 +137,7 @@ class NaiveBayes # rubocop:disable Metrics/ClassLength
   def class_probability(features, class_name)
     class_fraction = 1.0 / num_classes
     feature_bayes = feature_multiplication(features, class_name)
-    feature_bayes *= (10**WEIGHT) if class_name.start_with?('key_')
+    feature_bayes *= (10**Spellr.config.key_heuristic_weight) if class_name.start_with?('key_')
     feature_bayes * class_fraction
   end
 

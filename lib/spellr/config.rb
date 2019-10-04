@@ -39,6 +39,14 @@ module Spellr
       @word_minimum_length ||= @config[:word_minimum_length]
     end
 
+    def key_heuristic_weight
+      @key_heuristic_weight ||= @config[:key_heuristic_weight]
+    end
+
+    def key_minimum_length
+      @key_minimum_length ||= @config[:key_minimum_length]
+    end
+
     def only
       @config[:only] || []
     end
@@ -51,11 +59,13 @@ module Spellr
       @config[:color]
     end
 
-    def clear_cache
+    def clear_cache # rubocop:disable Metrics/CyclomaticComplexity
       remove_instance_variable(:@wordlists) if defined?(@wordlists)
       remove_instance_variable(:@languages) if defined?(@languages)
       remove_instance_variable(:@errors) if defined?(@errors)
       remove_instance_variable(:@word_minimum_length) if defined?(@word_minimum_length)
+      remove_instance_variable(:@key_heuristic_weight) if defined?(@key_heuristic_weight)
+      remove_instance_variable(:@key_minimum_length) if defined?(@key_minimum_length)
     end
 
     def languages

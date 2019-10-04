@@ -168,7 +168,13 @@ module Spellr
       end
     end
 
-    THREE_ALPHA_RE = /(?:[A-Z][a-z]{2}|[a-z]{3}|[A-Z]{3})/.freeze
+    MIN_ALPHA_RE = /(?:
+      [A-Z][a-z]{#{Spellr.config.word_minimum_length - 1}}
+      |
+      [a-z]{#{Spellr.config.word_minimum_length}}
+      |
+      [A-Z]{#{Spellr.config.word_minimum_length}}
+    )/x.freeze
     ALPHA_SEP_RE = '[A-Za-z][A-Za-z\\-_/+]*'
     NUM_SEP_RE = '\\d[\\d\\-_/+]*'
     THREE_CHUNK_RE = /^(?:
@@ -177,9 +183,9 @@ module Spellr
       #{NUM_SEP_RE}#{ALPHA_SEP_RE}#{NUM_SEP_RE}
     )/x.freeze
     def key_roughly?(matched)
-      return unless matched.length >= 6
+      return unless matched.length >= Spellr.config.key_minimum_length
       return unless matched.match?(THREE_CHUNK_RE)
-      return unless matched.match?(THREE_ALPHA_RE) # or there's no point
+      return unless matched.match?(MIN_ALPHA_RE) # or there's no point
 
       true
     end
