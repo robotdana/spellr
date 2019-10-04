@@ -45,6 +45,8 @@ GEM
     rubocop-rspec (1.36.0)
       rubocop (>= 0.68.1)
     ruby-progressbar (1.10.1)
+    terminal-table (1.8.0)
+      unicode-display_width (~> 1.1, >= 1.1.1)
     tty_string (0.1.0)
     unicode-display_width (1.6.0)
 
@@ -60,6 +62,7 @@ DEPENDENCIES
   rubocop
   rubocop-rspec
   spellr!
+  terminal-table
   tty_string
 
 BUNDLED WITH

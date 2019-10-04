@@ -34,5 +34,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-rspec'
   spec.add_development_dependency 'tty_string'
+  spec.add_development_dependency 'terminal-table'
   spec.add_dependency 'fast_ignore'
 end

@@ -4,6 +4,7 @@ require 'strscan'
 require_relative '../spellr'
 require_relative 'column_location'
 require_relative 'token'
+require_relative 'key_tuner/naive_bayes'
 
 module Spellr
   class LineTokenizer < StringScanner # rubocop:disable Metrics/ClassLength
@@ -78,20 +79,22 @@ module Spellr
     LEFTOVER_NON_WORD_BITS_RE = %r{[/%#0-9\\]}.freeze # e.g. a / not starting //a-url.com
     HEX_RE = /(?:#(?:\h{6}|\h{3})|0x\h+)(?![[:alpha:]])/.freeze
     SHELL_COLOR_ESCAPE_RE = /\\(?:e|0?33)\[\d+(;\d+)*m/.freeze
+    PUNYCODE_RE = /xn--[a-v0-9\-]+(?:[[:alpha:]])/.freeze
     BACKSLASH_ESCAPE_RE = /\\[a-zA-Z]/.freeze # TODO: hex escapes e.g. \xAA. TODO: language aware escapes
     REPEATED_SINGLE_LETTERS_RE = /(?:([[:alpha:]])\1+)(?![[:alpha:]])/.freeze # e.g. xxxxxxxx (it's not a word)
     URL_ENCODED_ENTITIES_RE = /%[0-8A-F]{2}/.freeze
     # There's got to be a better way of writing this
     SEQUENTIAL_LETTERS_RE = /a(?:b(?:c(?:d(?:e(?:f(?:g(?:h(?:i(?:j(?:k(?:l(?:m(?:n(?:o(?:p(?:q(?:r(?:s(?:t(?:u(?:v(?:w(?:x(?:yz?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?(?![[:alpha:]])/i.freeze # rubocop:disable Metrics/LineLength
 
-    def skip_nonwords # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    def skip_nonwords # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
       skip_not_even_non_words_re ||
         skip_shell_color_escape_re ||
         skip_backslash_escape_re ||
         skip_url_encoded_entities_re ||
         skip_hex_re ||
-        skip_key_heuristically ||
         skip_uri_heuristically ||
+        skip_punycode ||
+        skip_key_heuristically ||
         skip_leftover_non_word_bits_re ||
         skip_repeated_single_letters_re ||
         skip_sequential_letters_re
@@ -99,6 +102,10 @@ module Spellr
 
     def skip_not_even_non_words_re
       skip(NOT_EVEN_NON_WORDS_RE)
+    end
+
+    def skip_punycode
+      skip(PUNYCODE_RE)
     end
 
     def skip_shell_color_escape_re
@@ -153,24 +160,47 @@ module Spellr
       skip(URL_RE)
     end
 
-    # url unsafe base64 or url safe base64
-    # TODO: character distribution heuristic
-    KEY_FULL_RE = %r{(?:[A-Za-z\d+/]|[A-Za-z\d\-_])+[=.]*}.freeze
-    KEY_RE = %r{
-      (?:
-        [A-Za-z\-_+/=]+|
-        [\d\-_+/=]+
-      )
-    }x.freeze
-    def skip_key_heuristically
-      return unless skip_key?
-      return unless match?(KEY_FULL_RE)
+    KEY_RE = %r{[A-Za-z0-9]([A-Za-z0-9+/\-_]*)=*(?![[:alnum:]])}.freeze
+    KNOWN_KEY_PATTERNS_RE = %r{(
+      SG\.[\w\-]{22}\.[\w\-]{43} | # sendgrid
+      prg-\h{8}-\h{4}-\h{4}-\h{4}-\h{12} | # hyperwallet
+      GTM-[A-Z0-9]{7} | # google tag manager
+      sha1-[A-Za-z0-9=+/]{28} |
+      sha512-[A-Za-z0-9=+/]{88} |
+      data:[a-z/;0-9\-]+;base64,[A-Za-z0-9+/]+=*(?![[:alnum:]])
+    )}x.freeze
+    N = NaiveBayes.new
+    def skip_key_heuristically # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/AbcSize,
+      return true if skip(KNOWN_KEY_PATTERNS_RE)
+      return unless scan(KEY_RE)
+      # i've come across some large base64 strings by this point they're definitely base64.
+      return true if matched.length > 200
 
-      # can't use regular captures because repeated capture groups don't
-      matches = matched.scan(KEY_RE)
-      return unless matches.length >= 3 # number chosen arbitrarily
+      if key_roughly?(matched)
+        if N.key?(matched)
+          puts "\e[31mk: #{matched}\e[0m"
+          true
+        else
+          puts "\e[32mn: #{matched}\e[0m"
+          unscan
+          false
+        end
+      else
+        unscan
+        false
+      end
+    end
 
-      skip(KEY_FULL_RE)
+    KEY_CHUNK_RE = %r{[A-Za-z\-_/+]+|[0-9]+}.freeze
+    THREE_ALPHA_RE = /(?:[A-Z][a-z]{2}|[a-z]{3}|[A-Z]{3})/.freeze
+    def key_roughly?(matched)
+      return unless matched.length >= 6
+      return unless matched.match?(THREE_ALPHA_RE) # or there's no point
+
+      chunks = matched.scan(KEY_CHUNK_RE)
+      return unless chunks.length >= 3
+
+      true
     end
 
     # jump to character-aware position
