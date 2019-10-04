@@ -118,13 +118,23 @@ module Spellr
       #{URL_QUERY}?#{URL_FRAGMENT}?
     /x.freeze
 
+    KNOWN_KEY_PATTERNS_RE = %r{(
+      SG\.[\w\-]{22}\.[\w\-]{43} | # sendgrid
+      prg-\h{8}-\h{4}-\h{4}-\h{4}-\h{12} | # hyperwallet
+      GTM-[A-Z0-9]{7} | # google tag manager
+      sha1-[A-Za-z0-9=+/]{28} |
+      sha512-[A-Za-z0-9=+/]{88} |
+      data:[a-z/;0-9\-]+;base64,[A-Za-z0-9+/]+=*(?![[:alnum:]])
+    )}x.freeze
+
     SKIPS = Regexp.union(
       NOT_EVEN_NON_WORDS_RE,
       SHELL_COLOR_ESCAPE_RE,
       BACKSLASH_ESCAPE_RE,
       URL_ENCODED_ENTITIES_RE,
       HEX_RE,
-      URL_RE # 2%
+      URL_RE, # 2%
+      KNOWN_KEY_PATTERNS_RE
     ).freeze
 
     AFTER_KEY_SKIPS = Regexp.union(
@@ -140,17 +150,8 @@ module Spellr
     end
 
     KEY_RE = %r{[A-Za-z0-9]([A-Za-z0-9+/\-_]*)=*(?![[:alnum:]])}.freeze
-    KNOWN_KEY_PATTERNS_RE = %r{(
-      SG\.[\w\-]{22}\.[\w\-]{43} | # sendgrid
-      prg-\h{8}-\h{4}-\h{4}-\h{4}-\h{12} | # hyperwallet
-      GTM-[A-Z0-9]{7} | # google tag manager
-      sha1-[A-Za-z0-9=+/]{28} |
-      sha512-[A-Za-z0-9=+/]{88} |
-      data:[a-z/;0-9\-]+;base64,[A-Za-z0-9+/]+=*(?![[:alnum:]])
-    )}x.freeze
     N = NaiveBayes.new
-    def skip_key_heuristically # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity
-      return true if skip(KNOWN_KEY_PATTERNS_RE)
+    def skip_key_heuristically # rubocop:disable Metrics/MethodLength
       return unless scan(KEY_RE)
       # i've come across some large base64 strings by this point they're definitely base64.
       return true if matched.length > 200
