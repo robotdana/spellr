@@ -41,6 +41,8 @@ module Spellr
       require 'shellwords'
       warn "Generating wordlist for #{name}"
 
+      generated_project_wordlist.touch
+
       Spellr::CLI.new(generate.shellsplit)
 
       default_wordlists

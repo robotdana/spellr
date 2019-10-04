@@ -67,7 +67,9 @@ module Spellr
     end
 
     def exist?
-      @path.exist?
+      return @exist if defined?(@exist)
+
+      @exist = @path.exist?
     end
 
     def add(term)
@@ -87,6 +89,7 @@ module Spellr
 
       @path.dirname.mkpath
       @path.write('')
+      remove_instance_varible(:@exist)
     end
 
     def raise_unless_exists?
