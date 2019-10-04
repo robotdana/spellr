@@ -170,14 +170,18 @@ module Spellr
       end
     end
 
-    KEY_CHUNK_RE = %r{[A-Za-z\-_/+]+|[0-9]+}.freeze
     THREE_ALPHA_RE = /(?:[A-Z][a-z]{2}|[a-z]{3}|[A-Z]{3})/.freeze
+    ALPHA_SEP_RE = '[A-Za-z][A-Za-z\\-_/+]*'
+    NUM_SEP_RE = '\\d[\\d\\-_/+]*'
+    THREE_CHUNK_RE = /^(?:
+      #{ALPHA_SEP_RE}#{NUM_SEP_RE}#{ALPHA_SEP_RE}
+      |
+      #{NUM_SEP_RE}#{ALPHA_SEP_RE}#{NUM_SEP_RE}
+    )/x.freeze
     def key_roughly?(matched)
       return unless matched.length >= 6
+      return unless matched.match?(THREE_CHUNK_RE)
       return unless matched.match?(THREE_ALPHA_RE) # or there's no point
-
-      chunks = matched.scan(KEY_CHUNK_RE)
-      return unless chunks.length >= 3
 
       true
     end
