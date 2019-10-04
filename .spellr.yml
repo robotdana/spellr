@@ -1,6 +1,7 @@
 ---
 ignore:
   - wordlists/*
+  - data/*
 only:
   - '*.rb'
   - '*.yml'

@@ -40,7 +40,9 @@ class SCOWLDownloader
 
         @options[:spelling] = a
       end
-      opts.on('-p', '--[no-]programming', 'include common programming terms like grep (default true)') { |h| @options[:special] = :hacker if h }
+      opts.on('-p', '--[no-]programming', 'include common programming terms like grep (default true)') do |h|
+        @options[:special] = :hacker if h
+      end
       opts.on_tail('-h', '--help') do
         warn opts.to_s
         exit 1

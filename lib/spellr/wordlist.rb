@@ -6,8 +6,6 @@ require_relative 'token'
 
 module Spellr
   class Wordlist
-    class NotFound < Spellr::Error; end
-
     include Enumerable
 
     attr_reader :path, :name
@@ -31,7 +29,7 @@ module Spellr
     # significantly faster than default Enumerable#include?
     # requires terms to be sorted
     def include?(term)
-      include_cache[Spellr::Token.normalize(term)]
+      include_cache[term.normalize]
     end
 
     def include_cache
@@ -69,12 +67,14 @@ module Spellr
     end
 
     def exist?
-      @path.exist?
+      return @exist if defined?(@exist)
+
+      @exist = @path.exist?
     end
 
     def add(term)
       touch
-      term = Spellr::Token.normalize(term)
+      term = term.normalize
       include_cache[term] = true
       to_a << term
       to_a.sort!
@@ -89,6 +89,7 @@ module Spellr
 
       @path.dirname.mkpath
       @path.write('')
+      remove_instance_variable(:@exist)
     end
 
     def raise_unless_exists?

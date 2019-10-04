@@ -62,7 +62,7 @@ RSpec.describe Spellr::FileList do
 
     it 'ignores gitignore files' do
       expect(described_class.new.to_a).to match_relative_paths(
-        '.gitignore',
+        # '.gitignore',
         'spec/foo_spec.rb'
       )
     end

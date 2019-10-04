@@ -5,14 +5,23 @@
 require_relative 'column_location'
 require_relative 'string_format'
 
+class String
+  def normalize
+    normalize_cache[to_s]
+  end
+
+  def normalize_cache
+    @@normalize_cache ||= Hash.new do |cache, term| # rubocop:disable Style/ClassVars # i want this shared with subclasses
+      cache[term] = term.strip.downcase.unicode_normalize.tr('’', "'") + "\n"
+    end
+  end
+
+  alias_method :match?, :match unless RUBY_VERSION >= '2.4'
+end
+
 module Spellr
   class Token < String
     attr_reader :location, :line, :replacement
-    def self.normalize(value)
-      return value.normalize if value.is_a?(Spellr::Token)
-
-      value.strip.downcase.unicode_normalize.tr('’', "'") + "\n"
-    end
 
     def self.wrap(value)
       return value if value.is_a?(Spellr::Token)
@@ -40,10 +49,6 @@ module Spellr
         char_offset: length - lstripped.length,
         line_location: location.line_location
       )
-    end
-
-    def normalize
-      @normalize ||= self.class.normalize(to_s)
     end
 
     def inspect

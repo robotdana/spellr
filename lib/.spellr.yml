@@ -1,14 +1,17 @@
 ---
 word_minimum_length: 3
+key_heuristic_weight: 5
+key_minimum_length: 6
 
 ignore: # this list is parsed with the .gitignore format
-  - /.git/
+  - .git/
   - .spellr_wordlists/
   - .DS_Store
   - Gemfile.lock
   - .rspec_status
   - '*.png'
   - '*.jpg'
+  - '*.jpeg'
   - '*.gif'
   - '*.ico'
   - .gitkeep

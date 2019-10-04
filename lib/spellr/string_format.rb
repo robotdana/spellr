@@ -10,10 +10,9 @@ module Spellr
       "#{count} #{word}#{'s' if count != 1}"
     end
 
+    # TODO: make it work without color
     def color_enabled?
-      return $stdout.tty? if Spellr.config.color.nil?
-
-      Spellr.config.color
+      true
     end
 
     def aqua(text)

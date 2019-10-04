@@ -4,6 +4,7 @@ require 'strscan'
 require_relative '../spellr'
 require_relative 'column_location'
 require_relative 'token'
+require_relative 'key_tuner/naive_bayes'
 
 module Spellr
   class LineTokenizer < StringScanner # rubocop:disable Metrics/ClassLength
@@ -63,85 +64,131 @@ module Spellr
     end
 
     def next_term
-      return if eos?
-
-      (skip_nonwords_and_flags && next_term) || scan_term || next_term
+      if skip_nonwords_and_flags
+        nil
+      else
+        scan_term
+      end
     end
 
+    # [Word], [Word]Word [Word]'s [Wordn't]
+    TITLE_CASE_RE = /[[:upper:]][[:lower:]]+(?:['’][[:lower:]]+(?<!['’]s))*/.freeze
+    # [WORD] [WORD]Word [WORDN'T] [WORD]'S [WORD]'s [WORD]s
+    UPPER_CASE_RE = /[[:upper:]]+(?:['’][[:upper:]]+(?<!['’][Ss]))*(?:(?![[:lower:]])|(?=s(?![[:lower:]])))/.freeze
+    # [word] [word]'s [wordn't]
+    LOWER_CASE_RE = /[[:lower:]]+(?:['’][[:lower:]]+(?<!['’]s))*/.freeze
+    # for characters in [:alpha:] that aren't in [:lower:] or [:upper:] e.g. Arabic
+    OTHER_CASE_RE = /(?:[[:alpha:]](?<![[:lower:][:upper:]]))+/.freeze
+
+    TERM_RE = Regexp.union(TITLE_CASE_RE, UPPER_CASE_RE, LOWER_CASE_RE, OTHER_CASE_RE)
+
     def scan_term
-      term = title_case || lower_case || upper_case || other_case
+      term = scan(TERM_RE)
 
       return term if term && term.length >= Spellr.config.word_minimum_length
     end
 
     NOT_EVEN_NON_WORDS_RE = %r{[^[:alpha:]/%#0-9\\]+}.freeze # everything not covered by more specific skips/scans
-    LEFTOVER_NON_WORD_BITS_RE = %r{[/%#0-9\\]}.freeze # e.g. a / not starting //a-url.com
+    LEFTOVER_NON_WORD_BITS_RE = %r{[/%#\\]|\d+}.freeze # e.g. a / not starting //a-url.com
     HEX_RE = /(?:#(?:\h{6}|\h{3})|0x\h+)(?![[:alpha:]])/.freeze
-    SHELL_COLOR_ESCAPE_RE = /\\(e|033)\[\d+(;\d+)*m/.freeze
+    SHELL_COLOR_ESCAPE_RE = /\\(?:e|0?33)\[\d+(;\d+)*m/.freeze
+    PUNYCODE_RE = /xn--[a-v0-9\-]+(?:[[:alpha:]])/.freeze
     BACKSLASH_ESCAPE_RE = /\\[a-zA-Z]/.freeze # TODO: hex escapes e.g. \xAA. TODO: language aware escapes
     REPEATED_SINGLE_LETTERS_RE = /(?:([[:alpha:]])\1+)(?![[:alpha:]])/.freeze # e.g. xxxxxxxx (it's not a word)
-    # https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding
-    # Only the necessary percent encoding that actually ends in letters
-    # URL_ENCODED_ENTITIES_RE = /%(3A|2F|3F|5B|5D|%2A|%2B|%2C|%3B|%3D)/i.freeze
     URL_ENCODED_ENTITIES_RE = /%[0-8A-F]{2}/.freeze
     # There's got to be a better way of writing this
-    SEQUENTIAL_LETTERS_RE = /a(b(c(d(e(f(g(h(i(j(k(l(m(n(o(p(q(r(s(t(u(v(w(x(y(z)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?(?![[:alpha:]])/i.freeze # rubocop:disable Metrics/LineLength
-
-    def skip_nonwords # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      skip(NOT_EVEN_NON_WORDS_RE) ||
-        skip(SHELL_COLOR_ESCAPE_RE) ||
-        skip(BACKSLASH_ESCAPE_RE) ||
-        skip(URL_ENCODED_ENTITIES_RE) ||
-        skip(HEX_RE) ||
-        skip_key_heuristically ||
-        skip_uri_heuristically ||
-        skip(LEFTOVER_NON_WORD_BITS_RE) ||
-        skip(REPEATED_SINGLE_LETTERS_RE) ||
-        skip(SEQUENTIAL_LETTERS_RE)
-    end
+    SEQUENTIAL_LETTERS_RE = /a(?:b(?:c(?:d(?:e(?:f(?:g(?:h(?:i(?:j(?:k(?:l(?:m(?:n(?:o(?:p(?:q(?:r(?:s(?:t(?:u(?:v(?:w(?:x(?:yz?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?)?(?![[:alpha:]])/i.freeze # rubocop:disable Metrics/LineLength
 
     # I didn't want to do this myself. BUT i need something to heuristically match on, and it's difficult
-    URL_RE = %r{
-      (//|https?://|s?ftp://|mailto:)? # 0 scheme
-      ([[:alnum:]]+(?::[[:alnum:]]+)?@)? # 1 userinfo
-      (?:(?:[[:alnum:]-]+(?:\\?\.[[:alnum:]-]+)+|localhost|\d{1,3}(?:.\d{1,3}){3})) # 2 hostname
-      (?::\d+)? # 3 port
-      (/(?:[[:alnum:]=!$&\-/._\\]|%\h{2})+)? # 4 path
-      (?:\?(?:[[:alnum:]=!$\-/.\\]|%\h{2})+(?:&(?:[[:alnum:]=!$\-/.\\]|%\h{2})+)*)? # 5 query
-      (?:\#(?:[[:alnum:]=!$&\-/.\\]|%\h{2})+)? # 6 fragment
-    }x.freeze
-    def skip_uri_heuristically
-      return unless skip_uri?
-      return unless scan(URL_RE)
+    URL_SCHEME = '(//|https?://|s?ftp://|mailto:)'
+    URL_USERINFO = '([[:alnum:]]+(?::[[:alnum:]]+)?@)'
+    URL_HOSTNAME = '((?:[[:alnum:]-]+(?:\\\\?\\.[[:alnum:]-]+)+|localhost|\\d{1,3}(?:\\.\\d{1,3}){3}))'
+    URL_PORT = '(:\\d+)'
+    URL_PATH = '(/(?:[[:alnum:]=@!$&\\-/._\\\\]|%\h{2})+)'
+    URL_QUERY = '(\\?(?:[[:alnum:]=!$\\-/.\\\\]|%\\h{2})+(?:&(?:[[:alnum:]=!$\\-/.\\\\]|%\\h{2})+)*)'
+    URL_FRAGMENT = '(\\#(?:[[:alnum:]=!$&\\-/.\\\\]|%\\h{2})+)'
+    URL_RE = /
+      (?:
+        #{URL_SCHEME}#{URL_USERINFO}?#{URL_HOSTNAME}#{URL_PORT}?#{URL_PATH}?
+        |
+        #{URL_SCHEME}?#{URL_USERINFO}#{URL_HOSTNAME}#{URL_PORT}?#{URL_PATH}?
+        |
+        #{URL_SCHEME}?#{URL_USERINFO}?#{URL_HOSTNAME}#{URL_PORT}?#{URL_PATH}
+      )
+      #{URL_QUERY}?#{URL_FRAGMENT}?
+    /x.freeze
 
-      heuristic_failed = if RUBY_VERSION >= '2.5'
-        captures.all?(&:empty?)
-      else
-        # unfortunately i have to match this regex again because stringscanner doesn't give me matchdata
-        matched.match(URL_RE).captures.compact.all?(&:empty?)
-      end
+    KNOWN_KEY_PATTERNS_RE = %r{(
+      SG\.[\w\-]{22}\.[\w\-]{43} | # sendgrid
+      prg-\h{8}-\h{4}-\h{4}-\h{4}-\h{12} | # hyperwallet
+      GTM-[A-Z0-9]{7} | # google tag manager
+      sha1-[A-Za-z0-9=+/]{28} |
+      sha512-[A-Za-z0-9=+/]{88} |
+      data:[a-z/;0-9\-]+;base64,[A-Za-z0-9+/]+=*(?![[:alnum:]])
+    )}x.freeze
 
-      unscan && false if heuristic_failed
+    SKIPS = Regexp.union(
+      NOT_EVEN_NON_WORDS_RE,
+      SHELL_COLOR_ESCAPE_RE,
+      BACKSLASH_ESCAPE_RE,
+      URL_ENCODED_ENTITIES_RE,
+      HEX_RE,
+      URL_RE, # 2%
+      KNOWN_KEY_PATTERNS_RE
+    ).freeze
+
+    AFTER_KEY_SKIPS = Regexp.union(
+      LEFTOVER_NON_WORD_BITS_RE,
+      REPEATED_SINGLE_LETTERS_RE,
+      SEQUENTIAL_LETTERS_RE
+    )
+
+    def skip_nonwords
+      skip(SKIPS) ||
+        skip_key_heuristically || # 5%
+        skip(AFTER_KEY_SKIPS)
     end
 
-    # url unsafe base64 or url safe base64
-    # TODO: character distribution heuristic
-    KEY_FULL_RE = %r{([A-Za-z\d+/]|[A-Za-z\d\-_])+[=.]*}.freeze
-    KEY_RE = %r{
-      (?:
-        [A-Za-z\-_+/=]+|
-        [\d\-_+/=]+
-      )
-    }x.freeze
-    def skip_key_heuristically
-      return unless skip_key?
-      return unless match?(KEY_FULL_RE)
+    KEY_RE = %r{[A-Za-z0-9]([A-Za-z0-9+/\-_]*)=*(?![[:alnum:]])}.freeze
+    N = NaiveBayes.new
+    def skip_key_heuristically # rubocop:disable Metrics/MethodLength
+      return unless scan(KEY_RE)
+      # I've come across some large base64 strings by this point they're definitely base64.
+      return true if matched.length > 200
 
-      # can't use regular captures because repeated capture groups don't
-      matches = matched.scan(KEY_RE)
-      return unless matches.length >= 3 # number chosen arbitrarily
+      if key_roughly?(matched)
+        if N.key?(matched)
+          true
+        else
+          unscan
+          false
+        end
+      else
+        unscan
+        false
+      end
+    end
 
-      skip(KEY_FULL_RE)
+    MIN_ALPHA_RE = /(?:
+      [A-Z][a-z]{#{Spellr.config.word_minimum_length - 1}}
+      |
+      [a-z]{#{Spellr.config.word_minimum_length}}
+      |
+      [A-Z]{#{Spellr.config.word_minimum_length}}
+    )/x.freeze
+    ALPHA_SEP_RE = '[A-Za-z][A-Za-z\\-_/+]*'
+    NUM_SEP_RE = '\\d[\\d\\-_/+]*'
+    THREE_CHUNK_RE = /^(?:
+      #{ALPHA_SEP_RE}#{NUM_SEP_RE}#{ALPHA_SEP_RE}
+      |
+      #{NUM_SEP_RE}#{ALPHA_SEP_RE}#{NUM_SEP_RE}
+    )/x.freeze
+    def key_roughly?(matched)
+      return unless matched.length >= Spellr.config.key_minimum_length
+      return unless matched.match?(THREE_CHUNK_RE)
+      return unless matched.match?(MIN_ALPHA_RE) # or there's no point
+
+      true
     end
 
     # jump to character-aware position
@@ -149,37 +196,17 @@ module Spellr
       skip(/.{#{new_charpos - charpos}}/m)
     end
 
-    # [Word], [Word]Word [Word]'s [Wordn't]
-    TITLE_CASE_RE = /[[:upper:]][[:lower:]]+(?:['’][[:lower:]]+(?<!['’]s))*/.freeze
-    def title_case
-      scan(TITLE_CASE_RE)
-    end
-
-    # [word] [word]'s [wordn't]
-    LOWER_CASE_RE = /[[:lower:]]+(?:['’][[:lower:]]+(?<!['’]s))*/.freeze
-    def lower_case
-      scan(LOWER_CASE_RE)
-    end
-
-    # [WORD] [WORD]Word [WORDN'T] [WORD]'S [WORD]'s [WORD]s
-    UPPER_CASE_RE = /[[:upper:]]+(?:['’][[:upper:]]+(?<!['’][Ss]))*((?![[:lower:]])|(?=s(?![[:lower:]])))/.freeze
-    def upper_case
-      scan(UPPER_CASE_RE)
-    end
-
-    # for characters in [:alpha:] that aren't in [:lower:] or [:upper:] e.g. Arabic
-    OTHER_CASE_RE = /[[:alpha:]]+/.freeze
-    def other_case
-      scan(OTHER_CASE_RE)
-    end
-
     SPELLR_DISABLE_RE = /spellr:disable/.freeze
     def skip_and_track_disable
+      return if disabled?
+
       skip(SPELLR_DISABLE_RE) && self.disabled = true
     end
 
     SPELLR_ENABLE_RE = /spellr:enable/.freeze
     def skip_and_track_enable
+      return unless disabled?
+
       skip(SPELLR_ENABLE_RE) && self.disabled = false
     end
   end

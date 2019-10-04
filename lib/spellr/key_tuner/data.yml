@@ -1,0 +1,1242 @@
+---
+:feature_set:
+  not_key_lower36:
+    :+:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+    :-:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+    :_:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+    :/:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+    :A:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+    :z:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+    :Z:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+    :q:
+      :standard_deviation: 0.155525672352269
+      :mean: 0.30690235690235684
+      :variance: 0.02418823476062533
+    :Q:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+    :X:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+    :x:
+      :standard_deviation: 0.155525672352269
+      :mean: 0.30690235690235684
+      :variance: 0.02418823476062533
+    :equal:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :length:
+      :standard_deviation: 5.362523425023914
+      :mean: 11.303030303030303
+      :variance: 28.756657483930212
+    :hex:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :lower36:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :upper36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :base64:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :variance_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :max_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_lower_chunk_size:
+      :standard_deviation: 2.200026898760529
+      :mean: 4.457070707070708
+      :variance: 4.84011835526987
+    :variance_lower_chunk_size:
+      :standard_deviation: 15.446558425730052
+      :mean: 8.281776094276093
+      :variance: 238.59616719949207
+    :mean_upper_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :variance_upper_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_alpha_chunk_size:
+      :standard_deviation: 2.200026898760529
+      :mean: 4.457070707070708
+      :variance: 4.84011835526987
+    :variance_alpha_chunk_size:
+      :standard_deviation: 15.446558425730052
+      :mean: 8.281776094276093
+      :variance: 238.59616719949207
+    :mean_alnum_chunk_size:
+      :standard_deviation: 5.362523425023914
+      :mean: 11.303030303030303
+      :variance: 28.756657483930212
+    :variance_alnum_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_digit_chunk_size:
+      :standard_deviation: 0.5364482803343927
+      :mean: 1.2676767676767677
+      :variance: 0.28777675747372716
+    :variance_digit_chunk_size:
+      :standard_deviation: 0.0794373787030574
+      :mean: 0.029461279461279462
+      :variance: 0.006310297135212959
+    :vowel_consonant_ratio:
+      :standard_deviation: 0.28747978728803447
+      :mean: 0.09090909090909091
+      :variance: 0.08264462809917354
+    :alpha_chunks:
+      :standard_deviation: 0.434930305891131
+      :mean: 2.1515151515151514
+      :variance: 0.1891643709825528
+    :alnum_chunks:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :digit_chunks:
+      :standard_deviation: 0.508874412840808
+      :mean: 1.2727272727272727
+      :variance: 0.25895316804407714
+    :title_chunks:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_letter_frequency_difference:
+      :standard_deviation: 0.14871089004178042
+      :mean: 0.299351367261815
+      :variance: 0.022114928817018507
+    :variance_letter_frequency_difference:
+      :standard_deviation: 0.14895898402844204
+      :mean: 0.31397306397306396
+      :variance: 0.022188778922785653
+  not_key_base64:
+    :+:
+      :standard_deviation: 0.2541397239690253
+      :mean: 0.3888229606188467
+      :variance: 0.06458699929905236
+    :-:
+      :standard_deviation: 0.25379807282721545
+      :mean: 0.37484730018783585
+      :variance: 0.06441346177080855
+    :_:
+      :standard_deviation: 0.24867689653717237
+      :mean: 0.34891859428821026
+      :variance: 0.061840198871359525
+    :/:
+      :standard_deviation: 0.24082594969785176
+      :mean: 0.36237670731007626
+      :variance: 0.057997138047872224
+    :A:
+      :standard_deviation: 0.2580372227665086
+      :mean: 0.37797187602172644
+      :variance: 0.06658320833305277
+    :z:
+      :standard_deviation: 0.2531981588250842
+      :mean: 0.3890360503174757
+      :variance: 0.06410930763241254
+    :Z:
+      :standard_deviation: 0.25312274743216495
+      :mean: 0.38970200421940926
+      :variance: 0.06407112526760757
+    :q:
+      :standard_deviation: 0.2540416387211879
+      :mean: 0.38725722619368014
+      :variance: 0.06453715420414655
+    :Q:
+      :standard_deviation: 0.254439260479986
+      :mean: 0.38710301560100957
+      :variance: 0.06473933727360218
+    :X:
+      :standard_deviation: 0.2530074034503754
+      :mean: 0.38961027793065495
+      :variance: 0.06401274620070103
+    :x:
+      :standard_deviation: 0.25582954010333747
+      :mean: 0.3852291846408556
+      :variance: 0.06544875358948515
+    :equal:
+      :standard_deviation: 0.15708447653152982
+      :mean: 0.02531645569620253
+      :variance: 0.024675532767184743
+    :length:
+      :standard_deviation: 16.199855835658557
+      :mean: 24.940928270042193
+      :variance: 262.4353290961206
+    :hex:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :lower36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :upper36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :base64:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :mean_title_chunk_size:
+      :standard_deviation: 2.568241657503519
+      :mean: 2.3335794655414905
+      :variance: 6.595865211336424
+    :variance_title_chunk_size:
+      :standard_deviation: 1.7731796257109087
+      :mean: 0.6990329264617239
+      :variance: 3.144165985036278
+    :max_title_chunk_size:
+      :standard_deviation: 3.2942590427831466
+      :mean: 2.9071729957805905
+      :variance: 10.852142640958535
+    :mean_lower_chunk_size:
+      :standard_deviation: 1.915575233425674
+      :mean: 3.858481819399541
+      :variance: 3.6694284749138255
+    :variance_lower_chunk_size:
+      :standard_deviation: 5.014372704895171
+      :mean: 3.7600050590117027
+      :variance: 25.143933623597718
+    :mean_upper_chunk_size:
+      :standard_deviation: 1.2114636082579695
+      :mean: 0.9685654008438819
+      :variance: 1.467644074133419
+    :variance_upper_chunk_size:
+      :standard_deviation: 4.561087317929197
+      :mean: 0.5595675105485233
+      :variance: 20.803517521774562
+    :mean_alpha_chunk_size:
+      :standard_deviation: 3.01249669311788
+      :mean: 5.781797404423986
+      :variance: 9.075136326046163
+    :variance_alpha_chunk_size:
+      :standard_deviation: 23.944475729042168
+      :mean: 11.714747648069515
+      :variance: 573.3379179386894
+    :mean_alnum_chunk_size:
+      :standard_deviation: 7.016229263680408
+      :mean: 8.991178261356966
+      :variance: 49.22747308052533
+    :variance_alnum_chunk_size:
+      :standard_deviation: 16.409988487728544
+      :mean: 8.18210737474977
+      :variance: 269.2877221673833
+    :mean_digit_chunk_size:
+      :standard_deviation: 1.4473247671976002
+      :mean: 1.7030942334739803
+      :variance: 2.0947489817435874
+    :variance_digit_chunk_size:
+      :standard_deviation: 3.099271241067515
+      :mean: 0.9975480543834974
+      :variance: 9.605482225708176
+    :vowel_consonant_ratio:
+      :standard_deviation: 0.388002158061524
+      :mean: 0.1350210970464135
+      :variance: 0.15054567466039984
+    :alpha_chunks:
+      :standard_deviation: 2.3107497762580356
+      :mean: 3.586497890295359
+      :variance: 5.339564528476561
+    :alnum_chunks:
+      :standard_deviation: 2.930962174002099
+      :mean: 3.5738396624472575
+      :variance: 8.59053926543111
+    :digit_chunks:
+      :standard_deviation: 0.9012760946964384
+      :mean: 1.358649789029536
+      :variance: 0.8122985988712635
+    :title_chunks:
+      :standard_deviation: 1.8805031935244438
+      :mean: 1.4303797468354431
+      :variance: 3.5362922608556318
+    :mean_letter_frequency_difference:
+      :standard_deviation: 0.25242610610339417
+      :mean: 0.3754562361065053
+      :variance: 0.063718939042522
+    :variance_letter_frequency_difference:
+      :standard_deviation: 0.2525704300501615
+      :mean: 0.3902671036769138
+      :variance: 0.06379182213572351
+  not_key_hex:
+    :+:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :-:
+      :standard_deviation: 0.06030940654579793
+      :mean: 0.4602272727272727
+      :variance: 0.0036372245179063342
+    :_:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :/:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :A:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :z:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :Z:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :q:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :Q:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :X:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :x:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+    :equal:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :length:
+      :standard_deviation: 2.0548046676563256
+      :mean: 8.333333333333334
+      :variance: 4.222222222222222
+    :hex:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :lower36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :upper36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :base64:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_title_chunk_size:
+      :standard_deviation: 1.4142135623730951
+      :mean: 1.0
+      :variance: 2.0
+    :variance_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :max_title_chunk_size:
+      :standard_deviation: 1.4142135623730951
+      :mean: 1.0
+      :variance: 2.0
+    :mean_lower_chunk_size:
+      :standard_deviation: 2.494438257849294
+      :mean: 5.333333333333333
+      :variance: 6.222222222222222
+    :variance_lower_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_upper_chunk_size:
+      :standard_deviation: 0.4714045207910317
+      :mean: 0.3333333333333333
+      :variance: 0.22222222222222224
+    :variance_upper_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_alpha_chunk_size:
+      :standard_deviation: 2.0548046676563256
+      :mean: 5.666666666666667
+      :variance: 4.222222222222222
+    :variance_alpha_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_alnum_chunk_size:
+      :standard_deviation: 2.0548046676563256
+      :mean: 5.666666666666667
+      :variance: 4.222222222222222
+    :variance_alnum_chunk_size:
+      :standard_deviation: 0.31426968052735443
+      :mean: 0.2222222222222222
+      :variance: 0.09876543209876543
+    :mean_digit_chunk_size:
+      :standard_deviation: 1.4142135623730951
+      :mean: 1.0
+      :variance: 2.0
+    :variance_digit_chunk_size:
+      :standard_deviation: 0.4714045207910317
+      :mean: 0.3333333333333333
+      :variance: 0.22222222222222224
+    :vowel_consonant_ratio:
+      :standard_deviation: 0.4714045207910317
+      :mean: 0.6666666666666666
+      :variance: 0.22222222222222224
+    :alpha_chunks:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :alnum_chunks:
+      :standard_deviation: 0.9428090415820634
+      :mean: 1.6666666666666667
+      :variance: 0.888888888888889
+    :digit_chunks:
+      :standard_deviation: 0.9428090415820634
+      :mean: 0.6666666666666666
+      :variance: 0.888888888888889
+    :title_chunks:
+      :standard_deviation: 0.4714045207910317
+      :mean: 0.3333333333333333
+      :variance: 0.22222222222222224
+    :mean_letter_frequency_difference:
+      :standard_deviation: 0.12842529172852032
+      :mean: 0.505907960199005
+      :variance: 0.01649305555555555
+    :variance_letter_frequency_difference:
+      :standard_deviation: 0.12842529172852035
+      :mean: 0.5208333333333334
+      :variance: 0.016493055555555556
+  not_key_upper36:
+    :+:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+    :-:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+    :_:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+    :/:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+    :A:
+      :standard_deviation: 0.09610769687289235
+      :mean: 0.19174007810371443
+      :variance: 0.009236689398211761
+    :z:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+    :Z:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+    :q:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+    :Q:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+    :X:
+      :standard_deviation: 0.12718253840346452
+      :mean: 0.26605339105339104
+      :variance: 0.016175398074748725
+    :x:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+    :equal:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :length:
+      :standard_deviation: 3.4997048281673013
+      :mean: 10.454545454545455
+      :variance: 12.24793388429752
+    :hex:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :lower36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :upper36:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :base64:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :variance_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :max_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_lower_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :variance_lower_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_upper_chunk_size:
+      :standard_deviation: 1.8124910943069896
+      :mean: 4.681818181818182
+      :variance: 3.285123966942149
+    :variance_upper_chunk_size:
+      :standard_deviation: 4.584266120958576
+      :mean: 3.3863636363636362
+      :variance: 21.015495867768593
+    :mean_alpha_chunk_size:
+      :standard_deviation: 1.8124910943069896
+      :mean: 4.681818181818182
+      :variance: 3.285123966942149
+    :variance_alpha_chunk_size:
+      :standard_deviation: 4.584266120958576
+      :mean: 3.3863636363636362
+      :variance: 21.015495867768593
+    :mean_alnum_chunk_size:
+      :standard_deviation: 3.4997048281673013
+      :mean: 10.454545454545455
+      :variance: 12.24793388429752
+    :variance_alnum_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_digit_chunk_size:
+      :standard_deviation: 0.28747978728803447
+      :mean: 1.0909090909090908
+      :variance: 0.08264462809917356
+    :variance_digit_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :vowel_consonant_ratio:
+      :standard_deviation: 0.4453617714151233
+      :mean: 0.2727272727272727
+      :variance: 0.1983471074380165
+    :alpha_chunks:
+      :standard_deviation: 0.0
+      :mean: 2.0
+      :variance: 0.0
+    :alnum_chunks:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :digit_chunks:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :title_chunks:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_letter_frequency_difference:
+      :standard_deviation: 0.09691947996985953
+      :mean: 0.27580172729426455
+      :variance: 0.009393385597628003
+    :variance_letter_frequency_difference:
+      :standard_deviation: 0.09721402300464727
+      :mean: 0.2904040404040404
+      :variance: 0.009450566268748087
+  key_base64:
+    :+:
+      :standard_deviation: 0.4788819123030189
+      :mean: 0.7620479677679989
+      :variance: 0.22932788593099632
+    :-:
+      :standard_deviation: 0.48519859969370527
+      :mean: 0.7674698211603613
+      :variance: 0.23541768114473247
+    :_:
+      :standard_deviation: 0.48463137733998624
+      :mean: 0.7683147592547762
+      :variance: 0.2348675719024521
+    :/:
+      :standard_deviation: 0.4796977010542205
+      :mean: 0.7593109857187765
+      :variance: 0.2301098843967043
+    :A:
+      :standard_deviation: 0.47274485793293863
+      :mean: 0.7159949406166164
+      :variance: 0.22348770070203433
+    :z:
+      :standard_deviation: 0.4823112559987381
+      :mean: 0.7593094160660077
+      :variance: 0.2326241476630803
+    :Z:
+      :standard_deviation: 0.478587057419695
+      :mean: 0.7550733796707711
+      :variance: 0.22904557152964244
+    :q:
+      :standard_deviation: 0.4797973892262882
+      :mean: 0.758355010937151
+      :variance: 0.23020553470836227
+    :Q:
+      :standard_deviation: 0.4785710616006751
+      :mean: 0.7559053227669673
+      :variance: 0.22903026100159712
+    :X:
+      :standard_deviation: 0.4814925121721273
+      :mean: 0.7576780710354446
+      :variance: 0.23183503927782617
+    :x:
+      :standard_deviation: 0.4806339810800607
+      :mean: 0.7574254814910006
+      :variance: 0.23100902376886814
+    :equal:
+      :standard_deviation: 0.3143541835844769
+      :mean: 0.07052561543579508
+      :variance: 0.09881855273706303
+    :length:
+      :standard_deviation: 30.924097493698984
+      :mean: 49.26480372588157
+      :variance: 956.2998057997999
+    :hex:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :lower36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :upper36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :base64:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :mean_title_chunk_size:
+      :standard_deviation: 0.938674119445719
+      :mean: 2.2847907490166315
+      :variance: 0.881109102517196
+    :variance_title_chunk_size:
+      :standard_deviation: 0.8399346427600576
+      :mean: 0.5945675969444422
+      :variance: 0.7054902041084655
+    :max_title_chunk_size:
+      :standard_deviation: 1.9182570205081106
+      :mean: 3.5276114437791084
+      :variance: 3.6797099967286537
+    :mean_lower_chunk_size:
+      :standard_deviation: 0.587698982820272
+      :mean: 1.5511671225738333
+      :variance: 0.3453900944079824
+    :variance_lower_chunk_size:
+      :standard_deviation: 0.9177955373157239
+      :mean: 0.7229509172836843
+      :variance: 0.8423486483166585
+    :mean_upper_chunk_size:
+      :standard_deviation: 3.6968868868006766
+      :mean: 2.462205221040871
+      :variance: 13.666972653798798
+    :variance_upper_chunk_size:
+      :standard_deviation: 79.21235203370325
+      :mean: 14.962714945400833
+      :variance: 6274.596714711332
+    :mean_alpha_chunk_size:
+      :standard_deviation: 5.281785870350391
+      :mean: 6.076705282839681
+      :variance: 27.897261980233036
+    :variance_alpha_chunk_size:
+      :standard_deviation: 109.32138291403083
+      :mean: 40.43368299794101
+      :variance: 11951.164762236152
+    :mean_alnum_chunk_size:
+      :standard_deviation: 22.642590373655526
+      :mean: 26.629095704694507
+      :variance: 512.6868988291579
+    :variance_alnum_chunk_size:
+      :standard_deviation: 227.9191503036366
+      :mean: 121.93367215571097
+      :variance: 51947.139075131694
+    :mean_digit_chunk_size:
+      :standard_deviation: 0.4560177083122001
+      :mean: 1.2085493841610866
+      :variance: 0.20795215029431086
+    :variance_digit_chunk_size:
+      :standard_deviation: 2.032593162410183
+      :mean: 0.24678149607358768
+      :variance: 4.131434963876628
+    :vowel_consonant_ratio:
+      :standard_deviation: 1.5059350768556554
+      :mean: 0.35595475715236197
+      :variance: 2.267840455704249
+    :alpha_chunks:
+      :standard_deviation: 4.805986662589386
+      :mean: 7.324683965402528
+      :variance: 23.097507800987067
+    :alnum_chunks:
+      :standard_deviation: 1.6410609080896856
+      :mean: 2.2035928143712575
+      :variance: 2.6930809040601433
+    :digit_chunks:
+      :standard_deviation: 4.279491803819623
+      :mean: 5.8496340652029275
+      :variance: 18.314050098959324
+    :title_chunks:
+      :standard_deviation: 6.077879235043679
+      :mean: 7.501663339986694
+      :variance: 36.94061599577514
+    :mean_letter_frequency_difference:
+      :standard_deviation: 0.4801208904505471
+      :mean: 0.757096597371617
+      :variance: 0.2305160694470263
+    :variance_letter_frequency_difference:
+      :standard_deviation: 0.4667268935323255
+      :mean: 0.7824197834489751
+      :variance: 0.2178339931463347
+  key_hex:
+    :+:
+      :standard_deviation: 1.627890353560724
+      :mean: 1.914128895184136
+      :variance: 2.6500270032160596
+    :-:
+      :standard_deviation: 1.624885769907154
+      :mean: 1.8968935536160076
+      :variance: 2.6402537652467646
+    :_:
+      :standard_deviation: 1.627890353560724
+      :mean: 1.914128895184136
+      :variance: 2.6500270032160596
+    :/:
+      :standard_deviation: 1.627890353560724
+      :mean: 1.914128895184136
+      :variance: 2.6500270032160596
+    :A:
+      :standard_deviation: 1.674253402278047
+      :mean: 1.8633401715870046
+      :variance: 2.803124455039616
+    :z:
+      :standard_deviation: 1.627890353560724
+      :mean: 1.914128895184136
+      :variance: 2.6500270032160596
+    :Z:
+      :standard_deviation: 1.627890353560724
+      :mean: 1.914128895184136
+      :variance: 2.6500270032160596
+    :q:
+      :standard_deviation: 1.627890353560724
+      :mean: 1.914128895184136
+      :variance: 2.6500270032160596
+    :Q:
+      :standard_deviation: 1.627890353560724
+      :mean: 1.914128895184136
+      :variance: 2.6500270032160596
+    :X:
+      :standard_deviation: 1.627890353560724
+      :mean: 1.914128895184136
+      :variance: 2.6500270032160596
+    :x:
+      :standard_deviation: 1.627890353560724
+      :mean: 1.914128895184136
+      :variance: 2.6500270032160596
+    :equal:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :length:
+      :standard_deviation: 26.046245656971585
+      :mean: 30.626062322946176
+      :variance: 678.4069128233112
+    :hex:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :lower36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :upper36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :base64:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_title_chunk_size:
+      :standard_deviation: 0.3091098136373257
+      :mean: 0.046742209631728045
+      :variance: 0.09554887688690222
+    :variance_title_chunk_size:
+      :standard_deviation: 0.05641324949299612
+      :mean: 0.002124645892351275
+      :variance: 0.0031824547183590276
+    :max_title_chunk_size:
+      :standard_deviation: 0.3434223535526081
+      :mean: 0.049575070821529746
+      :variance: 0.11793891291961255
+    :mean_lower_chunk_size:
+      :standard_deviation: 0.8090842711740704
+      :mean: 1.3985280204157986
+      :variance: 0.6546173578612767
+    :variance_lower_chunk_size:
+      :standard_deviation: 1.011737461706983
+      :mean: 0.7691019261778345
+      :variance: 1.0236126914212886
+    :mean_upper_chunk_size:
+      :standard_deviation: 0.9269869523478304
+      :mean: 0.4866096721974909
+      :variance: 0.8593048098231186
+    :variance_upper_chunk_size:
+      :standard_deviation: 0.6235120686504038
+      :mean: 0.2590497712173737
+      :variance: 0.3887672997527058
+    :mean_alpha_chunk_size:
+      :standard_deviation: 0.5217947690640979
+      :mean: 1.8681337805668847
+      :variance: 0.2722697810226553
+    :variance_alpha_chunk_size:
+      :standard_deviation: 1.1116455261391447
+      :mean: 1.0639635915579726
+      :variance: 1.235755775785176
+    :mean_alnum_chunk_size:
+      :standard_deviation: 27.26959553329015
+      :mean: 26.07167138810198
+      :variance: 743.6308405492381
+    :variance_alnum_chunk_size:
+      :standard_deviation: 3.6704175053893504
+      :mean: 1.551274787535411
+      :variance: 13.471964663868583
+    :mean_digit_chunk_size:
+      :standard_deviation: 0.9771102121215561
+      :mean: 2.154084975711082
+      :variance: 0.9547443666322324
+    :variance_digit_chunk_size:
+      :standard_deviation: 3.0131414225553734
+      :mean: 2.1969818194376587
+      :variance: 9.079021232319018
+    :vowel_consonant_ratio:
+      :standard_deviation: 1.664310168158114
+      :mean: 0.4164305949008499
+      :variance: 2.7699283358344897
+    :alpha_chunks:
+      :standard_deviation: 6.422583645885298
+      :mean: 7.286118980169972
+      :variance: 41.24958068839329
+    :alnum_chunks:
+      :standard_deviation: 1.437771944565202
+      :mean: 1.613314447592068
+      :variance: 2.0671881645788024
+    :digit_chunks:
+      :standard_deviation: 6.652413426912916
+      :mean: 7.53257790368272
+      :variance: 44.25460440257124
+    :title_chunks:
+      :standard_deviation: 0.2078102089393939
+      :mean: 0.026912181303116147
+      :variance: 0.04318508293943455
+    :mean_letter_frequency_difference:
+      :standard_deviation: 1.6276991632601352
+      :mean: 1.899406120953307
+      :variance: 2.6494045660777443
+    :variance_letter_frequency_difference:
+      :standard_deviation: 1.6277817669242582
+      :mean: 1.9142469310670442
+      :variance: 2.6496734807310602
+  key_lower36:
+    :+:
+      :standard_deviation: 0.290443146065654
+      :mean: 0.3542240587695133
+      :variance: 0.08435722109651485
+    :-:
+      :standard_deviation: 0.290443146065654
+      :mean: 0.3542240587695133
+      :variance: 0.08435722109651485
+    :_:
+      :standard_deviation: 0.290443146065654
+      :mean: 0.3542240587695133
+      :variance: 0.08435722109651485
+    :/:
+      :standard_deviation: 0.290443146065654
+      :mean: 0.3542240587695133
+      :variance: 0.08435722109651485
+    :A:
+      :standard_deviation: 0.290443146065654
+      :mean: 0.3542240587695133
+      :variance: 0.08435722109651485
+    :z:
+      :standard_deviation: 0.2925549967441313
+      :mean: 0.34137681564107686
+      :variance: 0.08558842611995869
+    :Z:
+      :standard_deviation: 0.290443146065654
+      :mean: 0.3542240587695133
+      :variance: 0.08435722109651485
+    :q:
+      :standard_deviation: 0.2947635106037024
+      :mean: 0.34066932753689455
+      :variance: 0.08688552718341898
+    :Q:
+      :standard_deviation: 0.290443146065654
+      :mean: 0.3542240587695133
+      :variance: 0.08435722109651485
+    :X:
+      :standard_deviation: 0.290443146065654
+      :mean: 0.3542240587695133
+      :variance: 0.08435722109651485
+    :x:
+      :standard_deviation: 0.2953304782215121
+      :mean: 0.34204109423634216
+      :variance: 0.08722009136654703
+    :equal:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :length:
+      :standard_deviation: 10.455953258363547
+      :mean: 12.75206611570248
+      :variance: 109.32695854108327
+    :hex:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :lower36:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :upper36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :base64:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :variance_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :max_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_lower_chunk_size:
+      :standard_deviation: 1.9315355110434036
+      :mean: 2.4263180804503115
+      :variance: 3.7308294304217022
+    :variance_lower_chunk_size:
+      :standard_deviation: 5.455080894695695
+      :mean: 1.4484248591583748
+      :variance: 29.757907567673985
+    :mean_upper_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :variance_upper_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_alpha_chunk_size:
+      :standard_deviation: 1.9315355110434036
+      :mean: 2.4263180804503115
+      :variance: 3.7308294304217022
+    :variance_alpha_chunk_size:
+      :standard_deviation: 5.455080894695695
+      :mean: 1.4484248591583748
+      :variance: 29.757907567673985
+    :mean_alnum_chunk_size:
+      :standard_deviation: 10.455953258363547
+      :mean: 12.75206611570248
+      :variance: 109.32695854108327
+    :variance_alnum_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_digit_chunk_size:
+      :standard_deviation: 0.7783698797923754
+      :mean: 2.1150274885812075
+      :variance: 0.6058596697679969
+    :variance_digit_chunk_size:
+      :standard_deviation: 1.2963216707366823
+      :mean: 0.518260085776096
+      :variance: 1.680449874021543
+    :vowel_consonant_ratio:
+      :standard_deviation: 0.15549493985311388
+      :mean: 0.024793388429752067
+      :variance: 0.0241786763199235
+    :alpha_chunks:
+      :standard_deviation: 2.6737038035715504
+      :mean: 3.0082644628099175
+      :variance: 7.148692029232976
+    :alnum_chunks:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :digit_chunks:
+      :standard_deviation: 2.661593311600298
+      :mean: 2.9173553719008263
+      :variance: 7.08407895635544
+    :title_chunks:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_letter_frequency_difference:
+      :standard_deviation: 0.29020261896020055
+      :mean: 0.3397978356224316
+      :variance: 0.08421756005135934
+    :variance_letter_frequency_difference:
+      :standard_deviation: 0.29008315807212165
+      :mean: 0.3557326511871966
+      :variance: 0.08414823859709553
+  key_upper36:
+    :+:
+      :standard_deviation: 0.11825667485152908
+      :mean: 0.17724196277495768
+      :variance: 0.01398464114694027
+    :-:
+      :standard_deviation: 0.11825667485152908
+      :mean: 0.17724196277495768
+      :variance: 0.01398464114694027
+    :_:
+      :standard_deviation: 0.11825667485152908
+      :mean: 0.17724196277495768
+      :variance: 0.01398464114694027
+    :/:
+      :standard_deviation: 0.11825667485152908
+      :mean: 0.17724196277495768
+      :variance: 0.01398464114694027
+    :A:
+      :standard_deviation: 0.1323346509142575
+      :mean: 0.13370667489139618
+      :variance: 0.01751245983259839
+    :z:
+      :standard_deviation: 0.11825667485152908
+      :mean: 0.17724196277495768
+      :variance: 0.01398464114694027
+    :Z:
+      :standard_deviation: 0.11955871340816146
+      :mean: 0.17443672633360047
+      :variance: 0.014294285951814888
+    :q:
+      :standard_deviation: 0.11825667485152908
+      :mean: 0.17724196277495768
+      :variance: 0.01398464114694027
+    :Q:
+      :standard_deviation: 0.13168331954367837
+      :mean: 0.1561229591051926
+      :variance: 0.017340496646042505
+    :X:
+      :standard_deviation: 0.12112959593348659
+      :mean: 0.17199698696826668
+      :variance: 0.014672379011009729
+    :x:
+      :standard_deviation: 0.11825667485152908
+      :mean: 0.17724196277495768
+      :variance: 0.01398464114694027
+    :equal:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :length:
+      :standard_deviation: 4.2572402946550465
+      :mean: 6.380710659898477
+      :variance: 18.124094926434587
+    :hex:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :lower36:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :upper36:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :base64:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :variance_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :max_title_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_lower_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :variance_lower_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_upper_chunk_size:
+      :standard_deviation: 1.3864356943812188
+      :mean: 2.5596446700507616
+      :variance: 1.9222039346543327
+    :variance_upper_chunk_size:
+      :standard_deviation: 71.5249151440015
+      :mean: 5.446065989847716
+      :variance: 5115.813486356614
+    :mean_alpha_chunk_size:
+      :standard_deviation: 1.3864356943812188
+      :mean: 2.5596446700507616
+      :variance: 1.9222039346543327
+    :variance_alpha_chunk_size:
+      :standard_deviation: 71.5249151440015
+      :mean: 5.446065989847716
+      :variance: 5115.813486356614
+    :mean_alnum_chunk_size:
+      :standard_deviation: 4.2572402946550465
+      :mean: 6.380710659898477
+      :variance: 18.124094926434587
+    :variance_alnum_chunk_size:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_digit_chunk_size:
+      :standard_deviation: 0.20503860163007567
+      :mean: 1.0181895093062607
+      :variance: 0.042040828158416865
+    :variance_digit_chunk_size:
+      :standard_deviation: 0.4138627596045055
+      :mean: 0.021503102086858433
+      :variance: 0.17128238378745675
+    :vowel_consonant_ratio:
+      :standard_deviation: 1.3915412959132234
+      :mean: 1.0126903553299493
+      :variance: 1.9363871782318534
+    :alpha_chunks:
+      :standard_deviation: 0.20880166295637698
+      :mean: 2.045685279187817
+      :variance: 0.04359813445334845
+    :alnum_chunks:
+      :standard_deviation: 0.0
+      :mean: 1.0
+      :variance: 0.0
+    :digit_chunks:
+      :standard_deviation: 0.2961723401844171
+      :mean: 1.0786802030456852
+      :variance: 0.0877180550903141
+    :title_chunks:
+      :standard_deviation: 0.0
+      :mean: 0.0
+      :variance: 0.0
+    :mean_letter_frequency_difference:
+      :standard_deviation: 0.11786563179710752
+      :mean: 0.1677853781611642
+      :variance: 0.013892307158931324
+    :variance_letter_frequency_difference:
+      :standard_deviation: 0.12002815626414363
+      :mean: 0.1802030456852792
+      :variance: 0.014406758296169683
+:num_classes: 8
+:classes:
+- not_key_lower36
+- not_key_base64
+- not_key_hex
+- not_key_upper36
+- key_base64
+- key_hex
+- key_lower36
+- key_upper36
+:features:
+- :+
+- :-
+- :_
+- :/
+- :A
+- :z
+- :Z
+- :q
+- :Q
+- :X
+- :x
+- :equal
+- :length
+- :hex
+- :lower36
+- :upper36
+- :base64
+- :mean_title_chunk_size
+- :variance_title_chunk_size
+- :max_title_chunk_size
+- :mean_lower_chunk_size
+- :variance_lower_chunk_size
+- :mean_upper_chunk_size
+- :variance_upper_chunk_size
+- :mean_alpha_chunk_size
+- :variance_alpha_chunk_size
+- :mean_alnum_chunk_size
+- :variance_alnum_chunk_size
+- :mean_digit_chunk_size
+- :variance_digit_chunk_size
+- :vowel_consonant_ratio
+- :alpha_chunks
+- :alnum_chunks
+- :digit_chunks
+- :title_chunks
+- :mean_letter_frequency_difference
+- :variance_letter_frequency_difference

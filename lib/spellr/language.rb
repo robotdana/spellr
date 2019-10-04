@@ -26,7 +26,7 @@ module Spellr
 
       file = Spellr::File.wrap(file)
       return true if @only.any? { |o| file.fnmatch?(o) }
-      return true if file.hashbang && @hashbangs.any? { |h| file.hashbang.include?(h) }
+      return true if !@hashbangs.empty? && file.hashbang && @hashbangs.any? { |h| file.hashbang.include?(h) }
     end
 
     def wordlists
@@ -40,6 +40,8 @@ module Spellr
       require_relative 'cli'
       require 'shellwords'
       warn "Generating wordlist for #{name}"
+
+      generated_project_wordlist.touch
 
       Spellr::CLI.new(generate.shellsplit)
 

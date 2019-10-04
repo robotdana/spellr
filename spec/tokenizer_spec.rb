@@ -85,6 +85,7 @@ RSpec.describe Spellr::Tokenizer do
     it 'excludes URLs with underscores in the path' do
       expect('https://external.xx.fbcdn.net/safe_image.php').to have_no_tokens
     end
+
     it 'excludes URLs with backslash escaped characters' do
       expect('https://external.xx.fbcdn.net/safe_image.php?d=AQAFZTJMZJhBrrPa&w=158&h=158&url=https\\u00253A\\u00252F\\u00252F').to have_no_tokens # rubocop:disable Metrics/LineLength
     end
@@ -146,6 +147,10 @@ RSpec.describe Spellr::Tokenizer do
 
     it 'excludes URLs with numbers in them' do
       expect('http://www.the4wd.com').to have_no_tokens
+    end
+
+    it 'excludes URLs with @ in the path' do
+      expect('https://medium.com/@jessebeach/beware-smushed-off-screen-accessible-text-5952a4c2cbfe').to have_no_tokens
     end
 
     it 'excludes numbers only' do
@@ -221,7 +226,7 @@ RSpec.describe Spellr::Tokenizer do
     end
 
     it 'excludes tokens that look like keys' do
-      expect('a0abcdeA12a2ABaAabAaA0ABCDEaABCaABaAaABabcA1a012Aa').to have_no_tokens
+      expect('a0bcdefA12g2ABhAibCjA0DEFGjkHIJlKLmMnNOopqR1r012Ss').to have_no_tokens
       expect('AB/abcABCa0abAaABC0bAaABaABC').to have_no_tokens
       expect('SG.AAaA0a0AAA0a_aaA00a0aa.00AaaaaAAAA0AAAAAAaAAAAAA0aAa0aaaAAAaa0AAAA').to have_no_tokens
     end

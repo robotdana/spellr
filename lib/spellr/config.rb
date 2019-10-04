@@ -2,6 +2,9 @@
 
 require_relative '../spellr'
 require_relative 'config_loader'
+require_relative 'language'
+require_relative 'reporter'
+require 'pathname'
 
 module Spellr
   class Config
@@ -33,7 +36,15 @@ module Spellr
     end
 
     def word_minimum_length
-      @config[:word_minimum_length]
+      @word_minimum_length ||= @config[:word_minimum_length]
+    end
+
+    def key_heuristic_weight
+      @key_heuristic_weight ||= @config[:key_heuristic_weight]
+    end
+
+    def key_minimum_length
+      @key_minimum_length ||= @config[:key_minimum_length]
     end
 
     def only
@@ -48,18 +59,23 @@ module Spellr
       @config[:color]
     end
 
-    def clear_cache
+    def clear_cache # rubocop:disable Metrics/CyclomaticComplexity
       remove_instance_variable(:@wordlists) if defined?(@wordlists)
       remove_instance_variable(:@languages) if defined?(@languages)
       remove_instance_variable(:@errors) if defined?(@errors)
+      remove_instance_variable(:@word_minimum_length) if defined?(@word_minimum_length)
+      remove_instance_variable(:@key_heuristic_weight) if defined?(@key_heuristic_weight)
+      remove_instance_variable(:@key_minimum_length) if defined?(@key_minimum_length)
     end
 
     def languages
-      require_relative 'language'
-
       @languages ||= @config[:languages].map do |key, args|
         Spellr::Language.new(key, args)
       end
+    end
+
+    def pwd
+      @pwd ||= Pathname.pwd
     end
 
     def languages_for(file)
@@ -109,8 +125,6 @@ module Spellr
     end
 
     def default_reporter
-      require_relative 'reporter'
-
       Spellr::Reporter.new
     end
   end
