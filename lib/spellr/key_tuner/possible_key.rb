@@ -35,19 +35,7 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
 
   def features # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     {
-      **letter_frequency_difference.slice(
-        :+,
-        :-,
-        :_,
-        :'/',
-        :A,
-        :z,
-        :Z,
-        :q,
-        :Q,
-        :X,
-        :x
-      ),
+      **significant_letter_frequency_difference,
       equal: letter_count[:'='],
       length: length,
       hex: character_set == :hex ? 1 : 0,
@@ -83,6 +71,19 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
 
   def length
     string.length
+  end
+
+  SIGNIFICANT_LETTERS = %i{+ - _ / A z Z q Q X x}.freeze
+  if RUBY_VERSION >= '2.5'
+    def significant_letter_frequency_difference
+      letter_frequency_difference.slice(*SIGNIFICANT_LETTERS)
+    end
+  else
+    def significant_letter_frequency_difference
+      letter_frequency_difference.each.with_object({}) do |key, value, hash|
+        hash[key] = value if SIGNIFICANT_LETTERS.include?(key)
+      end
+    end
   end
 
   def character_set
@@ -122,7 +123,7 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
   def letter_frequency
     @letter_frequency ||= begin
       l = letter_count.dup
-      l.transform_values! { |v| v.to_f / string.length }
+      l.each { |k, v| l[k] = v.to_f / string.length }
       l
     end
   end
@@ -130,7 +131,7 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
   def letter_frequency_difference
     @letter_frequency_difference ||= begin
       l = letter_frequency.dup
-      l.transform_values! { |v| (v - ideal_letter_frequency).abs }
+      l.each { |k, v| l[k] = (v - ideal_letter_frequency).abs }
       l
     end
   end

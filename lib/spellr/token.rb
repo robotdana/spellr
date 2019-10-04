@@ -15,6 +15,8 @@ class String
       cache[term] = term.strip.downcase.unicode_normalize.tr('’', "'") + "\n"
     end
   end
+
+  alias_method :match?, :match unless RUBY_VERSION >= '2.4'
 end
 
 module Spellr
