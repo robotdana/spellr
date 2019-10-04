@@ -36,7 +36,7 @@ module Spellr
     end
 
     def word_minimum_length
-      @config[:word_minimum_length]
+      @word_minimum_length ||= @config[:word_minimum_length]
     end
 
     def only
@@ -55,6 +55,7 @@ module Spellr
       remove_instance_variable(:@wordlists) if defined?(@wordlists)
       remove_instance_variable(:@languages) if defined?(@languages)
       remove_instance_variable(:@errors) if defined?(@errors)
+      remove_instance_variable(:@word_minimum_length) if defined?(@word_minimum_length)
     end
 
     def languages
