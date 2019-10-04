@@ -89,7 +89,7 @@ module Spellr
     end
 
     NOT_EVEN_NON_WORDS_RE = %r{[^[:alpha:]/%#0-9\\]+}.freeze # everything not covered by more specific skips/scans
-    LEFTOVER_NON_WORD_BITS_RE = %r{[/%#0-9\\]}.freeze # e.g. a / not starting //a-url.com
+    LEFTOVER_NON_WORD_BITS_RE = %r{[/%#\\]|\d+}.freeze # e.g. a / not starting //a-url.com
     HEX_RE = /(?:#(?:\h{6}|\h{3})|0x\h+)(?![[:alpha:]])/.freeze
     SHELL_COLOR_ESCAPE_RE = /\\(?:e|0?33)\[\d+(;\d+)*m/.freeze
     PUNYCODE_RE = /xn--[a-v0-9\-]+(?:[[:alpha:]])/.freeze
