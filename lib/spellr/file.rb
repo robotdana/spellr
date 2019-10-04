@@ -19,9 +19,13 @@ module Spellr
       @first_line ||= each_line.first
     end
 
+    def basename
+      @basename ||= super.to_s
+    end
+
     def fnmatch?(pattern)
       relative_path.fnmatch?(pattern, ::File::FNM_DOTMATCH) ||
-        ::File.fnmatch?(basename.to_s, pattern, ::File::FNM_DOTMATCH)
+        ::File.fnmatch?(basename, pattern, ::File::FNM_DOTMATCH)
     end
 
     def relative_path
