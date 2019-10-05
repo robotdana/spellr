@@ -7,26 +7,39 @@ module Spellr
     attr_reader :name
     attr_reader :key
 
-    def initialize(name, # rubocop:disable Metrics/ParameterLists
+    def initialize(name, # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
       key: name[0],
       generate: nil,
       only: [],
+      includes: [],
       description: '',
       hashbangs: [])
+      unless only.empty?
+        warn <<~WARNING
+          \e[33mSpellr: `only:` language yaml key with a list of fnmatch rules is deprecated.
+          Please use `includes:` instead, which uses gitignore-inspired rules.
+          see github.com/robotdana/fast_ignore#using-an-includes-list for details\e[0m
+        WARNING
+      end
       @name = name
       @key = key
       @description = description
       @generate = generate
-      @only = only
+      @includes = only + includes
       @hashbangs = hashbangs
     end
 
     def matches?(file)
-      return true if @only.empty?
+      return true if @includes.empty?
+
+      return true if fast_ignore.allowed?(file.to_s)
 
       file = Spellr::File.wrap(file)
-      return true if @only.any? { |o| file.fnmatch?(o) }
       return true if !@hashbangs.empty? && file.hashbang && @hashbangs.any? { |h| file.hashbang.include?(h) }
+    end
+
+    def fast_ignore
+      @fast_ignore ||= FastIgnore.new(include_rules: @includes, gitignore: false)
     end
 
     def wordlists

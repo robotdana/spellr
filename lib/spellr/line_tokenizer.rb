@@ -169,13 +169,17 @@ module Spellr
       end
     end
 
-    MIN_ALPHA_RE = /(?:
-      [A-Z][a-z]{#{Spellr.config.word_minimum_length - 1}}
-      |
-      [a-z]{#{Spellr.config.word_minimum_length}}
-      |
-      [A-Z]{#{Spellr.config.word_minimum_length}}
-    )/x.freeze
+    # this is in a method becase the minimum word length stuff was throwing it off
+    # TODO: move to config maybe?
+    def min_alpha_re
+      /(?:
+        [A-Z][a-z]{#{Spellr.config.word_minimum_length - 1}}
+        |
+        [a-z]{#{Spellr.config.word_minimum_length}}
+        |
+        [A-Z]{#{Spellr.config.word_minimum_length}}
+      )/x.freeze
+    end
     ALPHA_SEP_RE = '[A-Za-z][A-Za-z\\-_/+]*'
     NUM_SEP_RE = '\\d[\\d\\-_/+]*'
     THREE_CHUNK_RE = /^(?:
@@ -186,7 +190,7 @@ module Spellr
     def key_roughly?(matched)
       return unless matched.length >= Spellr.config.key_minimum_length
       return unless matched.match?(THREE_CHUNK_RE)
-      return unless matched.match?(MIN_ALPHA_RE) # or there's no point
+      return unless matched.match?(min_alpha_re) # or there's no point
 
       true
     end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'spellr/backports'
 require_relative 'spellr/config'
 
 module Spellr

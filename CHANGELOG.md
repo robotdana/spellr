@@ -1,3 +1,14 @@
+# v0.4.0 (unreleased)
+- LOTS of performance improvements. it's about 4 times faster
+- significantly better key heuristic matching, with configurable weight (`key_heuristic_weight`).
+- Update FastIgnore dependency.
+- Change the yml format slightly. `ignore` is now `excludes`. `only` is now `includes`
+  I feel like this makes more sense for the way the config is merged. and the right time to do it is when you'll probably have to tweak it anyway because:
+- the `only`/`includes` items are now parsed using FastIgnore's gitignore inspired allow list format
+  (see https://github.com/robotdana/fast_ignore#using-an-includes-list)
+  Mostly it's the same just more flexible, though there may need to be some small adjustments.
+- the cli arguments are now also managed using FastIgnore's rules, fixing issues with absolute paths and paths beginning with `./` also it's a LOT faster when just checking a single file, basically instant. so that's nice.
+
 # v0.3.2
 - add automatic rubygems and dockerhub deploy
 
