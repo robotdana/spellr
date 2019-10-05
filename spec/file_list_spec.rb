@@ -46,7 +46,7 @@ RSpec.describe Spellr::FileList do
     )
   end
 
-  xit 'can respect absolute paths' do
+  it 'can respect absolute paths' do
     expect(described_class.new(Pathname.pwd.join('foo.rb').to_s).to_a).to match_relative_paths(
       'foo.rb'
     )
@@ -62,14 +62,14 @@ RSpec.describe Spellr::FileList do
 
     it 'ignores gitignore files' do
       expect(described_class.new.to_a).to match_relative_paths(
-        # '.gitignore',
+        '.gitignore',
         'spec/foo_spec.rb'
       )
     end
   end
 
   context 'with excluded files' do
-    before { stub_config(ignored: ['foo.rb', '*.txt']) }
+    before { stub_config(excludes: ['foo.rb', '*.txt']) }
 
     it 'ignores excluded files' do
       expect(described_class.new.to_a).to match_relative_paths(

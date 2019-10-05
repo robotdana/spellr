@@ -104,7 +104,7 @@ RSpec.describe 'command line', type: :cli do
     end
 
     it 'returns the list of files when given a dir to subset' do
-      run('spellr --dry-run lib/\*')
+      run('spellr --dry-run lib/')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
@@ -131,7 +131,7 @@ RSpec.describe 'command line', type: :cli do
 
       stub_fs_file '.spellr.yml', <<~FILE
         color: true
-        ignore:
+        excludes:
           - .spellr.yml
         languages:
           english:

@@ -3,7 +3,7 @@ word_minimum_length: 3
 key_heuristic_weight: 5
 key_minimum_length: 6
 
-ignore: # this list is parsed with the .gitignore format
+excludes: # this list is parsed with the .gitignore format
   - .git/
   - .spellr_wordlists/
   - .DS_Store
@@ -31,7 +31,7 @@ languages:
     generate: "fetch english"
     # TODO: don't generate the ruby file until you actually need one
   ruby:
-    only: # Filtered using File.fn_match
+    includes: # Filtered using gitignore format
       - '*.rb'
       - '*.rake'
       - '*.gemspec'
@@ -45,7 +45,7 @@ languages:
     hashbangs:
       - ruby
   html:
-    only:
+    includes:
       - '*.html'
       - '*.hml'
       - '*.jsx'
@@ -62,7 +62,7 @@ languages:
       - '*.sass'
       - '*.less'
   js:
-    only:
+    includes:
       - '*.html'
       - '*.hml'
       - '*.jsx'
@@ -74,22 +74,22 @@ languages:
       - '*.erb'
       - '*.json'
   shell:
-    only:
+    includes:
       - '*.sh'
       - Dockerfile
     hashbangs:
       - bash
       - sh
   dockerfile:
-    only:
+    includes:
       - Dockerfile
   css:
-    only:
+    includes:
       - '*.css'
       - '*.sass'
       - '*.scss'
   xml:
-    only:
+    includes:
       - '*.xml'
       - '*.html'
       - '*.haml'

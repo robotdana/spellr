@@ -2,6 +2,8 @@
 
 require 'pathname'
 
+# TODO: maybe just extend pathname if you have to
+
 module Spellr
   class File < Pathname
     def self.wrap(file)
@@ -9,27 +11,16 @@ module Spellr
     end
 
     def hashbang
-      return if extname != ''
-      return unless first_line&.start_with?('#!')
+      @hashbang ||= begin
+        return if extname != ''
+        return unless first_line&.start_with?('#!')
 
-      first_line
+        first_line
+      end
     end
 
     def first_line
       @first_line ||= each_line.first
-    end
-
-    def basename
-      @basename ||= super.to_s
-    end
-
-    def fnmatch?(pattern)
-      relative_path.fnmatch?(pattern, ::File::FNM_DOTMATCH) ||
-        ::File.fnmatch?(basename, pattern, ::File::FNM_DOTMATCH)
-    end
-
-    def relative_path
-      @relative_path ||= relative_path_from(Spellr.config.pwd)
     end
   end
 end

@@ -1,8 +1,8 @@
 ---
-ignore:
+excludes:
   - wordlists/*
   - data/*
-only:
+includes:
   - '*.rb'
   - '*.yml'
   - '*.txt'
@@ -12,9 +12,9 @@ only:
   - Gemfile
 languages:
   ruby:
-    only:
+    includes:
       - README.md
   lorem:
-    only:
+    includes:
       - spec/*
       - .spellr.yml

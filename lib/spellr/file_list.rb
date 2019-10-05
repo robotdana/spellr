@@ -12,22 +12,27 @@ module Spellr
       @patterns = patterns
     end
 
-    def config_only?(file)
-      Spellr.config.only.empty? || Spellr.config.only.any? { |o| file.fnmatch?(o) }
-    end
-
-    def cli_only?(file)
-      @patterns.empty? || @patterns.any? { |p| file.fnmatch?(p) }
+    # anchored patterns are significantly faster on large codebases
+    def cli_patterns
+      @patterns.map do |pattern|
+        if pattern.match?(%r{^([/~*]|\.{1,2}/)})
+          pattern
+        else
+          "/#{pattern}"
+        end
+      end
     end
 
     def each
-      # TODO: handle no gitignore
       gitignore = ::File.join(Dir.pwd, '.gitignore')
       gitignore = nil unless ::File.exist?(gitignore)
-      FastIgnore.new(rules: Spellr.config.ignored, gitignore: gitignore).each do |file|
+
+      FastIgnore.new(
+        ignore_rules: Spellr.config.excludes,
+        include_rules: Spellr.config.includes + cli_patterns,
+        gitignore: gitignore
+      ).each do |file|
         file = Spellr::File.new(file)
-        next unless cli_only?(file)
-        next unless config_only?(file)
 
         yield(file)
       end

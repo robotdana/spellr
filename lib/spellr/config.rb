@@ -7,7 +7,7 @@ require_relative 'reporter'
 require 'pathname'
 
 module Spellr
-  class Config
+  class Config # rubocop:disable Metrics/ClassLength
     attr_writer :reporter
     attr_reader :config_file
     attr_accessor :quiet
@@ -47,25 +47,46 @@ module Spellr
       @key_minimum_length ||= @config[:key_minimum_length]
     end
 
-    def only
-      @config[:only] || []
+    def includes
+      return @includes if defined?(@includes)
+
+      if @config[:only]
+        warn <<~WARNING
+          \e[33mSpellr: `only:` yaml key with a list of fnmatch rules is deprecated.
+          Please use `includes:` instead, which uses gitignore-inspired rules.
+          see github.com/robotdana/fast_ignore#using-an-includes-list for details\e[0m
+        WARNING
+      end
+
+      @includes = (@config[:includes] || []) + (@config[:only] || [])
     end
 
-    def ignored
-      @config[:ignore]
+    def excludes
+      return @excludes if defined?(@excludes)
+
+      if @config[:ignore]
+        warn <<~WARNING
+          \e[33mSpellr: `ignore:` yaml key is deprecated.
+          Please use `excludes:` instead.\e[0m
+        WARNING
+      end
+
+      @excludes = (@config[:excludes] || []) + (@config[:ignore] || [])
     end
 
     def color
       @config[:color]
     end
 
-    def clear_cache # rubocop:disable Metrics/CyclomaticComplexity
+    def clear_cache # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       remove_instance_variable(:@wordlists) if defined?(@wordlists)
       remove_instance_variable(:@languages) if defined?(@languages)
       remove_instance_variable(:@errors) if defined?(@errors)
       remove_instance_variable(:@word_minimum_length) if defined?(@word_minimum_length)
       remove_instance_variable(:@key_heuristic_weight) if defined?(@key_heuristic_weight)
       remove_instance_variable(:@key_minimum_length) if defined?(@key_minimum_length)
+      remove_instance_variable(:@excludes) if defined?(@excludes)
+      remove_instance_variable(:@includes) if defined?(@includes)
     end
 
     def languages
