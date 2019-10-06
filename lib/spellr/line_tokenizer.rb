@@ -169,7 +169,7 @@ module Spellr
       end
     end
 
-    # this is in a method becase the minimum word length stuff was throwing it off
+    # this is in a method because the minimum word length stuff was throwing it off
     # TODO: move to config maybe?
     def min_alpha_re
       /(?:

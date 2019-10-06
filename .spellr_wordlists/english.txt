@@ -3,6 +3,7 @@ addable
 alnum
 arg
 args
+backports
 baz
 bundler
 changelog
@@ -10,6 +11,7 @@ charpos
 cli
 cmd
 codebase
+codebases
 colours
 config
 configs
