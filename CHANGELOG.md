@@ -1,4 +1,9 @@
-# v0.4.0 (unreleased)
+# v0.4.1
+- fix the private method 'touch' issue when generating wordlists
+- fix the js/javascript defaults being named differently (now consistently is named javascript)
+- add .jsx.snap and .tsx.snap as extensions using the javascript wordlists
+
+# v0.4.0
 - LOTS of performance improvements. it's about 4 times faster
 - significantly better key heuristic matching, with configurable weight (`key_heuristic_weight`).
 - Update FastIgnore dependency.
