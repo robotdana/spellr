@@ -1,0 +1,101 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'net/http'
+require 'pathname'
+require_relative '../../lib/spellr/wordlist'
+require 'fileutils'
+
+class SCOWLDownloader
+  LOCALES=%i{US AU CA GBs GBz}
+  OUTPUT_DIR=Pathname.new(__dir__).join('..', '..', 'wordlists')
+  def initialize
+    LOCALES.each { |locale| fetch(locale) }
+    collate
+    FileUtils.copy(
+      wordlist_path(:US).sub_ext('.LICENSE.txt'),
+      base_wordlist_path.sub_ext('.LICENSE.txt')
+    )
+  end
+
+  def collate
+    puts "collating common words"
+    keep_common(wordlist_path(LOCALES[0]), wordlist_path(LOCALES[1]), base_wordlist_path)
+    LOCALES.drop(2).each do |locale|
+      keep_common(wordlist_path(locale), base_wordlist_path)
+    end
+
+    LOCALES.each do |locale|
+      puts "collating exclusive words for #{locale}"
+      keep_right_only(base_wordlist_path, wordlist_path(locale))
+    end
+
+    generate_gb
+  end
+  
+  def keep_common(path1, path2, output = path2)
+    system("comm -12 #{path1} #{path2} > #{output}.tmp")
+    output.sub_ext('.txt.tmp').rename(output)
+  end
+
+  def keep_right_only(path1, path2, output = path2)
+    system("comm -13 #{path1} #{path2} > #{output}.tmp")
+    output.sub_ext('.txt.tmp').rename(output)
+  end
+
+  def generate_gb
+    write_wordlist(wordlist_path(:GBs).read + wordlist_path(:GBz).read, :GB)
+  end
+
+  def fetch(locale)
+    puts "fetching #{locale}"
+    words = Net::HTTP.get_response(uri(locale)).body
+    words = extract_and_write_license(words, locale)
+    write_wordlist(words, locale)
+  end
+
+  def extract_and_write_license(words, locale)
+    puts "writing #{locale} license"
+    words, license = words.split('---', 2).reverse
+
+    license_path(locale).write(license) if license
+
+    words
+  end
+
+  def write_wordlist(words, locale)
+    puts "writing #{locale}"
+    Spellr::Wordlist.new(wordlist_path(locale))
+      .clean(StringIO.new(words.force_encoding('UTF-8')))
+  end
+
+  private
+
+  def license_path(locale)
+    wordlist_path(locale).sub_ext('.LICENSE.txt')
+  end
+
+  def base_wordlist_path
+    OUTPUT_DIR.join("english.txt")
+  end
+
+  def wordlist_path(locale)
+    OUTPUT_DIR.join("english", "#{locale}.txt")
+  end
+
+  def uri(spelling = :US)
+    query = URI.encode_www_form(
+      max_size: 80,
+      spelling: spelling,
+      max_variant: 0,
+      diacritic: :both,
+      hacker: true,
+      download: :wordlist,
+      encoding: :'utf-8',
+      format: :inline
+    )
+    URI.parse("http://app.aspell.net/create?#{query}")
+  end
+end
+
+SCOWLDownloader.new

@@ -20,12 +20,6 @@ RSpec.describe 'command line', type: :cli do
             -c, --config FILENAME            Path to the config file (default ./.spellr.yml)
             -v, --version                    Returns the current version
             -h, --help                       Shows this message
-
-        Usage: spellr fetch [options] WORDLIST [wordlist options]
-        Available wordlists: ["english", "ruby"]
-
-            -o, --output=OUTPUT              Outputs the fetched wordlist to OUTPUT/WORDLIST.txt
-            -h, --help                       Shows help for fetch
       HELP
     end
   end
@@ -124,18 +118,9 @@ RSpec.describe 'command line', type: :cli do
       FILE
 
       stub_fs_file 'check.txt', <<~FILE
-        lorem ipsum dolor
+        lorem ipsum dolar
 
-          dolor amet
-      FILE
-
-      stub_fs_file '.spellr.yml', <<~FILE
-        color: true
-        excludes:
-          - .spellr.yml
-        languages:
-          english:
-            generate: false
+          dolar amet
       FILE
     end
 
@@ -147,7 +132,7 @@ RSpec.describe 'command line', type: :cli do
         expect(exitstatus).to eq 1
         expect(stdout).to eq <<~WORDS.chomp
           amet
-          dolor
+          dolar
         WORDS
       end
     end
@@ -159,9 +144,9 @@ RSpec.describe 'command line', type: :cli do
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
         expect(stdout).to eq <<~WORDS.chomp
-          #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-          #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
-          #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+          #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+          #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+          #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
 
           1 file checked
           3 errors found
@@ -173,7 +158,7 @@ RSpec.describe 'command line', type: :cli do
       it 'returns the first unmatched term and a prompt' do
         run 'spellr -i' do |stdout, _|
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
         end
@@ -182,19 +167,19 @@ RSpec.describe 'command line', type: :cli do
       it 'returns the interactive command help' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print '?'
 
           expect(stdout).to print <<~STDOUT
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{bold '[r]'} Replace #{red 'dolor'}
-            #{bold '[R]'} Replace all future instances of #{red 'dolor'}
-            #{bold '[s]'} Skip #{red 'dolor'}
-            #{bold '[S]'} Skip all future instances of #{red 'dolor'}
-            #{bold '[a]'} Add #{red 'dolor'} to a word list
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{bold '[r]'} Replace #{red 'dolar'}
+            #{bold '[R]'} Replace all future instances of #{red 'dolar'}
+            #{bold '[s]'} Skip #{red 'dolar'}
+            #{bold '[S]'} Skip all future instances of #{red 'dolar'}
+            #{bold '[a]'} Add #{red 'dolar'} to a word list
             #{bold '[e]'} Edit the whole line
             #{bold '[?]'} Show this help
           STDOUT
@@ -204,7 +189,7 @@ RSpec.describe 'command line', type: :cli do
       it 'exits when ctrl C' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin, pid|
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
@@ -217,38 +202,38 @@ RSpec.describe 'command line', type: :cli do
       it 'returns the next unmatched term and a prompt after skipping' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            Skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            Skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
-            Skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            Skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
-            Skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             Skipped #{red 'amet'}
 
             1 file checked
@@ -262,27 +247,27 @@ RSpec.describe 'command line', type: :cli do
       it 'returns the next unmatched term and a prompt after skipping with S' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'S'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            Skipped #{red 'dolor'}
-            Automatically skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            Skipped #{red 'dolar'}
+            Automatically skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'S'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            Skipped #{red 'dolor'}
-            Automatically skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            Skipped #{red 'dolar'}
+            Automatically skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             Skipped #{red 'amet'}
 
             1 file checked
@@ -296,37 +281,37 @@ RSpec.describe 'command line', type: :cli do
       it 'returns the next unmatched term and a prompt after adding with a' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'a'
 
           expect(stdout).to print <<~STDOUT
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            Add #{red 'dolor'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            Add #{red 'dolar'} to wordlist:
             [e] english
           STDOUT
 
           stdin.print 'e'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            Add #{red 'dolor'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            Add #{red 'dolar'} to wordlist:
             [e] english
-            Added #{red 'dolor'} to english wordlist
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Added #{red 'dolar'} to english wordlist
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            Add #{red 'dolor'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            Add #{red 'dolar'} to wordlist:
             [e] english
-            Added #{red 'dolor'} to english wordlist
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Added #{red 'dolar'} to english wordlist
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             Skipped #{red 'amet'}
 
             1 file checked
@@ -340,70 +325,70 @@ RSpec.describe 'command line', type: :cli do
       it 'returns the next unmatched term and a prompt after replacing with R' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'R'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolor
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolar
           STDOUT
 
           stdin.print "es\n"
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolores
-            Replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolares
+            Replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'a'
 
           expect(stdout).to print <<~STDOUT
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolores
-            Replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
-            Add #{red 'dolores'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolares
+            Replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
+            Add #{red 'dolares'} to wordlist:
             [e] english
           STDOUT
 
           stdin.print 'e'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolores
-            Replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
-            Add #{red 'dolores'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolares
+            Replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
+            Add #{red 'dolares'} to wordlist:
             [e] english
-            Added #{red('dolores')} to english wordlist
-            Automatically replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:3:10'} dolores #{red 'amet'}
+            Added #{red('dolares')} to english wordlist
+            Automatically replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolores
-            Replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
-            Add #{red 'dolores'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolares
+            Replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
+            Add #{red 'dolares'} to wordlist:
             [e] english
-            Added #{red('dolores')} to english wordlist
-            Automatically replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:3:10'} dolores #{red 'amet'}
+            Added #{red('dolares')} to english wordlist
+            Automatically replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
             Skipped #{red('amet')}
 
             1 file checked
@@ -418,87 +403,87 @@ RSpec.describe 'command line', type: :cli do
       it 'returns the next unmatched term and a prompt after replacing with r' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin| # rubocop:disable Metrics/BlockLength
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'r'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolor
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolar
           STDOUT
 
           stdin.print "es\n"
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolores
-            Replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolares
+            Replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'a'
 
           expect(stdout).to print <<~STDOUT
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolores
-            Replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
-            Add #{red 'dolores'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolares
+            Replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
+            Add #{red 'dolares'} to wordlist:
             [e] english
           STDOUT
 
           stdin.print 'e'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolores
-            Replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
-            Add #{red 'dolores'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolares
+            Replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
+            Add #{red 'dolares'} to wordlist:
             [e] english
-            Added #{red 'dolores'} to english wordlist
-            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            Added #{red 'dolares'} to english wordlist
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolores
-            Replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
-            Add #{red 'dolores'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolares
+            Replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
+            Add #{red 'dolares'} to wordlist:
             [e] english
-            Added #{red 'dolores'} to english wordlist
-            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
-            Skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Added #{red 'dolares'} to english wordlist
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} #{red 'dolor'}
-            #{aqua '=>'} dolores
-            Replaced #{red('dolor')} with #{green('dolores')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolores'}
-            Add #{red 'dolores'} to wordlist:
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} #{red 'dolar'}
+            #{aqua '=>'} dolares
+            Replaced #{red('dolar')} with #{green('dolares')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
+            Add #{red 'dolares'} to wordlist:
             [e] english
-            Added #{red 'dolores'} to english wordlist
-            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
-            Skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Added #{red 'dolares'} to english wordlist
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             Skipped #{red 'amet'}
 
             1 file checked
@@ -513,52 +498,52 @@ RSpec.describe 'command line', type: :cli do
       it 'returns the next unmatched term and a prompt after replacing with e' do # rubocop:disable RSpec/ExampleLength
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 'e'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} lorem ipsum #{red 'dolor'}
-            #{aqua '=>'} lorem ipsum dolor
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} lorem ipsum #{red 'dolar'}
+            #{aqua '=>'} lorem ipsum dolar
           STDOUT
           stdin.print "\b" * 17
           stdin.print "lorem lorem lorem\n"
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} lorem ipsum #{red 'dolar'}
             #{aqua '=>'} lorem lorem lorem
-            Replaced #{red 'lorem ipsum dolor'} with #{green('lorem lorem lorem')}
-            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
+            Replaced #{red 'lorem ipsum dolar'} with #{green('lorem lorem lorem')}
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} lorem ipsum #{red 'dolar'}
             #{aqua '=>'} lorem lorem lorem
-            Replaced #{red 'lorem ipsum dolor'} with #{green('lorem lorem lorem')}
-            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
-            Skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Replaced #{red 'lorem ipsum dolar'} with #{green('lorem lorem lorem')}
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             #{bold '[a,s,S,r,R,e,?]'}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolor'}
-            #{aqua '>>'} lorem ipsum #{red 'dolor'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{aqua '>>'} lorem ipsum #{red 'dolar'}
             #{aqua '=>'} lorem lorem lorem
-            Replaced #{red 'lorem ipsum dolor'} with #{green('lorem lorem lorem')}
-            #{aqua 'check.txt:3:2'} #{red 'dolor'} amet
-            Skipped #{red 'dolor'}
-            #{aqua 'check.txt:3:8'} dolor #{red 'amet'}
+            Replaced #{red 'lorem ipsum dolar'} with #{green('lorem lorem lorem')}
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
             Skipped #{red 'amet'}
 
             1 file checked

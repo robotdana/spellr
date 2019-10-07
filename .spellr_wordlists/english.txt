@@ -59,6 +59,9 @@ htt
 hyperwallet
 ico
 inclusions
+ise
+ize
+javascript
 jbuilder
 jpg
 json
