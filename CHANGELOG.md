@@ -1,3 +1,8 @@
+# v0.5.0
+- Removed the fetch command it was just unnecessarily slow and awkward. instead use `locale: [US,AU]`
+- Added usage documentation
+- Fixed an issue where file-specific wordlists couldn't be added to
+
 # v0.4.1
 - fix the private method 'touch' issue when generating wordlists
 - fix the js/javascript defaults being named differently (now consistently is named javascript)
