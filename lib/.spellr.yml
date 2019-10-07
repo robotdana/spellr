@@ -52,6 +52,8 @@ languages:
       - '*.tsx'
       - '*.js'
       - '*.ts'
+      - '*.jsx.snap'
+      - '*.tsx.snap'
       - '*.coffee'
       - '*.haml'
       - '*.erb'
@@ -61,7 +63,7 @@ languages:
       - '*.scss'
       - '*.sass'
       - '*.less'
-  js:
+  javascript:
     includes:
       - '*.html'
       - '*.hml'
@@ -69,6 +71,8 @@ languages:
       - '*.tsx'
       - '*.js'
       - '*.ts'
+      - '*.jsx.snap'
+      - '*.tsx.snap'
       - '*.coffee'
       - '*.haml'
       - '*.erb'
@@ -88,6 +92,7 @@ languages:
       - '*.css'
       - '*.sass'
       - '*.scss'
+      - '*.less'
   xml:
     includes:
       - '*.xml'
