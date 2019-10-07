@@ -82,8 +82,6 @@ module Spellr
       Spellr.config.clear_cache if to_a.length == 1
     end
 
-    private
-
     def touch
       return if exist?
 
@@ -91,6 +89,8 @@ module Spellr
       @path.write('')
       remove_instance_variable(:@exist)
     end
+
+    private
 
     def raise_unless_exists?
       return if exist?
