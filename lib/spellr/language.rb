@@ -13,7 +13,8 @@ module Spellr
       only: [],
       includes: [],
       description: '',
-      hashbangs: [])
+      hashbangs: [],
+      locale: [])
       unless only.empty?
         warn <<~WARNING
           \e[33mSpellr: `only:` language yaml key with a list of fnmatch rules is deprecated.
@@ -21,12 +22,20 @@ module Spellr
           see github.com/robotdana/fast_ignore#using-an-includes-list for details\e[0m
         WARNING
       end
+
+      if generate
+        warn <<~WARNING
+          \e[33mSpellr: `generate:` and generation is now deprecated. Choose the language
+          using the key `locale:` (any of US,AU,CA,GB,GBz,GBs as a string or array).\e[0m
+        WARNING
+      end
+
       @name = name
       @key = key
       @description = description
-      @generate = generate
       @includes = only + includes
       @hashbangs = hashbangs
+      @locales = Array(locale)
     end
 
     def matches?(file)
@@ -43,22 +52,7 @@ module Spellr
     end
 
     def wordlists
-      generate_wordlist unless generated_project_wordlist.exist?
       default_wordlists.select(&:exist?)
-    end
-
-    def generate_wordlist
-      return [] unless generate
-
-      require_relative 'cli'
-      require 'shellwords'
-      warn "Generating wordlist for #{name}"
-
-      generated_project_wordlist.touch
-
-      Spellr::CLI.new(generate.shellsplit)
-
-      default_wordlists
     end
 
     def gem_wordlist
@@ -74,17 +68,17 @@ module Spellr
       )
     end
 
-    def generated_project_wordlist
-      @generated_project_wordlist ||= Spellr::Wordlist.new(
-        Pathname.pwd.join('.spellr_wordlists', 'generated', "#{name}.txt")
-      )
+    def locale_wordlists
+      @locale_wordlists ||= @locales.map do |locale|
+        Spellr::Wordlist.new(
+          Pathname.new(__dir__).parent.parent.join('wordlists', name.to_s, "#{locale}.txt")
+        )
+      end
     end
 
     private
 
-    attr_reader :generate
-
-    def load_wordlists(name, paths, _generate)
+    def load_wordlists(name, paths)
       wordlists = paths + default_wordlist_paths(name)
 
       wordlists.map(&Spellr::Wordlist.method(:new))
@@ -93,8 +87,8 @@ module Spellr
     def default_wordlists
       [
         gem_wordlist,
-        generated_project_wordlist,
-        project_wordlist
+        project_wordlist,
+        *locale_wordlists
       ]
     end
   end

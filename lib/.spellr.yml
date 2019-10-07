@@ -28,8 +28,7 @@ excludes: # this list is parsed with the .gitignore format
 
 languages:
   english:
-    generate: "fetch english"
-    # TODO: don't generate the ruby file until you actually need one
+    locale: US # options US, CA, AU, GBs (GB with -ise endings), GBz (GB with -ize endings)
   ruby:
     includes: # Filtered using gitignore format
       - '*.rb'
