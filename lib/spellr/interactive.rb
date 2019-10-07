@@ -120,10 +120,10 @@ module Spellr
     # TODO: handle more than 16 options
     def handle_add(token) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       puts "Add #{red(token)} to wordlist:"
-      languages = Spellr.config.languages_for(token.location.file)
+      languages = Spellr.config.languages_for(token.location.file.path)
 
-      languages.each do |wordlist|
-        puts "[#{wordlist.key}] #{wordlist.name}"
+      languages.each do |language|
+        puts "[#{language.key}] #{language.name}"
       end
       choice = STDIN.getch
       clear_current_line
