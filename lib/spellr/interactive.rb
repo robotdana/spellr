@@ -50,7 +50,7 @@ module Spellr
     end
 
     def prompt(token)
-      print bold('[a,s,S,r,R,e,?]')
+      print bold('[r,R,s,S,a,e,?]')
 
       handle_response(token)
     rescue Interrupt

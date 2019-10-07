@@ -1,4 +1,6 @@
 amet
+dolar
+dolares
 dolor
 ipsum
 lorem

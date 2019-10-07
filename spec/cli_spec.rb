@@ -159,7 +159,7 @@ RSpec.describe 'command line', type: :cli do
         run 'spellr -i' do |stdout, _|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
         end
       end
@@ -168,7 +168,7 @@ RSpec.describe 'command line', type: :cli do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print '?'
@@ -190,7 +190,7 @@ RSpec.describe 'command line', type: :cli do
         run 'spellr -i' do |stdout, stdin, pid|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.puts "\u0003" # ctrl c
@@ -203,7 +203,7 @@ RSpec.describe 'command line', type: :cli do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 's'
@@ -212,7 +212,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 's'
@@ -223,7 +223,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 's'
@@ -248,7 +248,7 @@ RSpec.describe 'command line', type: :cli do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 'S'
@@ -258,7 +258,7 @@ RSpec.describe 'command line', type: :cli do
             Skipped #{red 'dolar'}
             Automatically skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 'S'
@@ -282,7 +282,7 @@ RSpec.describe 'command line', type: :cli do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 'a'
@@ -301,7 +301,7 @@ RSpec.describe 'command line', type: :cli do
             [e] english
             Added #{red 'dolar'} to english wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 's'
@@ -326,7 +326,7 @@ RSpec.describe 'command line', type: :cli do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 'R'
@@ -345,7 +345,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} dolares
             Replaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 'a'
@@ -373,7 +373,7 @@ RSpec.describe 'command line', type: :cli do
             Added #{red('dolares')} to english wordlist
             Automatically replaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 's'
@@ -404,7 +404,7 @@ RSpec.describe 'command line', type: :cli do
         run 'spellr -i' do |stdout, stdin| # rubocop:disable Metrics/BlockLength
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 'r'
@@ -423,7 +423,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} dolares
             Replaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 'a'
@@ -450,7 +450,7 @@ RSpec.describe 'command line', type: :cli do
             [e] english
             Added #{red 'dolares'} to english wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 's'
@@ -467,7 +467,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 's'
@@ -499,7 +499,7 @@ RSpec.describe 'command line', type: :cli do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 'e'
@@ -518,7 +518,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua '=>'} lorem lorem lorem
             Replaced #{red 'lorem ipsum dolar'} with #{green('lorem lorem lorem')}
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 's'
@@ -531,7 +531,7 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[a,s,S,r,R,e,?]'}
+            #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
           stdin.print 's'

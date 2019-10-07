@@ -30,6 +30,7 @@ env
 eos
 eot
 erb
+esque
 exclusions
 exe
 executables
@@ -46,6 +47,7 @@ github
 gitignore
 gitignored
 gitkeep
+grepping
 gtm
 haml
 hashbang
@@ -80,6 +82,7 @@ multiline
 newlines
 noninfringement
 nonwords
+notaword
 num
 optparse
 org
@@ -130,6 +133,7 @@ unrecognised
 unscan
 uploader
 uri
+urls
 usr
 utf
 woff
