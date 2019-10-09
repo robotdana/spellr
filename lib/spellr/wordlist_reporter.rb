@@ -15,7 +15,7 @@ module Spellr
     end
 
     def call(token)
-      words << token.normalize
+      words << token.spellr_normalize
     end
   end
 end

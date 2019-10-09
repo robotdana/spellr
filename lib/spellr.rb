@@ -5,6 +5,7 @@ require_relative 'spellr/config'
 
 module Spellr
   class Error < StandardError; end
+
   class Wordlist
     class NotFound < Spellr::Error; end
   end

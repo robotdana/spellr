@@ -49,7 +49,8 @@ RSpec.describe Spellr::Tokenizer do
     end
 
     it 'tracks newlines with a whole line of nonsense' do
-      expect("!first line!\n!!!!!\n!second line!").to have_token_positions [1, 1], [1, 7], [3, 1], [3, 8]
+      expect("!first line!\n!!!!!\n!second line!")
+        .to have_token_positions [1, 1], [1, 7], [3, 1], [3, 8]
     end
   end
 
@@ -75,7 +76,8 @@ RSpec.describe Spellr::Tokenizer do
     end
 
     it 'excludes URLs when followed by punctuation' do
-      expect('read this http://google.com, and this http://apple.com').to have_tokens 'read', 'this', 'and', 'this'
+      expect('read this http://google.com, and this http://apple.com')
+        .to have_tokens 'read', 'this', 'and', 'this'
     end
 
     it 'excludes URLs with a query string' do
@@ -87,7 +89,8 @@ RSpec.describe Spellr::Tokenizer do
     end
 
     it 'excludes URLs with backslash escaped characters' do
-      expect('https://external.xx.fbcdn.net/safe_image.php?d=AQAFZTJMZJhBrrPa&w=158&h=158&url=https\\u00253A\\u00252F\\u00252F').to have_no_tokens # rubocop:disable Metrics/LineLength
+      expect('https://external.xx.fbcdn.net/safe_image.php?url=https\\u00253A\\u00252F\\u00252F')
+        .to have_no_tokens
     end
 
     it 'excludes URLs with paths and no scheme' do
@@ -150,7 +153,8 @@ RSpec.describe Spellr::Tokenizer do
     end
 
     it 'excludes URLs with @ in the path' do
-      expect('https://medium.com/@jessebeach/beware-smushed-off-screen-accessible-text-5952a4c2cbfe').to have_no_tokens
+      expect('https://medium.com/@jessebeach/beware-smushed-off-screen-accessible-text-5952a4c2cbfe')
+        .to have_no_tokens
     end
 
     it 'excludes numbers only' do
@@ -170,11 +174,13 @@ RSpec.describe Spellr::Tokenizer do
     end
 
     it "doesn't split on apostrophes" do
-      expect("Didn't shouldn't could've o'clock").to have_tokens "Didn't", "shouldn't", "could've", "o'clock"
+      expect("Didn't shouldn't could've o'clock")
+        .to have_tokens "Didn't", "shouldn't", "could've", "o'clock"
     end
 
     it 'excludes wrapping quotes' do
-      expect(%{"Didn't" 'shouldn't' <could've> 'o'clock'}).to have_tokens "Didn't", "shouldn't", "could've", "o'clock"
+      expect(%{"Didn't" 'shouldn't' <could've> 'o'clock'})
+        .to have_tokens "Didn't", "shouldn't", "could've", "o'clock"
     end
 
     it 'splits on underscore' do
@@ -228,11 +234,13 @@ RSpec.describe Spellr::Tokenizer do
     it 'excludes tokens that look like keys' do
       expect('a0bcdefA12g2ABhAibCjA0DEFGjkHIJlKLmMnNOopqR1r012Ss').to have_no_tokens
       expect('AB/abcABCa0abAaABC0bAaABaABC').to have_no_tokens
-      expect('SG.AAaA0a0AAA0a_aaA00a0aa.00AaaaaAAAA0AAAAAAaAAAAAA0aAa0aaaAAAaa0AAAA').to have_no_tokens
+      expect('SG.AAaA0a0AAA0a_aaA00a0aa.00AaaaaAAAA0AAAAAAaAAAAAA0aAa0aaaAAAaa0AAAA')
+        .to have_no_tokens
     end
 
     it 'excludes from the token escape code characters' do
-      expect('\never \rate /\Atheist\Seat/ \there').to have_tokens 'ever', 'ate', 'theist', 'eat', 'here'
+      expect('\never \rate /\Atheist\Seat/ \there')
+        .to have_tokens 'ever', 'ate', 'theist', 'eat', 'here'
     end
 
     it 'excludes the color escape code character' do
