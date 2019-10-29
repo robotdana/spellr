@@ -96,6 +96,7 @@ rakefile
 rdoc
 readme
 redisplay
+regexps
 repo
 robotdana
 rspec

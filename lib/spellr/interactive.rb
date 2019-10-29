@@ -3,50 +3,60 @@
 require 'io/console'
 require 'readline'
 require_relative '../spellr'
-require_relative 'reporter'
-require_relative 'string_format'
+require_relative 'interactive_add'
+require_relative 'interactive_replacement'
+require_relative 'base_reporter'
 
 module Spellr
-  class Interactive # rubocop:disable Metrics/ClassLength
-    include Spellr::StringFormat
+  class Interactive < BaseReporter
+    def parallel?
+      false
+    end
 
-    attr_reader :global_replacements, :global_skips
-    attr_reader :global_insensitive_replacements
-    attr_reader :global_insensitive_skips
-    attr_accessor :total_skipped
-    attr_accessor :total_fixed
-    attr_accessor :total_added
-
-    def finish(checked) # rubocop:disable Metrics/AbcSize
+    def finish # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       puts "\n"
-      puts "#{pluralize 'file', checked} checked"
+      puts "#{pluralize 'file', counts[:checked]} checked"
       puts "#{pluralize 'error', total} found"
-      puts "#{pluralize 'error', total_skipped} skipped" if total_skipped.positive?
-      puts "#{pluralize 'error', total_fixed} fixed" if total_fixed.positive?
-      puts "#{pluralize 'word', total_added} added" if total_added.positive?
+      if counts[:total_skipped].positive?
+        puts "#{pluralize 'error', counts[:total_skipped]} skipped"
+      end
+      puts "#{pluralize 'error', counts[:total_fixed]} fixed" if counts[:total_fixed].positive?
+      puts "#{pluralize 'word', counts[:total_added]} added" if counts[:total_added].positive?
     end
 
-    def total
-      total_skipped + total_fixed + total_added
+    def global_replacements
+      @global_replacements ||= begin
+        counts[:global_replacements] = {} unless counts.key?(:global_replacements)
+        counts[:global_replacements]
+      end
     end
 
-    def initialize
-      @global_replacements = {}
-      @global_insensitive_replacements = {}
-      @global_skips = []
-      @global_insensitive_skips = []
-      @total_skipped = 0
-      @total_fixed = 0
-      @total_added = 0
+    def global_skips
+      @global_skips ||= begin
+        counts[:global_skips] = [] unless counts.key?(:global_skips)
+        counts[:global_skips]
+      end
     end
 
     def call(token)
       return if attempt_global_replacement(token)
       return if attempt_global_skip(token)
 
-      Spellr::Reporter.new.call(token)
+      super
 
       prompt(token)
+    end
+
+    def stdin_getch
+      choice = output.stdin.getch
+      clear_current_line
+      choice
+    end
+
+    private
+
+    def total
+      counts[:total_skipped] + counts[:total_fixed] + counts[:total_added]
     end
 
     def prompt(token)
@@ -58,21 +68,18 @@ module Spellr
     end
 
     def attempt_global_skip(token)
-      return unless global_skips.include?(token.to_s) ||
-        global_insensitive_skips.include?(token.normalize)
+      return unless global_skips.include?(token.to_s)
 
       puts "Automatically skipped #{red(token)}"
-      self.total_skipped += 1
+      increment(:total_skipped)
     end
 
-    def attempt_global_replacement(token)
-      global_replacement = global_replacements[token.to_s]
-      global_replacement ||= global_insensitive_replacements[token.normalize]
-      return unless global_replacement
+    def attempt_global_replacement(token, replacement = global_replacements[token.to_s])
+      return unless replacement
 
-      token.replace(global_replacement)
-      self.total_fixed += 1
-      puts "Automatically replaced #{red(token)} with #{green(global_replacement)}"
+      token.replace(replacement)
+      increment(:total_fixed)
+      puts "Automatically replaced #{red(token)} with #{green(replacement)}"
       throw :check_file_from, token
     end
 
@@ -81,28 +88,21 @@ module Spellr
     end
 
     def handle_response(token) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
-      task = STDIN.getch
-      clear_current_line
-
-      case task
+      case stdin_getch
       when "\u0003" # ctrl c
         exit 1
       when 'a'
-        handle_add(token)
+        Spellr::InteractiveAdd.new(token, self)
       when 's', "\u0004" # ctrl d
         handle_skip(token)
       when 'S'
         handle_skip(token) { |skip_token| global_skips << skip_token.to_s }
-      when 'i'
-        handle_skip(token) { |skip_token| global_insensitive_skips << skip_token.downcase }
       when 'R'
-        handle_replacement(token) { |replacement| global_replacements[token.to_s] = replacement }
-      when 'I'
-        handle_replacement(token) { |replacement| global_insensitive_replacements[token.normalize] = replacement }
+        Spellr::InteractiveReplacement.new(token, self).global_replace
       when 'r'
-        handle_replacement(token)
+        Spellr::InteractiveReplacement.new(token, self).replace
       when 'e'
-        handle_replace_line(token)
+        Spellr::InteractiveReplacement.new(token, self).replace_line
       when '?'
         handle_help(token)
       else
@@ -112,66 +112,12 @@ module Spellr
     end
 
     def handle_skip(token)
-      self.total_skipped += 1
+      increment(:total_skipped)
       yield token if block_given?
       puts "Skipped #{red(token)}"
     end
 
-    # TODO: handle more than 16 options
-    def handle_add(token) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-      puts "Add #{red(token)} to wordlist:"
-      languages = Spellr.config.languages_for(token.location.file.path)
-
-      languages.each do |language|
-        puts "[#{language.key}] #{language.name}"
-      end
-      choice = STDIN.getch
-      clear_current_line
-      case choice
-      when "\u0003" # ctrl c
-        puts '^C again to exit'
-        call(token)
-      when *languages.map(&:key)
-        wl = languages.find { |w| w.key == choice }.project_wordlist
-
-        wl.add(token)
-        self.total_added += 1
-        puts "Added #{red(token)} to #{wl.name} wordlist"
-        throw :check_file_from, token
-      else
-        handle_add(token)
-      end
-    end
-
-    def handle_replacement(token, original_token: token) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      readline_editable_print(token.chomp)
-      highlighted_token = token == original_token ? red(token) : token.highlight(original_token.char_range)
-      puts "#{aqua '>>'} #{highlighted_token.chomp}"
-      prompt = "#{aqua '=>'} "
-      replacement = Readline.readline(prompt)
-      if replacement.empty?
-        call(token)
-      else
-        full_replacement = token == original_token ? replacement : replacement + "\n"
-        token.replace(full_replacement)
-        yield replacement if block_given?
-        self.total_fixed += 1
-        puts "Replaced #{red(token.chomp)} with #{green(replacement.chomp)}"
-        throw :check_file_from, token
-      end
-    rescue Interrupt
-      puts '^C again to exit'
-      call(original_token)
-    end
-
-    def handle_replace_line(token)
-      handle_replacement(
-        token.line,
-        original_token: token
-      )
-    end
-
-    def handle_help(token) # rubocop:disable Metrics/AbcSize
+    def handle_help(token) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       puts "#{bold '[r]'} Replace #{red token}"
       puts "#{bold '[R]'} Replace all future instances of #{red token}"
       puts "#{bold '[s]'} Skip #{red token}"
@@ -180,17 +126,6 @@ module Spellr
       puts "#{bold '[e]'} Edit the whole line"
       puts "#{bold '[?]'} Show this help"
       handle_response(token)
-    end
-
-    def readline_editable_print(string)
-      Readline.pre_input_hook = lambda {
-        Readline.refresh_line
-        Readline.insert_text string.to_s
-        Readline.redisplay
-
-        # Remove the hook right away.
-        Readline.pre_input_hook = nil
-      }
     end
   end
 end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'yaml'
+
 module Spellr
   class ConfigLoader
     attr_reader :config_file
@@ -9,6 +11,7 @@ module Spellr
     end
 
     def config_file=(value)
+      # TODO: nicer error message
       ::File.read(value) # raise Errno::ENOENT if the file doesn't exist
       @config_file = value
       @config = nil
@@ -29,10 +32,12 @@ module Spellr
     end
 
     def load_yaml(path)
-      require 'yaml'
-
       return {} unless ::File.exist?(path)
 
+      symbolize_yaml_safe_load(path)
+    end
+
+    def symbolize_yaml_safe_load(path)
       if RUBY_VERSION >= '2.5'
         YAML.safe_load(::File.read(path), symbolize_names: true)
       else
@@ -40,12 +45,11 @@ module Spellr
       end
     end
 
-    def symbolize_names!(obj)
+    def symbolize_names!(obj) # rubocop:disable Metrics/MethodLength
       case obj
       when Hash
         obj.keys.each do |key|
-          value = obj.delete(key)
-          obj[key.to_sym] = symbolize_names!(value)
+          obj[key.to_sym] = symbolize_names!(obj.delete(key))
         end
       when Array
         obj.map! { |ea| symbolize_names!(ea) }
@@ -53,7 +57,7 @@ module Spellr
       obj
     end
 
-    def merge_config(default, project)
+    def merge_config(default, project) # rubocop:disable Metrics/MethodLength
       if project.is_a?(Array) && default.is_a?(Array)
         default | project
       elsif project.is_a?(Hash) && default.is_a?(Hash)

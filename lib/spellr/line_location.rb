@@ -2,28 +2,34 @@
 
 module Spellr
   class LineLocation
-    attr_reader :file
     attr_reader :line_number
     attr_reader :char_offset
     attr_reader :byte_offset
 
     def initialize(file = '[String]', line_number = 1, char_offset: 0, byte_offset: 0)
-      @file = file
+      @filename = file
       @line_number = line_number
       @char_offset = char_offset
       @byte_offset = byte_offset
     end
 
     def to_s
-      "#{relative_file_name}:#{line_number}"
+      "#{file_relative_path}:#{line_number}"
     end
 
-    def file_name
-      file.respond_to?(:to_path) ? file.to_path : file
+    def file_relative_path
+      file.relative_path
     end
 
-    def relative_file_name
-      Pathname.new(file_name).relative_path_from(Pathname.pwd)
+    def file
+      @file ||= Spellr::File.wrap(@filename)
+    end
+
+    def advance(line)
+      LineLocation.new(@filename,
+                       line_number + 1,
+                       char_offset: char_offset + line.length,
+                       byte_offset: byte_offset + line.bytesize)
     end
   end
 end

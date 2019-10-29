@@ -18,15 +18,20 @@ module Spellr
 
     def check
       require_relative 'check'
-      unless Spellr.config.valid?
-        Spellr.config.print_errors
-        exit 1
-      end
+
+      validate_config
 
       checker = Spellr::Check.new(files: files)
       checker.check
 
       exit checker.exit_code
+    end
+
+    def validate_config
+      return true if Spellr.config.valid?
+
+      Spellr.config.print_errors
+      exit 1
     end
 
     def files
@@ -41,7 +46,8 @@ module Spellr
 
     def quiet_option(_)
       Spellr.config.quiet = true
-      Spellr.config.reporter = ->(_) {}
+      require_relative 'quiet_reporter'
+      Spellr.config.reporter = Spellr::QuietReporter.new
     end
 
     def interactive_option(_)
@@ -89,7 +95,8 @@ module Spellr
         opts.separator('')
         opts.on('-w', '--wordlist', 'Outputs errors in wordlist format', &method(:wordlist_option))
         opts.on('-q', '--quiet', 'Silences output', &method(:quiet_option))
-        opts.on('-i', '--interactive', 'Runs the spell check interactively', &method(:interactive_option))
+        opts.on('-i', '--interactive', 'Runs the spell check interactively',
+                &method(:interactive_option))
         opts.separator('')
         opts.on('-d', '--dry-run', 'List files to be checked', &method(:dry_run_option))
         opts.separator('')

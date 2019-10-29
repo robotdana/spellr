@@ -3,7 +3,7 @@
 require_relative '../lib/spellr/version'
 RSpec.describe 'command line', type: :cli do
   describe '--help' do
-    it 'returns the help' do # rubocop:disable RSpec/ExampleLength
+    it 'returns the help' do
       run('spellr --help')
 
       expect(exitstatus).to eq 0
@@ -78,7 +78,7 @@ RSpec.describe 'command line', type: :cli do
       }
     end
 
-    it 'returns the list of files when given no further arguments' do # rubocop:disable RSpec/ExampleLength
+    it 'returns the list of files when given no further arguments' do
       run('spellr --dry-run')
 
       expect(stderr).to be_empty
@@ -111,12 +111,14 @@ RSpec.describe 'command line', type: :cli do
       with_temp_dir { example.run }
     end
 
-    before do
+    let!(:english_wordlist) do
       stub_fs_file '.spellr_wordlists/english.txt', <<~FILE
         ipsum
         lorem
       FILE
+    end
 
+    let!(:check_file) do
       stub_fs_file 'check.txt', <<~FILE
         lorem ipsum dolar
 
@@ -125,7 +127,7 @@ RSpec.describe 'command line', type: :cli do
     end
 
     describe '--wordlist' do
-      it 'returns the list of unmatched words' do # rubocop:disable RSpec/ExampleLength
+      it 'returns the list of unmatched words' do
         run 'spellr --wordlist'
 
         expect(stderr).to be_empty
@@ -138,7 +140,7 @@ RSpec.describe 'command line', type: :cli do
     end
 
     describe 'spellr' do
-      it 'returns the list of unmatched words and their locations' do # rubocop:disable RSpec/ExampleLength
+      it 'returns the list of unmatched words and their locations' do
         run 'spellr'
 
         expect(stderr).to be_empty
@@ -164,7 +166,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the interactive command help' do # rubocop:disable RSpec/ExampleLength
+      it 'returns the interactive command help' do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -186,7 +188,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'exits when ctrl C' do # rubocop:disable RSpec/ExampleLength
+      it 'exits when ctrl C' do
         run 'spellr -i' do |stdout, stdin, pid|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -199,7 +201,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after skipping' do # rubocop:disable RSpec/ExampleLength
+      it 'returns the next unmatched term and a prompt after skipping' do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -244,7 +246,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after skipping with S' do # rubocop:disable RSpec/ExampleLength
+      it 'returns the next unmatched term and a prompt after skipping with S' do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -278,7 +280,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after adding with a' do # rubocop:disable RSpec/ExampleLength
+      it 'returns the next unmatched term and a prompt after adding with a' do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -304,6 +306,12 @@ RSpec.describe 'command line', type: :cli do
             #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
 
+          expect(english_wordlist.read).to eq <<~FILE
+            dolar
+            ipsum
+            lorem
+          FILE
+
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT
@@ -322,8 +330,8 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after replacing with R' do # rubocop:disable RSpec/ExampleLength
-        run 'spellr -i' do |stdout, stdin|
+      it 'returns the next unmatched term and a prompt after replacing with R' do
+        run 'spellr -i' do |stdout, stdin| # rubocop:disable Metrics/BlockLength
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{bold '[r,R,s,S,a,e,?]'}
@@ -347,6 +355,12 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
             #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
+
+          expect(check_file.read).to eq <<~FILE
+            lorem ipsum dolares
+
+              dolar amet
+          FILE
 
           stdin.print 'a'
 
@@ -375,6 +389,12 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
             #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
+
+          expect(english_wordlist.read).to eq <<~FILE
+            dolares
+            ipsum
+            lorem
+          FILE
 
           stdin.print 's'
 
@@ -400,7 +420,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after replacing with r' do # rubocop:disable RSpec/ExampleLength
+      it 'returns the next unmatched term and a prompt after replacing with r' do
         run 'spellr -i' do |stdout, stdin| # rubocop:disable Metrics/BlockLength
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -425,6 +445,12 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
             #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
+
+          expect(check_file.read).to eq <<~FILE
+            lorem ipsum dolares
+
+              dolar amet
+          FILE
 
           stdin.print 'a'
 
@@ -452,6 +478,12 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
             #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
+
+          expect(english_wordlist.read).to eq <<~FILE
+            dolares
+            ipsum
+            lorem
+          FILE
 
           stdin.print 's'
 
@@ -495,7 +527,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after replacing with e' do # rubocop:disable RSpec/ExampleLength
+      it 'returns the next unmatched term and a prompt after replacing with e' do
         run 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -520,6 +552,12 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
             #{bold '[r,R,s,S,a,e,?]'}
           STDOUT
+
+          expect(check_file.read).to eq <<~FILE
+            lorem lorem lorem
+
+              dolar amet
+          FILE
 
           stdin.print 's'
 

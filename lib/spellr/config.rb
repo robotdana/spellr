@@ -7,7 +7,7 @@ require_relative 'reporter'
 require 'pathname'
 
 module Spellr
-  class Config # rubocop:disable Metrics/ClassLength
+  class Config
     attr_writer :reporter
     attr_reader :config_file
     attr_accessor :quiet
@@ -48,45 +48,15 @@ module Spellr
     end
 
     def includes
-      return @includes if defined?(@includes)
-
-      if @config[:only]
-        warn <<~WARNING
-          \e[33mSpellr: `only:` yaml key with a list of fnmatch rules is deprecated.
-          Please use `includes:` instead, which uses gitignore-inspired rules.
-          see github.com/robotdana/fast_ignore#using-an-includes-list for details\e[0m
-        WARNING
-      end
-
-      @includes = (@config[:includes] || []) + (@config[:only] || [])
+      @includes ||= @config[:includes] || []
     end
 
     def excludes
-      return @excludes if defined?(@excludes)
-
-      if @config[:ignore]
-        warn <<~WARNING
-          \e[33mSpellr: `ignore:` yaml key is deprecated.
-          Please use `excludes:` instead.\e[0m
-        WARNING
-      end
-
-      @excludes = (@config[:excludes] || []) + (@config[:ignore] || [])
+      @excludes ||= @config[:excludes] || []
     end
 
     def color
       @config[:color]
-    end
-
-    def clear_cache # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      remove_instance_variable(:@wordlists) if defined?(@wordlists)
-      remove_instance_variable(:@languages) if defined?(@languages)
-      remove_instance_variable(:@errors) if defined?(@errors)
-      remove_instance_variable(:@word_minimum_length) if defined?(@word_minimum_length)
-      remove_instance_variable(:@key_heuristic_weight) if defined?(@key_heuristic_weight)
-      remove_instance_variable(:@key_minimum_length) if defined?(@key_minimum_length)
-      remove_instance_variable(:@excludes) if defined?(@excludes)
-      remove_instance_variable(:@includes) if defined?(@includes)
     end
 
     def languages
@@ -101,10 +71,6 @@ module Spellr
 
     def languages_for(file)
       languages.select { |l| l.matches?(file) }
-    end
-
-    def wordlists
-      @wordlists ||= languages.flat_map(&:wordlists)
     end
 
     def wordlists_for(file)
@@ -123,21 +89,16 @@ module Spellr
     private
 
     def only_has_one_key_per_language
-      conflicting_languages = languages
-        .group_by(&:key)
-        .values.select { |g| g.length > 1 }
-
-      return if conflicting_languages.empty?
+      conflicting_languages = languages.group_by(&:key).values.select { |g| g.length > 1 }
 
       conflicting_languages.each do |conflicts|
-        errors << "Error: #{conflicts.map(&:name).join(' & ')} share the same language key (#{conflicts.first.key}). "\
-          'Please define one to be different with `key:`'
+        errors << "Error: #{conflicts.map(&:name).join(' & ')} share the same language key "\
+        "(#{conflicts.first.key}). Please define one to be different with `key:`"
       end
     end
 
     def keys_are_single_characters
       bad_languages = languages.select { |l| l.key.length > 1 }
-      return if bad_languages.empty?
 
       bad_languages.each do |language|
         errors << "Error: #{language.name} defines a key that is too long (#{language.key}). "\

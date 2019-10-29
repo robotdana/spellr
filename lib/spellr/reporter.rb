@@ -1,27 +1,23 @@
 # frozen_string_literal: true
 
-require_relative 'string_format'
+require_relative 'base_reporter'
 
 module Spellr
-  class Reporter
-    include Spellr::StringFormat
-
-    attr_accessor :total
-
-    def initialize
-      @total = 0
+  class Reporter < Spellr::BaseReporter
+    def parallel?
+      true
     end
 
-    def finish(checked)
+    def finish
       puts "\n"
-      puts "#{pluralize 'file', checked} checked"
-      puts "#{pluralize 'error', total} found"
+      puts "#{pluralize 'file', counts[:checked]} checked"
+      puts "#{pluralize 'error', counts[:total]} found"
     end
 
     def call(token)
-      puts "#{aqua token.location} #{token.line.highlight(token.char_range).strip}"
+      super
 
-      self.total += 1
+      increment(:total)
     end
   end
 end

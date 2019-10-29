@@ -1,18 +1,13 @@
 # frozen_string_literal: true
 
-# frozen string_literal: true
-
 require_relative 'column_location'
 require_relative 'string_format'
 
 class String
-  def normalize
-    normalize_cache[to_s]
-  end
-
-  def normalize_cache
-    @@normalize_cache ||= Hash.new do |cache, term| # rubocop:disable Style/ClassVars # i want this shared with subclasses
-      cache[term] = term.strip.downcase.unicode_normalize.tr('’', "'") + "\n"
+  def spellr_normalize
+    @@spellr_normalize ||= {} # rubocop:disable Style/ClassVars # I want to share this with subclasses
+    @@spellr_normalize.fetch(to_s) do |term|
+      @@spellr_normalize[term] = "#{term.strip.downcase.unicode_normalize.tr('’', "'")}\n"
     end
   end
 end
@@ -49,6 +44,11 @@ module Spellr
       )
     end
 
+    def line=(new_line)
+      @line = new_line
+      location.line_location = new_line.location.line_location
+    end
+
     def inspect
       "#<#{self.class.name} #{to_s.inspect} @#{location}>"
     end
@@ -61,6 +61,10 @@ module Spellr
       @byte_range ||= location.byte_offset...(location.byte_offset + bytesize)
     end
 
+    def file_char_range
+      @file_char_range ||= location.absolute_char_offset...(location.absolute_char_offset + length)
+    end
+
     def coordinates
       location.coordinates
     end
@@ -71,13 +75,7 @@ module Spellr
 
     def replace(replacement)
       @replacement = replacement
-      ::File.open(file_name, 'r+') do |f|
-        body = f.read
-        body[location.absolute_char_offset...(location.absolute_char_offset + length)] = replacement
-        f.rewind
-        f.truncate(0)
-        f.write(body)
-      end
+      location.file.insert(replacement, file_char_range)
     end
 
     def file_name

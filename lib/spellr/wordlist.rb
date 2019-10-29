@@ -27,17 +27,17 @@ module Spellr
     end
 
     # significantly faster than default Enumerable#include?
-    # requires terms to be sorted
+    # requires terms to have been sorted
     def include?(term)
-      include_cache[term.normalize]
+      include_cache[term.spellr_normalize]
     end
 
-    def include_cache
-      @include_cache ||= Hash.new do |cache, term|
-        cache[term] = to_a.bsearch do |value|
-          term <=> value
-        end
-      end
+    def <<(term)
+      term = term.spellr_normalize
+      touch
+      include_cache[term] = true
+      insert_sorted(term)
+      @path.write(to_a.join) # we don't need to clear the cache
     end
 
     def to_a
@@ -46,7 +46,7 @@ module Spellr
 
     def clean(file = @path)
       require_relative 'tokenizer'
-      write(Spellr::Tokenizer.new(file, skip_uri: false, skip_key: false).normalized_terms.join)
+      write(Spellr::Tokenizer.new(file, skip_key: false).normalized_terms.join)
     end
 
     def write(content)
@@ -61,25 +61,10 @@ module Spellr
       @path.read
     end
 
-    def clear_cache
-      @to_a = nil
-      @include = nil
-    end
-
     def exist?
       return @exist if defined?(@exist)
 
       @exist = @path.exist?
-    end
-
-    def add(term)
-      touch
-      term = term.normalize
-      include_cache[term] = true
-      to_a << term
-      to_a.sort!
-      write(@to_a.join)
-      Spellr.config.clear_cache if to_a.length == 1
     end
 
     def touch
@@ -87,10 +72,29 @@ module Spellr
 
       @path.dirname.mkpath
       @path.write('')
-      remove_instance_variable(:@exist)
+      clear_cache
     end
 
     private
+
+    def insert_sorted(term)
+      insert_at = to_a.bsearch_index { |value| value >= term }
+      insert_at ? to_a.insert(insert_at, term) : to_a.push(term)
+    end
+
+    def include_cache
+      @include_cache ||= Hash.new do |cache, term|
+        cache[term] = to_a.bsearch do |value|
+          term <=> value
+        end
+      end
+    end
+
+    def clear_cache
+      @to_a = nil
+      @include = nil
+      remove_instance_variable(:@exist) if defined?(@exist)
+    end
 
     def raise_unless_exists?
       return if exist?

@@ -1,21 +1,29 @@
 # frozen_string_literal: true
 
 require 'set'
+require_relative 'base_reporter'
 
 module Spellr
-  class WordlistReporter
-    attr_reader :words
-
-    def initialize
-      @words = Set.new
+  class WordlistReporter < Spellr::BaseReporter
+    def parallel?
+      true
     end
 
-    def finish(_checked)
-      puts words.sort.join
+    def finish
+      output.puts words.sort.join
     end
 
     def call(token)
-      words << token.normalize
+      words << token.spellr_normalize
+    end
+
+    private
+
+    def words
+      @words ||= begin
+        output.counts[:words] = Set.new unless output.counts.key?(:words)
+        output.counts[:words]
+      end
     end
   end
 end

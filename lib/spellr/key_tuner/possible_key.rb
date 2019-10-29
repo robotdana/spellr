@@ -6,23 +6,35 @@ require_relative 'stats'
 class PossibleKey # rubocop:disable Metrics/ClassLength
   include Stats
 
+  VOWELS = %i{
+    a e i o u
+    A E I O U
+  }.freeze
+  CONSONANTS = %i{
+    b c d f g h j k l m n p q r s t v w x y z
+    B C D F G H J K L M N P Q R S T V W X Y Z
+  }.freeze
+  BASE_64 = VOWELS + CONSONANTS + %i{0 1 2 3 4 5 6 7 8 9 - _ + / =}.freeze
+  LETTER_COUNT_HASH = BASE_64.map { |k| [k.to_sym, 0] }.to_h
+  FEATURE_LETTERS = %i{+ - _ / A z Z q Q X x}.freeze
+
   class << self
-    attr_reader :keys
-  end
-
-  def self.load # rubocop:disable Metrics/AbcSize
-    @keys = []
-
-    Pathname.new(__dir__).join('data', 'false_positives.txt').each_line do |line|
-      next if line.chomp.empty?
-
-      keys << PossibleKey.new(line.chomp, false)
+    def keys
+      @keys ||= begin
+        load_from_file('false_positives.txt', false) +
+          load_from_file('keys.txt', true)
+      end
     end
 
-    Pathname.new(__dir__).join('data', 'keys.txt').each_line do |line|
-      next if line.chomp.empty?
+    private
 
-      keys << PossibleKey.new(line.chomp, true)
+    def load_from_file(filename, key)
+      Pathname.new(__dir__).join('data', filename).each_line.map! do |line|
+        line = line.chomp
+        next if line.empty?
+
+        PossibleKey.new(line, key)
+      end.compact
     end
   end
 
@@ -35,7 +47,7 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
 
   def features # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     {
-      **significant_letter_frequency_difference,
+      **letter_frequency_difference_features,
       equal: letter_count[:'='],
       length: length,
       hex: character_set == :hex ? 1 : 0,
@@ -69,24 +81,20 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
     @key
   end
 
+  def classification
+    key_class = key? ? 'key' : 'not_key'
+    "#{key_class}_#{character_set}"
+  end
+
   def length
     string.length
   end
 
-  SIGNIFICANT_LETTERS = %i{+ - _ / A z Z q Q X x}.freeze
-  if RUBY_VERSION >= '2.5'
-    def significant_letter_frequency_difference
-      letter_frequency_difference.slice(*SIGNIFICANT_LETTERS)
-    end
-  else
-    def significant_letter_frequency_difference
-      letter_frequency_difference.each.with_object({}) do |key, value, hash|
-        hash[key] = value if SIGNIFICANT_LETTERS.include?(key)
-      end
-    end
+  def letter_frequency_difference_features
+    letter_frequency_difference.slice(*FEATURE_LETTERS)
   end
 
-  def character_set
+  def character_set # rubocop:disable Metrics/MethodLength
     @character_set ||= case string
     when /^[a-fA-F0-9\-]+$/ then :hex
     when /^[a-z0-9]+$/ then :lower36
@@ -97,7 +105,7 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def character_set_total
+  def character_set_total # rubocop:disable Metrics/MethodLength
     case character_set
     when :hex then 16
     when :lower36 then 36
@@ -110,11 +118,9 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
     1.0 / character_set_total * length
   end
 
-  LETTER_COUNT_HASH = (('A'..'Z').to_a + ('a'..'z').to_a + ('0'..'9').to_a + %w{+ _ / - =})
-    .map { |k| [k.to_sym, 0] }.to_h
   def letter_count
     @letter_count ||= begin
-      string.chars.each.with_object(LETTER_COUNT_HASH.dup) do |letter, hash|
+      string.chars.each_with_object(LETTER_COUNT_HASH.dup) do |letter, hash|
         hash[letter.to_sym] += 1
       end
     end
@@ -136,8 +142,6 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
     end
   end
 
-  VOWELS = %i{a e i o u A E I O U}.freeze
-  CONSONANTS = %i{b c d f g h j k l m n p q r s t v w x y z B C D F G H J K L M N P Q R S T V W X Y Z}.freeze
   def vowel_consonant_ratio
     vowels = letter_count.fetch_values(*VOWELS).sum
     consonants = letter_count.fetch_values(*CONSONANTS).sum

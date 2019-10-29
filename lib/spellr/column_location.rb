@@ -4,9 +4,9 @@ require_relative 'line_location'
 
 module Spellr
   class ColumnLocation
-    attr_reader :line_location
     attr_reader :char_offset
     attr_reader :byte_offset
+    attr_accessor :line_location
 
     def initialize(char_offset: 0, byte_offset: 0, line_location: LineLocation.new)
       @line_location = line_location

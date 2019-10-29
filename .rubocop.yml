@@ -11,6 +11,8 @@ AllCops:
     - db/schema*
     - .bundle/**/*
     - tmp/**/*
+    - wordlists/**/*
+    - .spellr_wordlists/**/*
   DisplayCopNames: true
   DisplayStyleGuide: true
   TargetRubyVersion: 2.5
@@ -115,8 +117,11 @@ Metrics/BlockLength:
     - it
 
 Metrics/LineLength:
-  Max: 120
+  Max: 100
   IgnoreCopDirectives: true
+
+Metrics/MethodLength:
+  Max: 5
 
 Naming/UncommunicativeMethodParamName:
   AllowedNames: [_, io, id, to, by, 'on', in, at, ip, db]
@@ -124,10 +129,14 @@ Naming/UncommunicativeMethodParamName:
 RSpec:
   Enabled: true
   Include:
-    - 'spec/**/*.rb'
+    - spec/**/*.rb
 
 RSpec/DescribeClass:
   Enabled: false
+
+RSpec/ExampleLength:
+  Exclude: 
+    - spec/feature_spec.rb
 
 # I misuse matchers often
 RSpec/ExpectActual:
