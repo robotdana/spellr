@@ -7,10 +7,11 @@ module Spellr
     attr_reader :token, :reporter, :original_token, :token_highlight, :suffix
 
     def initialize(token, reporter)
-      @original_token = token
-      @token = token
+      @original_token = @token = token
       @token_highlight = red(token)
       @reporter = reporter
+      Readline.input = reporter.output.stdin
+      Readline.output = reporter.output.stdout
     end
 
     def global_replace
@@ -28,7 +29,7 @@ module Spellr
     def complete_replacement(replacement)
       token.replace("#{replacement}#{suffix}")
 
-      reporter.total_fixed += 1
+      reporter.increment(:total_fixed)
       puts "Replaced #{red(token.chomp)} with #{green(replacement)}"
       throw :check_file_from, token
     end
@@ -48,6 +49,8 @@ module Spellr
       reporter.call(original_token)
     end
 
+    private
+
     def readline_editable_print(string) # rubocop:disable Metrics/MethodLength
       Readline.pre_input_hook = lambda {
         Readline.refresh_line
@@ -57,6 +60,10 @@ module Spellr
         # Remove the hook right away.
         Readline.pre_input_hook = nil
       }
+    end
+
+    def puts(str)
+      reporter.puts(str)
     end
   end
 end

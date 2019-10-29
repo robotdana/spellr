@@ -3,48 +3,60 @@
 require 'io/console'
 require 'readline'
 require_relative '../spellr'
-require_relative 'reporter'
 require_relative 'interactive_add'
 require_relative 'interactive_replacement'
-require_relative 'string_format'
+require_relative 'base_reporter'
 
 module Spellr
-  class Interactive
-    include Spellr::StringFormat
+  class Interactive < BaseReporter
+    def parallel?
+      false
+    end
 
-    attr_reader :global_replacements, :global_skips
-    attr_accessor :total_skipped
-    attr_accessor :total_fixed
-    attr_accessor :total_added
-
-    def finish(checked) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def finish # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       puts "\n"
-      puts "#{pluralize 'file', checked} checked"
+      puts "#{pluralize 'file', counts[:checked]} checked"
       puts "#{pluralize 'error', total} found"
-      puts "#{pluralize 'error', total_skipped} skipped" if total_skipped.positive?
-      puts "#{pluralize 'error', total_fixed} fixed" if total_fixed.positive?
-      puts "#{pluralize 'word', total_added} added" if total_added.positive?
+      if counts[:total_skipped].positive?
+        puts "#{pluralize 'error', counts[:total_skipped]} skipped"
+      end
+      puts "#{pluralize 'error', counts[:total_fixed]} fixed" if counts[:total_fixed].positive?
+      puts "#{pluralize 'word', counts[:total_added]} added" if counts[:total_added].positive?
     end
 
-    def total
-      total_skipped + total_fixed + total_added
+    def global_replacements
+      @global_replacements ||= begin
+        counts[:global_replacements] = {} unless counts.key?(:global_replacements)
+        counts[:global_replacements]
+      end
     end
 
-    def initialize
-      @global_replacements = {}
-      @global_skips = []
-      @total_skipped = 0
-      @total_fixed = 0
-      @total_added = 0
+    def global_skips
+      @global_skips ||= begin
+        counts[:global_skips] = [] unless counts.key?(:global_skips)
+        counts[:global_skips]
+      end
     end
 
     def call(token)
       return if attempt_global_replacement(token)
       return if attempt_global_skip(token)
 
-      Spellr::Reporter.new.call(token)
+      super
 
       prompt(token)
+    end
+
+    def stdin_getch
+      choice = output.stdin.getch
+      clear_current_line
+      choice
+    end
+
+    private
+
+    def total
+      counts[:total_skipped] + counts[:total_fixed] + counts[:total_added]
     end
 
     def prompt(token)
@@ -59,26 +71,20 @@ module Spellr
       return unless global_skips.include?(token.to_s)
 
       puts "Automatically skipped #{red(token)}"
-      self.total_skipped += 1
+      increment(:total_skipped)
     end
 
     def attempt_global_replacement(token, replacement = global_replacements[token.to_s])
       return unless replacement
 
       token.replace(replacement)
-      self.total_fixed += 1
+      increment(:total_fixed)
       puts "Automatically replaced #{red(token)} with #{green(replacement)}"
       throw :check_file_from, token
     end
 
     def clear_current_line
       print "\r\e[K"
-    end
-
-    def stdin_getch
-      choice = STDIN.getch
-      clear_current_line
-      choice
     end
 
     def handle_response(token) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
@@ -106,7 +112,7 @@ module Spellr
     end
 
     def handle_skip(token)
-      self.total_skipped += 1
+      increment(:total_skipped)
       yield token if block_given?
       puts "Skipped #{red(token)}"
     end

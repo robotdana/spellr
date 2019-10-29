@@ -46,7 +46,8 @@ module Spellr
 
     def quiet_option(_)
       Spellr.config.quiet = true
-      Spellr.config.reporter = ->(_) {}
+      require_relative 'quiet_reporter'
+      Spellr.config.reporter = Spellr::QuietReporter.new
     end
 
     def interactive_option(_)

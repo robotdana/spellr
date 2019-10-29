@@ -52,9 +52,13 @@ module Spellr
     def add_to_wordlist(choice)
       wordlist = languages.find { |w| w.key == choice }.project_wordlist
       wordlist << token
-      reporter.total_added += 1
+      reporter.increment(:total_added)
       puts "Added #{red(token)} to #{wordlist.name} wordlist"
       throw :check_file_from, token
+    end
+
+    def puts(str)
+      reporter.puts(str)
     end
   end
 end

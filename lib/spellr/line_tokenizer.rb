@@ -38,10 +38,11 @@ module Spellr
       end
     end
 
-    def each_token(skip_term_proc: nil)
+    def each_token(skip_term_proc: nil) # rubocop:disable Metrics/MethodLength
       until eos?
         term = next_term
-        next if !term || disabled? || skip_term_proc&.call(term)
+        next unless term
+        next if disabled? || skip_term_proc&.call(term)
 
         yield Token.new(term, line: line, location: column_location(term))
       end
