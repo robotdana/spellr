@@ -1,3 +1,6 @@
+# v0.5.2
+- require Parallel dependency in gemspec (oops)
+
 # v0.5.1
 - Check files in parallel
 - Lots of pure refactoring
