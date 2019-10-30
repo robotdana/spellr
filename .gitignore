@@ -3,3 +3,4 @@ pkg
 /vendor/
 /.bundle/
 data/
+Gemfile.lock
