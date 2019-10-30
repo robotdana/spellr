@@ -36,4 +36,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'terminal-table'
   spec.add_development_dependency 'tty_string'
   spec.add_dependency 'fast_ignore', '~> 0.4.0'
+  spec.add_dependency 'parallel'
 end
