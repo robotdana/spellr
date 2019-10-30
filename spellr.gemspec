@@ -17,7 +17,6 @@ Gem::Specification.new do |spec|
   spec.files = Dir.glob('{lib,exe,bin/fetch_wordlist,wordlists}/**/{*,.*}') + %w{
     CHANGELOG.md
     Gemfile
-    Gemfile.lock
     LICENSE.txt
     README.md
     spellr.gemspec
@@ -36,5 +35,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'terminal-table'
   spec.add_development_dependency 'tty_string'
   spec.add_dependency 'fast_ignore', '~> 0.4.0'
-  spec.add_dependency 'parallel'
+  spec.add_dependency 'parallel', '~> 1.0'
 end
