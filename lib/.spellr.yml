@@ -44,6 +44,7 @@ languages:
       - Capfile
     hashbangs:
       - ruby
+
   html:
     includes:
       - '*.html'

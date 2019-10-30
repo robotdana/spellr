@@ -1,3 +1,8 @@
+# v0.5.1
+- Check files in parallel
+- Lots of pure refactoring
+- Capfile is now considered a ruby file by default
+
 # v0.5.0
 - Removed the fetch command it was just unnecessarily slow and awkward. instead use `locale: [US,AU]`
 - Added usage documentation
