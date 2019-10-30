@@ -1,5 +1,6 @@
 # Spellr
 
+[![Gem Version](https://badge.fury.io/rb/spellr.svg)](https://rubygems.org/gems/spellr)
 [![Build Status](https://travis-ci.org/robotdana/spellr.svg?branch=master)](https://travis-ci.org/robotdana/spellr)
 
 Spell check your source code for fun and occasionally finding bugs
