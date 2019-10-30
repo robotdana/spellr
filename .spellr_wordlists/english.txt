@@ -6,6 +6,7 @@ args
 backports
 baz
 bundler
+capfile
 changelog
 charpos
 cli
