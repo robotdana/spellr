@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-rspec'
   spec.add_development_dependency 'terminal-table'
   spec.add_development_dependency 'tty_string'
-  spec.add_dependency 'fast_ignore', '~> 0.5.1'
+  spec.add_development_dependency 'nokogiri'
+  spec.add_dependency 'fast_ignore', '~> 0.5.2'
   spec.add_dependency 'parallel', '~> 1.0'
 end

@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require_relative 'util/mdn_words'
+
+ADDITIONAL_WORDS=[
+  "khz" # doc lists as kHz and it can also be written khz
+]
+# sass documentation has no structure for me to automate this.
+# fortunately sass is small
+SASS_WORDS=%w{
+  functions abs acos adjust alpha append arglist asin at atan blue bool
+  bracketed call case ceil change clamp color comparable compatible complement
+  content cos css darken debug default desaturate each else error exists extend
+  fade feature floor for forward function functions get global grayscale green
+  has hex hue hypot id ie if import in include index insert inspect invert is
+  join key keys keywords length lighten lightness list load log lower map math
+  max merge meta mix mixin module nest nth null number of opacify opacity out
+  parse percentage pi pow quote random red remove replace root round saturate
+  saturation scale selector selectors separator set simple sin slice sqrt str
+  string superselector tan to transparentize type unify unique unit unitless
+  unquote upper use values variable warn while zip
+}
+
+PATHS=%w{
+  /en-US/docs/Web/CSS/WebKit_Extensions?raw&macros
+  /en-US/docs/Web/CSS/Microsoft_extensions?raw&macros
+  /en-US/docs/Web/CSS/Mozilla_Extensions?raw&macros
+  /en-US/docs/Web/CSS/Reference?macros&raw&section=Keyword_index
+  /en-US/docs/Web/CSS/color_value?raw&macros
+  /en-US/docs/Web/CSS/At-rule?macros&raw
+  /en-US/docs/Web/CSS/Media_Queries/Using_media_queries?raw&macros
+  /en-US/docs/Web/CSS/@page?raw&macros&section=Descriptors
+  /en-US/docs/Web/CSS/@font-face?raw&macros&section=Descriptors
+  /en-US/docs/Web/CSS/@viewport?raw&macros&section=Descriptors
+  /en-US/docs/Web/CSS/@counter-style?raw&section=Descriptors&macros
+  /en-US/docs/Web/CSS/@font-feature-values?raw&section=Feature_value_blocks&macros&raw
+}
+
+EXCLUDE_PATHS=%w{
+  /en-US/docs/Web/API/Window/matchMedia
+}
+
+MDNWords.new('css', PATHS,
+  sections: %w{Values Syntax},
+  additional_words: ADDITIONAL_WORDS,
+  exclude_proc: ->(c) { c.start_with?(/[#<]/) }
+)

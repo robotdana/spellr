@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'pathname'
-require_relative '../../lib/spellr/wordlist/wordlist'
+require_relative '../../../lib/spellr/wordlist'
 
-module Generate
-  OUTPUT_DIR = Pathname.new(__dir__).join('..', '..', 'wordlists')
+module Write
+  OUTPUT_DIR = Pathname.new(__dir__).join('..', '..', '..', 'wordlists')
 
   def wordlist_path(name)
     OUTPUT_DIR.join("#{name}.txt")

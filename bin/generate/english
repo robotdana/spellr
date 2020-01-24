@@ -3,12 +3,14 @@
 
 require 'net/http'
 require 'fileutils'
-require_relative 'base'
+require_relative 'util/write'
+require_relative 'util/fetch'
 
 module SCOWLDownloader
   module_function
 
-  extend Generate
+  extend Write
+  extend Fetch
 
   LOCALES = %i{US AU CA GBs GBz}.freeze
   BASE_WORDLIST_PATH = OUTPUT_DIR.join('english.txt')

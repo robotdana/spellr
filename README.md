@@ -5,7 +5,7 @@
 
 Spell check your source code for fun and occasionally finding bugs
 
-This is inspired by https://github.com/myint/scspell, and uses wordlists from [SCOWL](http://wordlist.aspell.net) - see the license [here](https://github.com/robotdana/spellr/blob/master/wordlists/english.LICENSE.txt).
+This is inspired by https://github.com/myint/scspell, and uses wordlists from [SCOWL](http://wordlist.aspell.net) and [MDN](http://wiki.developer.mozilla.org/).
 
 ## What makes a spell checker a source code spell checker?
 
@@ -223,3 +223,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/robotd
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+Wordlists packaged with this gem have their own licenses, see them in https://github.com/robotdana/spellr/tree/master/wordlists

@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require_relative 'generate/util/write'
+
+unless ARGV[0]
+  puts 'usage: bin/clean wordlist_name'
+  exit 1
+end
+
+Spellr::Wordlist.new(Write::OUTPUT_DIR.join("#{ARGV[0]}.txt")).clean

@@ -1,11 +1,13 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative 'util/write'
 require 'set'
 
+# TODO: kwargs. look at .parameters
+
 class RubyWords
-  include Generate
+  include Write
 
   KEYWORDS = %w{
     __ENCODING__ __LINE__ __FILE__ BEGIN END alias and begin break case class def
@@ -14,7 +16,7 @@ class RubyWords
   }.freeze
 
   CONVENTION_WORDS = %w{
-    klass
+    klass kwarg kwargs
   }.freeze
 
   STDLIBS = %w{
@@ -30,7 +32,7 @@ class RubyWords
 
   def initialize
     @strings = []
-    looked_at(RubyWords, Generate)
+    looked_at(RubyWords, Write)
     require_stdlibs
     collect_words
     write_wordlist(@strings.to_a.join("\n"), :ruby)
