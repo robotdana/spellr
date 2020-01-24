@@ -19,7 +19,7 @@ module Spellr
       @file = file.is_a?(StringIO) || file.is_a?(IO) ? file : ::File.new(file)
       @file.pos = @start_at.line_location.byte_offset
 
-      @line_tokenizer = LineTokenizer.new(skip_key: skip_key)
+      @line_tokenizer = LineTokenizer.new('', skip_key: skip_key)
     end
 
     def terms

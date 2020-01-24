@@ -61,7 +61,7 @@ module Spellr
 
     def languages
       @languages ||= @config[:languages].map do |key, args|
-        Spellr::Language.new(key, args)
+        Spellr::Language.new(key, **args)
       end
     end
 
