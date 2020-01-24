@@ -1,0 +1,17 @@
+disable
+enable
+excludes
+generated
+hashbangs
+heuristic
+includes
+key
+languages
+length
+locale
+minimum
+robotdana
+spellr
+weight
+word
+wordlists

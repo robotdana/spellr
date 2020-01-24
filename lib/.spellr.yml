@@ -29,6 +29,8 @@ excludes: # this list is parsed with the .gitignore format
 languages:
   english:
     locale: US # options US, CA, AU, GBs (GB with -ise endings), GBz (GB with -ize endings)
+  spellr:
+    addable: false
   ruby:
     includes: # Filtered using gitignore format
       - '*.rb'
