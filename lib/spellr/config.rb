@@ -89,11 +89,15 @@ module Spellr
     private
 
     def only_has_one_key_per_language
-      conflicting_languages = languages.group_by(&:key).values.select { |g| g.length > 1 }
-
-      conflicting_languages.each do |conflicts|
+      languages_with_conflicting_keys.each do |conflicts|
         errors << "Error: #{conflicts.map(&:name).join(' & ')} share the same language key "\
         "(#{conflicts.first.key}). Please define one to be different with `key:`"
+      end
+    end
+
+    def languages_with_conflicting_keys
+      languages.select(&:addable?).group_by(&:key).values.select do |g|
+        g.length > 1
       end
     end
 

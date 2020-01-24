@@ -7,12 +7,17 @@ module Spellr
     attr_reader :name
     attr_reader :key
 
-    def initialize(name, key: name[0], includes: [], hashbangs: [], locale: [])
+    def initialize(name, key: name[0], includes: [], hashbangs: [], locale: [], addable: true) # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
       @name = name
       @key = key
       @includes = includes
       @hashbangs = hashbangs
       @locales = Array(locale)
+      @addable = addable
+    end
+
+    def addable?
+      @addable
     end
 
     def matches?(file)

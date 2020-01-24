@@ -19,14 +19,18 @@ module Spellr
       @languages ||= Spellr.config.languages_for(token.location.file.to_path)
     end
 
+    def addable_languages
+      languages.select(&:addable?)
+    end
+
     def language_keys
-      @language_keys ||= @languages.map(&:key)
+      @language_keys ||= addable_languages.map(&:key)
     end
 
     def ask_wordlist
       puts "Add #{red(token)} to wordlist:"
 
-      languages.each do |language|
+      addable_languages.each do |language|
         puts "[#{language.key}] #{language.name}"
       end
 
@@ -50,7 +54,7 @@ module Spellr
     end
 
     def add_to_wordlist(choice)
-      wordlist = languages.find { |w| w.key == choice }.project_wordlist
+      wordlist = addable_languages.find { |w| w.key == choice }.project_wordlist
       wordlist << token
       reporter.increment(:total_added)
       puts "Added #{red(token)} to #{wordlist.name} wordlist"

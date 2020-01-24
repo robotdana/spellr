@@ -99,7 +99,6 @@ readme
 redisplay
 regexps
 repo
-robotdana
 rspec
 rubocop
 rubygems
@@ -110,7 +109,6 @@ shelljoin
 shellsplit
 shellwords
 sherson
-spellr
 stderr
 stdin
 stdlib
