@@ -92,7 +92,7 @@ class NaiveBayes
   # value: the value of the feature for which we are finding the probability
   # class_name: name of the class in consideration
   def feature_probability(feature, value, class_name)
-    Stats.gaussian_probability(value, feature_set[class_name][feature])
+    Stats.gaussian_probability(value, **feature_set[class_name][feature])
   end
 
   # multiply together the feature probabilities for all of the
