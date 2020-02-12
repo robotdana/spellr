@@ -12,6 +12,10 @@ class Array
   end
 end
 
+class Regexp
+  alias_method :match?, :match unless RUBY_VERSION >= '2.4'
+end
+
 class String
   alias_method :match?, :match unless RUBY_VERSION >= '2.4'
 end

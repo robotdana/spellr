@@ -14,6 +14,8 @@ module Spellr
 
     def each
       fast_ignore.each do |file|
+        next unless cli_patterns_ignore.allowed?(file)
+
         file = Spellr::File.new(file)
 
         yield(file)
@@ -41,9 +43,13 @@ module Spellr
     def fast_ignore
       FastIgnore.new(
         ignore_rules: Spellr.config.excludes,
-        include_rules: Spellr.config.includes + cli_patterns,
+        include_rules: Spellr.config.includes,
         gitignore: gitignore_path
       )
+    end
+
+    def cli_patterns_ignore
+      @cli_patterns_ignore ||= FastIgnore.new(include_rules: cli_patterns, gitignore: false)
     end
   end
 end

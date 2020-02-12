@@ -14,6 +14,7 @@ module Spellr
       path = @file = file
       @path = Pathname.pwd.join('.spellr_wordlists').join(path).expand_path
       @name = name
+      @include = {}
     end
 
     def each(&block)
@@ -29,20 +30,24 @@ module Spellr
     # significantly faster than default Enumerable#include?
     # requires terms to have been sorted
     def include?(term)
-      include_cache[term.spellr_normalize]
+      term = term.spellr_normalize
+      @include.fetch(term) do
+        @include[term] = words.bsearch { |value| term <=> value }
+      end
     end
 
     def <<(term)
       term = term.spellr_normalize
       touch
-      include_cache[term] = true
+      @include[term] = true
       insert_sorted(term)
-      @path.write(to_a.join) # we don't need to clear the cache
+      @path.write(words.join) # we don't need to clear the cache
     end
 
-    def to_a
-      @to_a ||= super
+    def words
+      @words ||= (exist? ? @path.readlines : [])
     end
+    alias_method :to_a, :words
 
     def clean(file = @path)
       require_relative 'tokenizer'
@@ -78,21 +83,13 @@ module Spellr
     private
 
     def insert_sorted(term)
-      insert_at = to_a.bsearch_index { |value| value >= term }
-      insert_at ? to_a.insert(insert_at, term) : to_a.push(term)
-    end
-
-    def include_cache
-      @include_cache ||= Hash.new do |cache, term|
-        cache[term] = to_a.bsearch do |value|
-          term <=> value
-        end
-      end
+      insert_at = words.bsearch_index { |value| value >= term }
+      insert_at ? words.insert(insert_at, term) : words.push(term)
     end
 
     def clear_cache
-      @to_a = nil
-      @include = nil
+      @words = nil
+      @include = {}
       remove_instance_variable(:@exist) if defined?(@exist)
     end
 

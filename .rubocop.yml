@@ -39,11 +39,11 @@ AllCops:
 # end
 
 # to match our preference for consistent indentation
-Layout/AlignHash:
+Layout/HashAlignment:
   EnforcedLastArgumentHashStyle: always_ignore
 
 # to match our preference for consistent indentation
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
 
 # to match our preference for consistent indentation
@@ -71,15 +71,15 @@ Layout/FirstHashElementLineBreak:
   Enabled: true
 
 # to match our preference for consistent indentation
-Layout/IndentFirstArgument:
+Layout/FirstArgumentIndentation:
   EnforcedStyle: consistent
 
 # to match our preference for consistent indentation
-Layout/IndentFirstArrayElement:
+Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
 # to match our preference for consistent indentation
-Layout/IndentFirstHashElement:
+Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
 # to match our preference for consistent indentation
@@ -123,7 +123,7 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Max: 5
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   AllowedNames: [_, io, id, to, by, 'on', in, at, ip, db]
 
 RSpec:
@@ -135,7 +135,7 @@ RSpec/DescribeClass:
   Enabled: false
 
 RSpec/ExampleLength:
-  Exclude: 
+  Exclude:
     - spec/feature_spec.rb
 
 # I misuse matchers often
