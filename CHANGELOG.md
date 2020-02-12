@@ -1,3 +1,7 @@
+# v0.5.3
+- update fast_ignore requirement. it's slightly faster.
+- misc other performance improvements
+
 # v0.5.2
 - require Parallel dependency in gemspec (oops)
 
