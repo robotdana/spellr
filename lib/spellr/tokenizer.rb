@@ -34,6 +34,8 @@ module Spellr
       file.each_line do |line|
         prepare_tokenizer_for_line(line).each_term(&block)
       end
+    ensure
+      file.close
     end
 
     def each_token(skip_term_proc: nil) # rubocop:disable Metrics/MethodLength
@@ -64,6 +66,8 @@ module Spellr
         char_offset += line.length
         byte_offset += line.bytesize
       end
+    ensure
+      file.close
     end
 
     def normalized_terms

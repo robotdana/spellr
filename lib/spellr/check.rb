@@ -6,6 +6,7 @@ require_relative 'token'
 require_relative 'column_location'
 require_relative 'line_location'
 require_relative 'output_stubbed'
+require_relative 'backports'
 
 require 'parallel'
 

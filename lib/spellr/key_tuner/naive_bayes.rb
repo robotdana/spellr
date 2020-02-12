@@ -11,10 +11,10 @@ class NaiveBayes
 
   def initialize(path = YAML_PATH)
     load_from_yaml(path) if File.exist?(path)
+    @key = {}
   end
 
   def key?(string)
-    @key ||= {}
     @key.fetch(string) do
       @key[string] = classify(PossibleKey.new(string).features).start_with?('key')
     end
@@ -103,12 +103,16 @@ class NaiveBayes
     end
   end
 
+  def heuristic_weight
+    @heuristic_weight ||= 10**Spellr.config.key_heuristic_weight
+  end
+
   # this is where we compute the final naive Bayesian probability
   # for a given set of features being a part of a given class.
   def class_probability(features, class_name)
     class_fraction = 1.0 / num_classes
     feature_bayes = feature_multiplication(features, class_name)
-    feature_bayes *= (10**Spellr.config.key_heuristic_weight) if class_name.start_with?('key_')
+    feature_bayes *= heuristic_weight if class_name.start_with?('key_')
     feature_bayes * class_fraction
   end
 

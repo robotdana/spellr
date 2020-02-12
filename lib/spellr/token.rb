@@ -4,8 +4,9 @@ require_relative 'column_location'
 require_relative 'string_format'
 
 class String
+  @@spellr_normalize = {} # rubocop:disable Style/ClassVars # I want to share this with subclasses
+
   def spellr_normalize
-    @@spellr_normalize ||= {} # rubocop:disable Style/ClassVars # I want to share this with subclasses
     @@spellr_normalize.fetch(to_s) do |term|
       @@spellr_normalize[term] = "#{term.strip.downcase.unicode_normalize.tr('’', "'")}\n"
     end
