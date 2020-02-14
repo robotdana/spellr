@@ -1,19 +1,7 @@
 ---
 excludes:
   - wordlists/*
-  - data/*
-includes:
-  - '*.rb'
-  - '*.yml'
-  - '*.txt'
-  - Rakefile
-  - '*.md'
-  - '*.gemspec'
-  - Gemfile
 languages:
-  ruby:
-    includes:
-      - README.md
   lorem:
     includes:
       - spec/*

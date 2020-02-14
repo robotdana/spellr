@@ -17,6 +17,7 @@ colours
 config
 configs
 css
+ctrl
 customisations
 cyclomatic
 def
@@ -26,6 +27,7 @@ diffs
 docker
 dockerfile
 dockerhub
+dockerignore
 downloader
 env
 eos
@@ -125,6 +127,7 @@ tlds
 tmp
 todo
 tokenize
+tokenizer
 tokenizes
 tsx
 ttf
