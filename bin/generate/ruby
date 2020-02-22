@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative 'util/write'
 require 'set'
 
 class RubyWords
-  include Generate
+  include Write
 
   KEYWORDS = %w{
     __ENCODING__ __LINE__ __FILE__ BEGIN END alias and begin break case class def
@@ -14,26 +14,33 @@ class RubyWords
   }.freeze
 
   CONVENTION_WORDS = %w{
-    klass
+    klass kwarg kwargs
   }.freeze
 
   STDLIBS = %w{
     abbrev base64 benchmark bigdecimal cgi cmath coverage csv date delegate digest
     drb/drb e2mmap English erb etc expect fcntl fiddle fileutils find forwardable
     getoptlong io/console io/nonblock io/wait ipaddr irb json logger matrix mkmf
-    monitor mutex_m net/ftp net/http net/imap net/pop net/smtp net/telnet nkf
+    monitor mutex_m net/ftp net/http net/imap net/pop net/smtp net/telnet nkf mathn
     objspace observer open-uri open3 openssl optionparser optparse ostruct pathname
     pp prettyprint prime pstore psych pty racc/parser readline resolv ripper rss scanf
     sdbm securerandom set shell shellwords singleton socket stringio strscan sync syslog
     tempfile thwait time timeout tmpdir tracer tsort uri weakref webrick yaml zlib
+    bundler dbm gdbm racc rake rdoc resolv-replace rexml/document rinda/ring rubygems
   }.freeze
+
+  # spellr:disable
+  NON_WORDS=%w{
+    Racc_No_Extentions
+  }
+  # spellr:enable
 
   def initialize
     @strings = []
-    looked_at(RubyWords, Generate)
+    looked_at(RubyWords, Write)
     require_stdlibs
     collect_words
-    write_wordlist(@strings.to_a.join("\n"), :ruby)
+    append_wordlist((@strings.to_a - NON_WORDS).join("\n"), :ruby)
   end
 
   private
@@ -65,13 +72,21 @@ class RubyWords
   def collect_instance_methods_for(constant)
     return unless constant.respond_to?(:public_instance_methods)
 
-    add_words constant.public_instance_methods(false)
+    methods = constant.public_instance_methods(false)
+    add_words methods
+    add_words(methods.flat_map do |m|
+      constant.instance_method(m).parameters.select { |r| r.first == :key }.map(&:last)
+    end)
   end
 
   def collect_singleton_methods_for(constant)
     return unless constant.respond_to?(:public_methods)
 
-    add_words constant.public_methods(false)
+    methods = constant.public_methods(false)
+    add_words methods
+    add_words(methods.flat_map do |m|
+      constant.method(m).parameters.select { |r| r.first == :key }.map(&:last)
+    end)
   end
 
   def collect_constants_for(constant) # rubocop:disable Metrics/MethodLength
@@ -101,7 +116,11 @@ class RubyWords
   end
 
   def require_stdlibs
-    STDLIBS.each { |p| require p }
+    STDLIBS.each do |lib|
+      require lib
+    rescue LoadError
+      warn "can't load #{lib}"
+    end
   end
 end
 

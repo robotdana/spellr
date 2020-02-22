@@ -2,9 +2,11 @@ abc
 addable
 alnum
 arg
+arglist
 args
 backports
 baz
+beihang
 bundler
 capfile
 changelog
@@ -21,6 +23,7 @@ ctrl
 customisations
 cyclomatic
 def
+desaturate
 dict
 diffable
 diffs
@@ -33,6 +36,7 @@ env
 eos
 eot
 erb
+ercim
 esque
 exclusions
 exe
@@ -50,6 +54,7 @@ github
 gitignore
 gitignored
 gitkeep
+grayscale
 grepping
 gtm
 haml
@@ -71,8 +76,11 @@ jbuilder
 jpg
 json
 jsx
+keio
 keydata
+khz
 klass
+kwargs
 localhost
 lstripped
 mailto
@@ -80,6 +88,7 @@ marketplacer
 matcher
 matchers
 maths
+mdn
 merchantability
 multiline
 newlines
@@ -121,6 +130,7 @@ strscan
 sublicense
 subwords
 sudo
+superselector
 svg
 thu
 tlds
@@ -132,6 +142,7 @@ tokenizes
 tsx
 ttf
 txt
+unitless
 unrecognised
 unscan
 uploader
@@ -139,10 +150,13 @@ uri
 urls
 usr
 utf
+viewport
+wai
 woff
 wordlist
 wordlists
 wordn't
+wtf
 xdescribe
 xit
 xlsx
