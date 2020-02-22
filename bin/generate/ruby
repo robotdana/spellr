@@ -35,7 +35,7 @@ class RubyWords
     looked_at(RubyWords, Write)
     require_stdlibs
     collect_words
-    write_wordlist(@strings.to_a.join("\n"), :ruby)
+    append_wordlist(@strings.to_a.join("\n"), :ruby)
   end
 
   private
@@ -103,7 +103,11 @@ class RubyWords
   end
 
   def require_stdlibs
-    STDLIBS.each { |p| require p }
+    STDLIBS.each do |lib|
+      require lib
+    rescue LoadError
+      warn "can't load #{lib}"
+    end
   end
 end
 
