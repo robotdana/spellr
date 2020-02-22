@@ -59,6 +59,7 @@ after
 again
 age
 agent
+aggregated
 aio
 ajd
 akid
@@ -127,6 +128,7 @@ apply
 approx
 approximate
 aqua
+are
 area
 aref
 arg
@@ -148,6 +150,7 @@ aryptn
 ascend
 ascii
 asciicompat
+asciiincompat
 asctime
 aset
 asian
@@ -157,6 +160,8 @@ ask
 asn
 assemble
 assert
+assertion
+assertions
 asset
 assign
 assignment
@@ -199,6 +204,7 @@ auto
 autoclose
 autoload
 autorequire
+autorun
 avail
 available
 axis
@@ -245,6 +251,7 @@ beginning
 begins
 bell
 below
+bench
 benchmark
 best
 between
@@ -338,6 +345,7 @@ call
 callback
 callee
 caller
+callers
 calls
 can
 cancel
@@ -655,6 +663,7 @@ ctext
 ctime
 ctrl
 ctrunc
+ctx
 ctype
 cur
 current
@@ -760,6 +769,7 @@ des
 desc
 descend
 descendent
+describe
 description
 descriptions
 descriptor
@@ -791,6 +801,7 @@ dictionary
 did
 diff
 difference
+diffs
 dig
 digest
 digests
@@ -1020,6 +1031,7 @@ encoder
 encoding
 encodings
 encrypt
+encs
 end
 endarg
 ended
@@ -1205,6 +1217,7 @@ executable
 executables
 execute
 execution
+executor
 exfull
 exist
 existing
@@ -1219,6 +1232,7 @@ expanded
 expansion
 expect
 expectation
+expectations
 expected
 expiration
 expire
@@ -1228,6 +1242,7 @@ explain
 explanation
 explicit
 exponent
+exponential
 export
 expr
 expression
@@ -1260,6 +1275,7 @@ failed
 failer
 failing
 failure
+failures
 fake
 fallback
 false
@@ -1299,6 +1315,7 @@ fileutils
 fill
 filter
 filtered
+filtering
 final
 finalize
 finalizer
@@ -1311,6 +1328,7 @@ finite
 fips
 fire
 first
+fit
 fitem
 fix
 fixed
@@ -1326,6 +1344,7 @@ float
 flock
 floor
 flow
+flunk
 flush
 fname
 fnm
@@ -1689,6 +1708,7 @@ index
 indexed
 indicate
 inet
+infect
 inferred
 infinite
 infinity
@@ -1872,6 +1892,7 @@ legal
 len
 length
 leq
+let
 letter
 level
 leveled
@@ -1893,9 +1914,11 @@ libs
 libyaml
 license
 licenses
+lifecycle
 like
 limit
 line
+linear
 linemode
 lineno
 lines
@@ -1936,6 +1959,7 @@ lockfile
 locking
 locks
 log
+logarithmic
 logfile
 logger
 logging
@@ -2075,7 +2099,9 @@ mime
 min
 minfo
 mingw
+mini
 minimum
+minitest
 minmax
 minor
 minus
@@ -2101,6 +2127,7 @@ mlhs
 mlsd
 mlst
 mname
+mock
 mod
 mode
 model
@@ -2176,6 +2203,7 @@ native
 natm
 naws
 ncname
+ncnametest
 ndata
 ndatadecl
 ndelay
@@ -2308,6 +2336,7 @@ nspool
 nth
 ntoh
 ntop
+nuke
 null
 nullable
 num
@@ -2394,6 +2423,7 @@ orthogonal
 osc
 osi
 ostruct
+osx
 other
 others
 out
@@ -2433,6 +2463,7 @@ parades
 paragraph
 paragraphs
 parallel
+parallelize
 param
 parameters
 params
@@ -2450,8 +2481,10 @@ partial
 partition
 parts
 pass
+passed
 passing
 passive
+passthrough
 passwd
 password
 pat
@@ -2488,6 +2521,7 @@ percent
 pereference
 perfect
 perform
+performance
 period
 perm
 perma
@@ -2568,12 +2602,14 @@ precondition
 precs
 pred
 predecessors
+predefined
 predicate
 prefer
 preference
 prefetch
 prefix
 prefixes
+prelude
 preorder
 prep
 prepare
@@ -2581,6 +2617,7 @@ prepend
 preposing
 preproc
 preprocess
+prerecord
 prerelease
 prereqs
 prerequisite
@@ -2595,6 +2632,7 @@ prev
 previous
 primary
 prime
+primes
 primitive
 print
 printable
@@ -2710,6 +2748,7 @@ radio
 radix
 raise
 raised
+raises
 rake
 rakefile
 rakefiles
@@ -2717,6 +2756,7 @@ rakelib
 rand
 random
 range
+rangerand
 ranges
 rank
 rassoc
@@ -2819,6 +2859,7 @@ referer
 refn
 refresh
 refused
+refute
 reg
 regex
 regexp
@@ -2869,8 +2910,10 @@ replicate
 reply
 repo
 report
+reportable
 reported
 reporter
+reporters
 repositories
 repository
 represent
@@ -2911,6 +2954,7 @@ restricted
 rests
 restsize
 result
+results
 resume
 resumption
 retopts
@@ -2987,6 +3031,7 @@ rthdr
 rtip
 rtld
 rtsig
+rubinius
 ruby
 rubyforge
 rubygems
@@ -2994,6 +3039,8 @@ rule
 ruleid
 rules
 run
+runnable
+runnables
 runner
 running
 runs
@@ -3152,6 +3199,7 @@ sid
 sieve
 siginfo
 sigint
+sigma
 sign
 signal
 signaled
@@ -3191,6 +3239,7 @@ skew
 skid
 skip
 skipped
+skips
 slaiceps
 slash
 sleep
@@ -3240,6 +3289,7 @@ specificity
 specified
 specifier
 specifiers
+specify
 specs
 speed
 spell
@@ -3350,6 +3400,7 @@ submission
 submit
 submodules
 subnode
+subprocess
 subscribe
 subsec
 subset
@@ -3365,6 +3416,8 @@ success
 successful
 successors
 such
+suck
+suckage
 sudo
 suffix
 suffixes
@@ -3464,6 +3517,7 @@ tck
 tclass
 tcp
 tdata
+teardown
 tee
 tell
 telnet
@@ -3499,6 +3553,7 @@ threaded
 threads
 threshold
 throw
+throws
 thursday
 thwait
 ticket
@@ -3642,6 +3697,7 @@ unconverted
 undef
 undefine
 undefined
+under
 underflow
 underline
 underlying
@@ -3841,6 +3897,7 @@ winkler
 winsep
 winsize
 with
+within
 without
 wks
 wnohang
