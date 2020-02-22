@@ -29,12 +29,18 @@ class RubyWords
     bundler dbm gdbm racc rake rdoc resolv-replace rexml/document rinda/ring rubygems
   }.freeze
 
+  # spellr:disable
+  NON_WORDS=%w{
+    Racc_No_Extentions
+  }
+  # spellr:enable
+
   def initialize
     @strings = []
     looked_at(RubyWords, Write)
     require_stdlibs
     collect_words
-    append_wordlist(@strings.to_a.join("\n"), :ruby)
+    append_wordlist((@strings.to_a - NON_WORDS).join("\n"), :ruby)
   end
 
   private

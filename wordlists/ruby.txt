@@ -1254,7 +1254,6 @@ extender
 extends
 extension
 extensions
-extentions
 external
 externalid
 extglob
