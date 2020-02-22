@@ -4,8 +4,6 @@
 require_relative 'util/write'
 require 'set'
 
-# TODO: kwargs. look at .parameters
-
 class RubyWords
   include Write
 
@@ -23,11 +21,12 @@ class RubyWords
     abbrev base64 benchmark bigdecimal cgi cmath coverage csv date delegate digest
     drb/drb e2mmap English erb etc expect fcntl fiddle fileutils find forwardable
     getoptlong io/console io/nonblock io/wait ipaddr irb json logger matrix mkmf
-    monitor mutex_m net/ftp net/http net/imap net/pop net/smtp net/telnet nkf
+    monitor mutex_m net/ftp net/http net/imap net/pop net/smtp net/telnet nkf mathn
     objspace observer open-uri open3 openssl optionparser optparse ostruct pathname
     pp prettyprint prime pstore psych pty racc/parser readline resolv ripper rss scanf
     sdbm securerandom set shell shellwords singleton socket stringio strscan sync syslog
     tempfile thwait time timeout tmpdir tracer tsort uri weakref webrick yaml zlib
+    bundler dbm gdbm racc rake rdoc resolv-replace rexml/document rinda/ring rubygems
   }.freeze
 
   def initialize
@@ -67,13 +66,21 @@ class RubyWords
   def collect_instance_methods_for(constant)
     return unless constant.respond_to?(:public_instance_methods)
 
-    add_words constant.public_instance_methods(false)
+    methods = constant.public_instance_methods(false)
+    add_words methods
+    add_words(methods.flat_map do |m|
+      constant.instance_method(m).parameters.select { |r| r.first == :key }.map(&:last)
+    end)
   end
 
   def collect_singleton_methods_for(constant)
     return unless constant.respond_to?(:public_methods)
 
-    add_words constant.public_methods(false)
+    methods = constant.public_methods(false)
+    add_words methods
+    add_words(methods.flat_map do |m|
+      constant.method(m).parameters.select { |r| r.first == :key }.map(&:last)
+    end)
   end
 
   def collect_constants_for(constant) # rubocop:disable Metrics/MethodLength

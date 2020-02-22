@@ -16,6 +16,6 @@ module Write
 
   def append_wordlist(words, name)
     old_words = wordlist_path(name).read
-    write_wordlist("#{words}\n#{old_words}", name)
+    write_wordlist("#{words}\n#{old_words}".dup, name)
   end
 end
