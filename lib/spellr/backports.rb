@@ -1,27 +1,29 @@
 # frozen_string_literal: true
 
-class Array
-  unless RUBY_VERSION >= '2.4'
+ruby_version = Gem::Version.new(RUBY_VERSION)
+
+unless ruby_version >= Gem::Version.new('2.4')
+  class Array
     def sum
       if block_given?
         reduce(0) { |total, value| total + yield(value) }
       else
-        reduce(:+)
+        reduce(0, :+)
       end
     end
   end
+
+  class Regexp
+    alias_method :match?, :match
+  end
+
+  class String
+    alias_method :match?, :match
+  end
 end
 
-class Regexp
-  alias_method :match?, :match unless RUBY_VERSION >= '2.4'
-end
-
-class String
-  alias_method :match?, :match unless RUBY_VERSION >= '2.4'
-end
-
-class Hash
-  unless RUBY_VERSION >= '2.5'
+unless ruby_version >= Gem::Version.new('2.5')
+  class Hash
     def slice!(*keys)
       delete_if { |k| !keys.include?(k) }
     end
