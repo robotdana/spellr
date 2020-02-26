@@ -11,13 +11,6 @@ require_relative 'backports'
 require 'parallel'
 
 module Spellr
-  class InvalidByteSequence
-    def self.===(error)
-      error.is_a?(ArgumentError) &&
-        /invalid byte sequence/.match?(error.message)
-    end
-  end
-
   class Check
     attr_reader :files, :reporter
 
@@ -58,7 +51,7 @@ module Spellr
     def check_and_count_file(file)
       check_file(file)
       reporter.output.increment(:checked)
-    rescue InvalidByteSequence
+    rescue Spellr::InvalidByteSequence
       # sometimes files are binary
       reporter.output.warn "Skipped unreadable file: #{file}"
     end
