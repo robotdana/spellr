@@ -5,10 +5,6 @@ require_relative 'base_reporter'
 
 module Spellr
   class WordlistReporter < Spellr::BaseReporter
-    def parallel?
-      true
-    end
-
     def finish
       output.puts words.sort.join
     end

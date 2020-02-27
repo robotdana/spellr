@@ -4,10 +4,6 @@ require_relative 'base_reporter'
 
 module Spellr
   class Reporter < Spellr::BaseReporter
-    def parallel?
-      true
-    end
-
     def finish
       puts "\n"
       puts "#{pluralize 'file', counts[:checked]} checked"

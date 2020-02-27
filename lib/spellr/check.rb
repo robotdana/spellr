@@ -2,13 +2,6 @@
 
 require_relative '../spellr'
 require_relative 'tokenizer'
-require_relative 'token'
-require_relative 'column_location'
-require_relative 'line_location'
-require_relative 'output_stubbed'
-require_relative 'backports'
-
-require 'parallel'
 
 module Spellr
   class Check
@@ -25,23 +18,9 @@ module Spellr
     end
 
     def check
-      return check_parallel if reporter.parallel?
-
       files.each do |file|
         check_and_count_file(file)
       end
-
-      reporter.finish
-    end
-
-    def check_parallel # rubocop:disable Metrics/MethodLength
-      acc_reporter = @reporter
-      Parallel.each(files, finish: ->(_, _, result) { acc_reporter.output << result }) do |file|
-        @reporter = acc_reporter.class.new(Spellr::OutputStubbed.new)
-        check_and_count_file(file)
-        reporter.output
-      end
-      @reporter = acc_reporter
 
       reporter.finish
     end
@@ -56,32 +35,18 @@ module Spellr
       reporter.output.warn "Skipped unreadable file: #{file}"
     end
 
-    def check_tokens_in_file(file, start_at, wordlist_proc)
+    def check_file(file, start_at = nil, found_word_proc = wordlist_proc_for(file))
       Spellr::Tokenizer.new(file, start_at: start_at)
-        .each_token(skip_term_proc: wordlist_proc) do |token|
+        .each_token(skip_term_proc: found_word_proc) do |token|
           reporter.call(token)
           reporter.output.exit_code = 1
         end
     end
 
     def wordlist_proc_for(file)
-      wordlists = Spellr.config.wordlists_for(file)
+      wordlists = Spellr.config.wordlists_for(file).sort_by(&:length).reverse
 
       ->(term) { wordlists.any? { |w| w.include?(term) } }
-    end
-
-    def check_file_from_restart(file, restart_token, wordlist_proc)
-      # new wordlist cache when adding a word
-      wordlist_proc = wordlist_proc_for(file) unless restart_token.replacement
-      check_file(file, start_at: restart_token.location, wordlist_proc: wordlist_proc)
-    end
-
-    def check_file(file, start_at: nil, wordlist_proc: wordlist_proc_for(file))
-      restart_token = catch(:check_file_from) do
-        check_tokens_in_file(file, start_at, wordlist_proc)
-        nil
-      end
-      check_file_from_restart(file, restart_token, wordlist_proc) if restart_token
     end
   end
 end

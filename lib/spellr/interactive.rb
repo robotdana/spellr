@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'io/console'
-require 'readline'
 require_relative '../spellr'
 require_relative 'interactive_add'
 require_relative 'interactive_replacement'

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'readline'
+require_relative 'string_format'
+
 module Spellr
   class InteractiveReplacement
     include Spellr::StringFormat

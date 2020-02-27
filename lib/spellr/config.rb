@@ -3,15 +3,16 @@
 require_relative '../spellr'
 require_relative 'config_loader'
 require_relative 'language'
-require_relative 'reporter'
 require 'pathname'
 
 module Spellr
-  class Config
+  class Config # rubocop:disable Metrics/ClassLength
     attr_writer :reporter
+    attr_writer :checker
     attr_reader :config_file
     attr_accessor :quiet
     alias_method :quiet?, :quiet
+    attr_accessor :dry_run
 
     def initialize
       @config = ConfigLoader.new
@@ -20,7 +21,16 @@ module Spellr
     def valid?
       only_has_one_key_per_language
       keys_are_single_characters
+      checker_and_reporter_coexist
+
       errors.empty?
+    end
+
+    def checker_and_reporter_coexist
+      if reporter.class.name == 'Spellr::Interactive' &&
+          checker.name == 'Spellr::CheckParallel'
+        errors << '--interactive is incompatible with --parallel'
+      end
     end
 
     def print_errors
@@ -86,6 +96,15 @@ module Spellr
       @reporter ||= default_reporter
     end
 
+    def checker
+      if @dry_run
+        require_relative 'check_dry_run'
+        @checker ||= Spellr::CheckDryRun
+      end
+
+      @checker ||= default_checker
+    end
+
     private
 
     def only_has_one_key_per_language
@@ -111,7 +130,13 @@ module Spellr
     end
 
     def default_reporter
+      require_relative 'reporter'
       Spellr::Reporter.new
+    end
+
+    def default_checker
+      require_relative 'check_parallel'
+      Spellr::CheckParallel
     end
   end
 end

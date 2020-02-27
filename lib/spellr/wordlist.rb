@@ -2,7 +2,7 @@
 
 require 'pathname'
 require_relative '../spellr'
-require_relative 'token'
+require_relative 'token' # for spellr_normalize
 
 module Spellr
   class Wordlist
@@ -12,7 +12,7 @@ module Spellr
 
     def initialize(file, name: file)
       path = @file = file
-      @path = Pathname.pwd.join('.spellr_wordlists').join(path).expand_path
+      @path = Spellr.config.pwd.join('.spellr_wordlists').join(path).expand_path
       @name = name
       @include = {}
     end
@@ -78,6 +78,10 @@ module Spellr
       @path.dirname.mkpath
       @path.write('')
       clear_cache
+    end
+
+    def length
+      to_a.length
     end
 
     private

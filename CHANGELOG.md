@@ -1,3 +1,7 @@
+- dry_run checks config validity
+- require fast_ignore 6.0
+- misc performance improvements
+
 # v0.6.0
 - add CSS wordlist from MDN
 - improve html wordlist comprehensiveness from MDN and W3C

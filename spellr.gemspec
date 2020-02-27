@@ -14,6 +14,8 @@ Gem::Specification.new do |spec|
   spec.homepage = 'http://github.com/robotdana/spellr'
   spec.license = 'MIT'
 
+  spec.required_ruby_version = '>= 2.3'
+
   spec.files = Dir.glob('{lib,exe,bin/fetch_wordlist,wordlists}/**/{*,.*}') + %w{
     CHANGELOG.md
     Gemfile
@@ -35,6 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'terminal-table'
   spec.add_development_dependency 'tty_string'
   spec.add_development_dependency 'nokogiri'
-  spec.add_dependency 'fast_ignore', '~> 0.5.2'
+  spec.add_dependency 'fast_ignore', '~> 0.6.0'
   spec.add_dependency 'parallel', '~> 1.0'
 end

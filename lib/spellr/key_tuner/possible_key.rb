@@ -2,6 +2,7 @@
 
 require 'pathname'
 require_relative 'stats'
+require_relative '../backports'
 
 class PossibleKey # rubocop:disable Metrics/ClassLength
   include Stats

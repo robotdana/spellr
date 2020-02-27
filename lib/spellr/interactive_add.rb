@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../spellr'
 require_relative 'string_format'
 
 module Spellr

@@ -38,7 +38,7 @@ module Spellr
     end
 
     def symbolize_yaml_safe_load(path)
-      if RUBY_VERSION >= '2.5'
+      if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.5')
         YAML.safe_load(::File.read(path), symbolize_names: true)
       else
         symbolize_names!(YAML.safe_load(::File.read(path)))

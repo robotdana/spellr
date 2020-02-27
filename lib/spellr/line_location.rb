@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'file'
+
 module Spellr
   class LineLocation
     attr_reader :line_number

@@ -6,8 +6,6 @@ RSpec.describe 'command line', type: :cli do
     it 'returns the help' do
       run('spellr --help')
 
-      expect(exitstatus).to eq 0
-      expect(stderr).to be_empty
       expect(stdout).to eq <<~HELP.chomp
         Usage: spellr [options] [files]
 
@@ -15,12 +13,15 @@ RSpec.describe 'command line', type: :cli do
             -q, --quiet                      Silences output
             -i, --interactive                Runs the spell check interactively
 
+                --[no-]parallel              Run in parallel or not, default --parallel
             -d, --dry-run                    List files to be checked
 
             -c, --config FILENAME            Path to the config file (default ./.spellr.yml)
             -v, --version                    Returns the current version
             -h, --help                       Shows this message
       HELP
+      expect(exitstatus).to eq 0
+      expect(stderr).to be_empty
     end
   end
 

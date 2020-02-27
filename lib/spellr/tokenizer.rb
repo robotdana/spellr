@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../spellr'
 require_relative 'token'
 require_relative 'column_location'
 require_relative 'line_location'

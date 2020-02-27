@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require_relative 'wordlist'
+require_relative 'file'
+require 'pathname'
+require 'fast_ignore'
 
 module Spellr
   class Language
@@ -30,7 +33,7 @@ module Spellr
 
     def project_wordlist
       @project_wordlist ||= Spellr::Wordlist.new(
-        Pathname.pwd.join('.spellr_wordlists', "#{name}.txt"),
+        Spellr.config.pwd.join('.spellr_wordlists', "#{name}.txt"),
         name: name
       )
     end
