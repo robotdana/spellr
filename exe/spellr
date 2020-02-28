@@ -2,4 +2,11 @@
 # frozen_string_literal: true
 
 require_relative '../lib/spellr/cli'
-Spellr::CLI.new(ARGV)
+
+begin
+  Spellr::CLI.new(ARGV).check
+rescue Spellr::Error => e
+  require_relative '../lib/spellr/string_format'
+  warn Spellr::StringFormat.red(e.message)
+  exit 1
+end

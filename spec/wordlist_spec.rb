@@ -5,7 +5,15 @@ require_relative '../lib/spellr/wordlist'
 RSpec.describe Spellr::Wordlist do
   subject { described_class.new(Pathname.pwd.join('wordlist').to_s) }
 
-  around { |e| with_temp_dir { e.run } }
+  around { |e| with_temp_dir(e) }
+
+  context 'when missing' do
+    describe '#include?' do
+      it "doesn't raise Errno::ENOENT" do
+        expect(subject).not_to include 'bar'
+      end
+    end
+  end
 
   describe '#include?' do
     before do

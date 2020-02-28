@@ -52,14 +52,21 @@ module Spellr
           require_relative 'interactive'
           require_relative 'check_interactive'
           Spellr.config.reporter = Spellr::Interactive.new
-          Spellr.config.checker = Spellr::CheckInteractive
+          Spellr.config.checker = Spellr::CheckInteractive unless @parallel_option
         end
 
         def config_option(file)
-          Spellr.config.config_file = Pathname.pwd.join(file).expand_path
+          file = Pathname.pwd.join(file).expand_path
+
+          unless ::File.readable?(file)
+            raise Spellr::Config::NotFound, "Config error: #{file} not found or not readable"
+          end
+
+          Spellr.config.config_file = file
         end
 
         def parallel_option(parallel) # rubocop:disable Metrics/MethodLength
+          @parallel_option = true
           Spellr.config.checker = if parallel
             require_relative 'check_parallel'
             Spellr::CheckParallel

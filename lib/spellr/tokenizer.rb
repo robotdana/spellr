@@ -77,15 +77,6 @@ module Spellr
 
     attr_reader :line_tokenizer
 
-    def each_line_token
-      line_location = @start_at.line_location
-
-      file.each_line do |line|
-        yield Token.new(line, location: ColumnLocation.new(line_location: line_location))
-        line_location = line_location.advance(line)
-      end
-    end
-
     def prepare_tokenizer_for_line(line)
       line_tokenizer.string = line
       line_tokenizer.pos = 0

@@ -13,6 +13,7 @@ module Spellr
       @token = token
       @reporter = reporter
 
+      puts ''
       ask_wordlist
     end
 
@@ -40,7 +41,7 @@ module Spellr
 
     def handle_ctrl_c
       puts '^C again to exit'
-      reporter.call(token)
+      reporter.prompt(token)
     end
 
     def handle_wordlist_choice(choice) # rubocop:disable Metrics/MethodLength

@@ -134,6 +134,10 @@ RSpec.describe Spellr::Tokenizer do
       expect('#bac 0xfed').to have_no_tokens
     end
 
+    it 'excludes naked hex codes heuristically' do
+      expect('bac1fed').to have_no_tokens
+    end
+
     it 'excludes url encoded things' do
       expect('search%5Baccount_type').to have_tokens 'search', 'account', 'type'
     end
@@ -236,6 +240,10 @@ RSpec.describe Spellr::Tokenizer do
       expect('AB/abcABCa0abAaABC0bAaABaABC').to have_no_tokens
       expect('SG.AAaA0a0AAA0a_aaA00a0aa.00AaaaaAAAA0AAAAAAaAAAAAA0aAa0aaaAAAaa0AAAA')
         .to have_no_tokens
+      expect('xy1xy2xy3').to have_no_tokens
+
+      # long things like this are never going to be words
+      expect('long1' * 41).to have_no_tokens
     end
 
     it 'excludes from the token escape code characters' do
@@ -255,37 +263,4 @@ RSpec.describe Spellr::Tokenizer do
       expect("this\nspellr:disable\nand\nspellr:enable\nthat").to have_tokens 'this', 'that'
     end
   end
-
-  # spellr:disable
-  xdescribe '#subwords' do
-    it 'returns nothing for the shortest word' do
-      expect('foo').to have_no_subwords
-    end
-
-    it 'returns nothing for the just slightly longer than the shortest word' do
-      expect('food').to have_no_subwords
-    end
-
-    it 'splits once for double the shortest word' do
-      expect('foobar').to have_subwords %w{foo bar}
-    end
-
-    it 'has both splitting points for just slightly longer than double the shortest word' do
-      expect('foodbar').to have_subwords %w{food bar}, %w{foo dbar}
-    end
-
-    it 'splits into three for three times the longest word, and also has all possible pairs' do
-      expect('foobarbaz').to have_subwords(
-        %w{foo bar baz}, %w{foob arbaz}, %w{fooba rbaz}, %w{foobar baz}, %w{foo barbaz}
-      )
-    end
-
-    it 'just keeps going' do
-      expect('foobarbazz').to have_subwords(
-        %w{foo barbazz}, %w{foo bar bazz}, %w{foo barb azz}, %w{foob arbazz},
-        %w{foob arb azz}, %w{fooba rbazz}, %w{foobar bazz}, %w{foobarb azz}
-      )
-    end
-  end
-  # spellr:enable
 end

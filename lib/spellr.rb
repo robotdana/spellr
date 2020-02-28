@@ -10,6 +10,11 @@ module Spellr
     class NotFound < Spellr::Error; end
   end
 
+  class Config
+    class NotFound < Spellr::Error; end
+    class Invalid < Spellr::Error; end
+  end
+
   class InvalidByteSequence < ArgumentError
     RE = /invalid byte sequence/.freeze
     def self.===(error)

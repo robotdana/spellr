@@ -9,11 +9,15 @@ module StubHelper
     allow(Spellr.config).to receive_messages(configs)
   end
 
-  def with_temp_dir(&block)
-    dir = Pathname.new(Dir.mktmpdir)
-    Dir.chdir(dir, &block)
+  def with_temp_dir(example) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    dirname = "#{example.full_description.tr(' /', '__-')}_#{rand.to_s[2..-1]}"
+    dir = Pathname.new(__dir__).join('..', '..', 'tmp', dirname).expand_path
+    dir.mkpath
+    dir = dir
+    Dir.chdir(dir.to_s) { example.run }
   ensure
     dir.rmtree
+    Spellr.config.send(:clear_pwd)
   end
 
   def stub_fs_file_list(filenames)

@@ -4,12 +4,6 @@ require_relative 'output'
 
 module Spellr
   class OutputStubbed < Spellr::Output
-    attr_accessor :exit_code
-
-    def initialize
-      @exit_code = 0
-    end
-
     def stdin
       @stdin ||= StringIO.new
     end
@@ -23,15 +17,21 @@ module Spellr
     end
 
     def marshal_dump # rubocop:disable Metrics/MethodLength
+      l_exit_code = @exit_code if defined?(@exit_code)
+      l_counts = @counts if defined?(@counts)
+      l_stdin = @stdin if defined?(@stdin)
+      l_stdout = @stdout if defined?(@stdout)
+      l_stderr = @stderr if defined?(@stderr)
+
       {
-        exit_code: exit_code,
-        counts: @counts,
-        stdin: @stdin&.string,
-        stdin_pos: @stdin&.pos,
-        stdout: @stdout&.string,
-        stdout_pos: @stdout&.pos,
-        stderr: @stderr&.string,
-        stderr_pos: @stderr&.pos
+        exit_code: l_exit_code,
+        counts: l_counts,
+        stdin: l_stdin&.string,
+        stdin_pos: l_stdin&.pos,
+        stdout: l_stdout&.string,
+        stdout_pos: l_stdout&.pos,
+        stderr: l_stderr&.string,
+        stderr_pos: l_stderr&.pos
       }
     end
 
@@ -51,8 +51,8 @@ module Spellr
         @stderr.pos = dumped[:stderr_pos]
       end
 
-      @exit_code = dumped[:exit_code]
-      @counts = dumped[:counts]
+      @exit_code = dumped[:exit_code] if dumped[:exit_code]
+      @counts = dumped[:counts] if dumped[:counts]
     end
   end
 end

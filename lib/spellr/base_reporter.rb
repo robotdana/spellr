@@ -7,10 +7,6 @@ module Spellr
   class BaseReporter
     include Spellr::StringFormat
 
-    def parallel?
-      true
-    end
-
     def initialize(output = nil)
       @output = output
     end

@@ -1,0 +1,105 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'pathname'
+require_relative '../../lib/spellr/key_tuner/possible_key'
+require_relative '../../lib/spellr/key_tuner/stats'
+require_relative '../../lib/spellr/key_tuner/naive_bayes'
+
+class TrainPossibleKeyData
+  YAML_PATH = if ENV['SPELLR_TEST_PWD']
+    File.join(ENV['SPELLR_TEST_PWD'], 'data.yml')
+  else
+    NaiveBayes::YAML_PATH
+  end
+
+  KEY_DATA_DIR = ENV['SPELLR_TEST_PWD'] || __dir__
+
+  def save_to_yaml(path = YAML_PATH) # rubocop:disable Metrics/MethodLength
+    write_yaml(
+      path,
+      feature_set: feature_set,
+      num_classes: num_classes,
+      classes: classes,
+      features: features
+    )
+  end
+
+  def keys
+    @keys ||= begin
+      load_from_file('false_positives.txt', false) +
+        load_from_file('keys.txt', true)
+    end
+  end
+
+  private
+
+  def load_from_file(filename, key)
+    Pathname.new(KEY_DATA_DIR).join(filename).each_line.map do |line|
+      line = line.chomp
+      next if line.empty?
+
+      PossibleKey.new(line, key)
+    end.compact
+  end
+
+  def write_yaml(path = YAML_PATH, **hash)
+    require 'yaml'
+
+    File.write(path, hash.to_yaml)
+  end
+
+  def training_data
+    @training_data ||= keys.each_with_object({}) do |key, data|
+      data[key.classification] ||= []
+      data[key.classification] << key.features
+    end
+  end
+
+  def num_classes
+    @num_classes ||= training_data&.length
+  end
+
+  def classes # rubocop:disable Metrics/MethodLength
+    # @classes ||= training_data&.keys&.sort
+    # hardcoded to avoid reordering existing data
+    @classes ||= %w{
+      not_key_lower36
+      not_key_base64
+      not_key_hex
+      not_key_upper36
+      key_base64
+      key_hex
+      key_lower36
+      key_upper36
+    }
+  end
+
+  def features
+    @features ||= training_data.first.last.first.keys
+  end
+
+  def feature_set
+    @feature_set ||= classes.each.with_object({}) do |class_name, feature_set|
+      feature_set[class_name] = features.each.with_object({}) do |feature, feature_set_for_class|
+        feature_set_for_class[feature] = feature_stats_for_class(class_name, feature)
+      end
+    end
+  end
+
+  def feature_stats_for_class(class_name, feature)
+    values = training_data[class_name]&.map { |row| row[feature] } || []
+
+    feature_stats(values)
+  end
+
+  def feature_stats(values)
+    {
+      standard_deviation: Stats.standard_deviation(values),
+      mean: Stats.mean(values),
+      variance: Stats.variance(values)
+    }
+  end
+end
+
+TrainPossibleKeyData.new.save_to_yaml

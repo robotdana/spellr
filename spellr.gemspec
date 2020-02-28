@@ -14,9 +14,9 @@ Gem::Specification.new do |spec|
   spec.homepage = 'http://github.com/robotdana/spellr'
   spec.license = 'MIT'
 
-  spec.required_ruby_version = '>= 2.3'
+  spec.required_ruby_version = '>= 2.4'
 
-  spec.files = Dir.glob('{lib,exe,bin/fetch_wordlist,wordlists}/**/{*,.*}') + %w{
+  spec.files = Dir.glob('{lib,exe,wordlists}/**/{*,.*}') + %w{
     CHANGELOG.md
     Gemfile
     LICENSE.txt
@@ -28,15 +28,17 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler', '~> 2.0'
+  spec.add_development_dependency 'mime-types', '~> 3.3.1'
+  spec.add_development_dependency 'nokogiri'
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rspec-eventually'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-rspec'
-  spec.add_development_dependency 'terminal-table'
+  spec.add_development_dependency 'simplecov', '~> 0.18.5'
   spec.add_development_dependency 'tty_string'
-  spec.add_development_dependency 'nokogiri'
+  spec.add_development_dependency 'webmock', '~> 3.8'
+
   spec.add_dependency 'fast_ignore', '~> 0.6.0'
   spec.add_dependency 'parallel', '~> 1.0'
 end

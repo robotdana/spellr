@@ -2,10 +2,8 @@
 
 module Spellr
   class Output
-    attr_reader :exit_code
-
-    def initialize
-      @exit_code = 0
+    def exit_code
+      @exit_code ||= 0
     end
 
     def stdin
@@ -52,10 +50,10 @@ module Spellr
       stdout.print(str)
     end
 
-    def <<(other) # rubocop:disable Metrics/AbcSize
+    def <<(other)
       self.exit_code = other.exit_code
-      stderr.puts other.stderr.string if other.stderr?
-      stdout.puts other.stdout.string if other.stdout?
+      warn other.stderr.string if other.stderr?
+      puts other.stdout.string if other.stdout?
       counts.merge!(other.counts) { |_k, a, b| a + b }
     end
   end

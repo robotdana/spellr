@@ -8,10 +8,6 @@ require_relative 'base_reporter'
 
 module Spellr
   class Interactive < BaseReporter
-    def parallel?
-      false
-    end
-
     def finish # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       puts "\n"
       puts "#{pluralize 'file', counts[:checked]} checked"
@@ -24,21 +20,17 @@ module Spellr
     end
 
     def global_replacements
-      @global_replacements ||= begin
-        counts[:global_replacements] = {} unless counts.key?(:global_replacements)
-        counts[:global_replacements]
-      end
+      @global_replacements ||= counts[:global_replacements] = {}
     end
 
     def global_skips
-      @global_skips ||= begin
-        counts[:global_skips] = [] unless counts.key?(:global_skips)
-        counts[:global_skips]
-      end
+      @global_skips ||= counts[:global_skips] = []
     end
 
     def call(token)
-      return if attempt_global_replacement(token)
+      # if attempt_global_replacement succeeds, then it throws,
+      # it acts like a guard clause all by itself.
+      attempt_global_replacement(token)
       return if attempt_global_skip(token)
 
       super
@@ -52,18 +44,16 @@ module Spellr
       choice
     end
 
-    private
-
-    def total
-      counts[:total_skipped] + counts[:total_fixed] + counts[:total_added]
-    end
-
     def prompt(token)
       print bold('[r,R,s,S,a,e,?]')
 
       handle_response(token)
-    rescue Interrupt
-      puts '^C again to exit'
+    end
+
+    private
+
+    def total
+      counts[:total_skipped] + counts[:total_fixed] + counts[:total_added]
     end
 
     def attempt_global_skip(token)

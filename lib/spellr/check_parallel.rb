@@ -9,6 +9,7 @@ module Spellr
   class CheckParallel < Check
     def check # rubocop:disable Metrics/MethodLength
       acc_reporter = @reporter
+
       Parallel.each(files, finish: ->(_, _, result) { acc_reporter.output << result }) do |file|
         @reporter = acc_reporter.class.new(Spellr::OutputStubbed.new)
         check_and_count_file(file)

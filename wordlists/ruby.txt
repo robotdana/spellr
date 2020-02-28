@@ -3796,6 +3796,7 @@ username
 userreserved
 uses
 using
+usr
 utc
 utctime
 utf

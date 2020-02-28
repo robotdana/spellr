@@ -1,6 +1,10 @@
+cov
 kwarg
 matchdata
+nocov
 nokogiri
 pty
+simplecov
 subclasses
 vars
+webmock

@@ -15,7 +15,7 @@ AllCops:
     - .spellr_wordlists/**/*
   DisplayCopNames: true
   DisplayStyleGuide: true
-  TargetRubyVersion: 2.5
+  TargetRubyVersion: 2.4
 
 # all of our layout customisations are because we prefer indentation to be
 # always consistently 2 spaces, for blocks, scopes, multiline expressions, etc
@@ -115,13 +115,16 @@ Metrics/BlockLength:
     - describe
     - context
     - it
+    - run_exe
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 100
   IgnoreCopDirectives: true
 
 Metrics/MethodLength:
   Max: 5
+  Exclude:
+    - bin/generate/*
 
 Naming/MethodParameterName:
   AllowedNames: [_, io, id, to, by, 'on', in, at, ip, db]
@@ -135,8 +138,7 @@ RSpec/DescribeClass:
   Enabled: false
 
 RSpec/ExampleLength:
-  Exclude:
-    - spec/feature_spec.rb
+  Enabled: false
 
 # I misuse matchers often
 RSpec/ExpectActual:
@@ -194,3 +196,14 @@ Style/SignalException:
 # this wants less descriptive names
 Style/SingleLineBlockParams:
   Enabled: false
+
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true

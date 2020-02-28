@@ -48,8 +48,8 @@ module Spellr
       yield replacement if block_given?
       complete_replacement(replacement)
     rescue Interrupt
-      puts '^C again to exit'
-      reporter.call(original_token)
+      puts "\n^C again to exit"
+      reporter.prompt(original_token)
     end
 
     private

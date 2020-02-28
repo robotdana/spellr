@@ -1,6 +1,8 @@
 .rspec_status
 pkg
+/coverage/
 /vendor/
 /.bundle/
-data/
+/tmp/
+/bin/possible_key_data/*.txt
 Gemfile.lock

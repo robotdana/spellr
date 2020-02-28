@@ -18,14 +18,14 @@ module Spellr
     end
 
     def each(&block)
-      raise_unless_exists?
-
-      @path.each_line(&block)
+      words.each(&block)
     end
 
+    # :nocov:
     def inspect
       "#<#{self.class.name}:#{@path}>"
     end
+    # :nocov:
 
     # significantly faster than default Enumerable#include?
     # requires terms to have been sorted
@@ -60,12 +60,6 @@ module Spellr
       clear_cache
     end
 
-    def read
-      raise_unless_exists?
-
-      @path.read
-    end
-
     def exist?
       return @exist if defined?(@exist)
 
@@ -95,12 +89,6 @@ module Spellr
       @words = nil
       @include = {}
       remove_instance_variable(:@exist) if defined?(@exist)
-    end
-
-    def raise_unless_exists?
-      return if exist?
-
-      raise Spellr::Wordlist::NotFound, "Wordlist file #{@file} doesn't exist at #{@path}"
     end
   end
 end

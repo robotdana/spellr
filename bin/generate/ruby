@@ -14,7 +14,7 @@ class RubyWords
   }.freeze
 
   CONVENTION_WORDS = %w{
-    klass kwarg kwargs
+    klass kwarg kwargs usr
   }.freeze
 
   STDLIBS = %w{
@@ -30,14 +30,14 @@ class RubyWords
   }.freeze
 
   # spellr:disable
-  NON_WORDS=%w{
+  NON_WORDS = %w{
     Racc_No_Extentions
-  }
+  }.freeze
   # spellr:enable
 
   def initialize
     @strings = []
-    looked_at(RubyWords, Write)
+    looked_at(RubyWords, Write, Spellr)
     require_stdlibs
     collect_words
     append_wordlist((@strings.to_a - NON_WORDS).join("\n"), :ruby)
@@ -55,8 +55,6 @@ class RubyWords
 
   def check_and_collect_words_for(constant)
     return if looked_at?(constant) # to prevent endless loops
-
-    puts "generating words for #{constant}" if constant.is_a?(Module)
 
     looked_at(constant)
 
@@ -80,8 +78,6 @@ class RubyWords
   end
 
   def collect_singleton_methods_for(constant)
-    return unless constant.respond_to?(:public_methods)
-
     methods = constant.public_methods(false)
     add_words methods
     add_words(methods.flat_map do |m|
@@ -89,14 +85,16 @@ class RubyWords
     end)
   end
 
-  def collect_constants_for(constant) # rubocop:disable Metrics/MethodLength
+  def collect_constants_for(constant)
     return unless constant.respond_to?(:constants)
 
     constant.constants.each do |child|
-      add_words(child)
-      check_and_collect_words_for(constant.const_get(child))
-    rescue StandardError, LoadError => e
-      warn "Error loading #{constant}::#{child} => #{e.message}"
+      begin
+        add_words(child)
+        check_and_collect_words_for(constant.const_get(child))
+      rescue StandardError, LoadError => e
+        warn "Error loading #{constant}::#{child} => #{e.message}"
+      end
     end
   end
 
@@ -117,9 +115,11 @@ class RubyWords
 
   def require_stdlibs
     STDLIBS.each do |lib|
-      require lib
-    rescue LoadError
-      warn "can't load #{lib}"
+      begin
+        require lib
+      rescue LoadError
+        puts "can't load #{lib}"
+      end
     end
   end
 end

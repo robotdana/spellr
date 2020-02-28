@@ -9,8 +9,13 @@ require 'yaml'
 class NaiveBayes
   YAML_PATH = File.join(__dir__, 'data.yml')
 
+  attr_reader :feature_set
+  attr_reader :num_classes
+  attr_reader :classes
+  attr_reader :features
+
   def initialize(path = YAML_PATH)
-    load_from_yaml(path) if File.exist?(path)
+    load_from_yaml(path)
     @key = {}
   end
 
@@ -27,63 +32,6 @@ class NaiveBayes
     @num_classes = data[:num_classes]
     @classes = data[:classes]
     @features = data[:features]
-  end
-
-  def save_to_yaml(path = YAML_PATH)
-    write_yaml(path,
-               feature_set: feature_set,
-               num_classes: num_classes,
-               classes: classes,
-               features: features)
-  end
-
-  private
-
-  def write_yaml(path = YAML_PATH, **hash)
-    require 'yaml'
-
-    File.write(path, hash.to_yaml)
-  end
-
-  def training_data
-    @training_data ||= PossibleKey.keys.each_with_object({}) do |key, data|
-      data[key.classification] ||= []
-      data[key.classification] << key.features
-    end
-  end
-
-  def num_classes
-    @num_classes ||= training_data&.length
-  end
-
-  def classes
-    @classes ||= training_data&.keys
-  end
-
-  def features
-    @features ||= training_data.first.last.first.keys
-  end
-
-  def feature_set
-    @feature_set ||= classes.each.with_object({}) do |class_name, feature_set|
-      feature_set[class_name] = features.each.with_object({}) do |feature, feature_set_for_class|
-        feature_set_for_class[feature] = feature_stats_for_class(class_name, feature)
-      end
-    end
-  end
-
-  def feature_stats_for_class(class_name, feature)
-    values = training_data[class_name].map { |row| row[feature] }
-
-    feature_stats(values)
-  end
-
-  def feature_stats(values)
-    {
-      standard_deviation: Stats.standard_deviation(values),
-      mean: Stats.mean(values),
-      variance: Stats.variance(values)
-    }
   end
 
   # given a class, this method determines the probability

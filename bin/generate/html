@@ -8,26 +8,28 @@ require_relative 'util/fetch'
 require 'nokogiri'
 require 'parallel'
 
-PATHS=%w{
+PATHS = %w{
   https://wiki.developer.mozilla.org/en-US/docs/Web/HTML/Element?raw&macros
   https://wiki.developer.mozilla.org/en-US/docs/Web/HTML/Attributes?raw&macros&section=Attribute_list
-}
+}.freeze
 
 def additional_words
-  response = Fetch.fetch("https://www.w3.org/TR/wai-aria/")
+  response = Fetch.fetch('https://www.w3.org/TR/wai-aria/')
   document = Nokogiri::HTML.parse(response)
   document.xpath('//a[code]').map(&:content)
 end
 
 def additional_license
-  "Copyright © 2015 W3C® (MIT, ERCIM, Keio, Beihang). This software or document includes material copied from or derived from (Accessible Rich Internet Applications (WAI-ARIA) 1.1)[https://www.w3.org/TR/wai-aria/]\n"
+  'Copyright © 2015 W3C® (MIT, ERCIM, Keio, Beihang). ' \
+  'This software or document includes material copied from or derived from '\
+  "(Accessible Rich Internet Applications (WAI-ARIA) 1.1)[https://www.w3.org/TR/wai-aria/]\n"
 end
 
 MDNWords.new(
   'html',
   PATHS,
-  sections: ["Attributes", "Additional_attributes", ""],
+  sections: ['Attributes', 'Additional_attributes', ''],
   additional_words: additional_words,
   additional_license: additional_license,
-  exclude_proc: ->(c) { c.start_with?(/#/) }
+  exclude_proc: ->(c) { c.start_with?('#') }
 )

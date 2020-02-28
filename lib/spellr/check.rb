@@ -32,7 +32,7 @@ module Spellr
       reporter.output.increment(:checked)
     rescue Spellr::InvalidByteSequence
       # sometimes files are binary
-      reporter.output.warn "Skipped unreadable file: #{file}"
+      reporter.warn "Skipped unreadable file: #{file}"
     end
 
     def check_file(file, start_at = nil, found_word_proc = wordlist_proc_for(file))

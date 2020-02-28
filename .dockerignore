@@ -1,6 +1,5 @@
 /.spellr_wordlists/
-/bin/console
-/bin/setup
+/bin
 /spec/
 /.dockerignore
 /.gitignore
