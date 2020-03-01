@@ -124,37 +124,52 @@ $ spellr --interactive
 You'll be shown each word that's not found in a dictionary, it's location (path:line:column), along with a prompt.
 ```
 file.rb:1:0 notaword
-[r,R,s,S,a,e?]
+[a]dd, [r]eplace, [s]kip, [h]elp, [^C] to exit: [ ]
 ```
 
-Type `?` for this list of what each letter command does
+Type `h` for this list of what each letter command does
 ```
-[r] Replace notaword
-[R] Replace all future instances of notaword
-[s] Skip notaword
-[S] Skip all future instances of notaword
 [a] Add notaword to a word list
-[e] Edit the whole line
-[?] Show this help
+[r] Replace notaword
+[R] Replace this and all future instances of notaword
+[s] Skip notaword
+[S] Skip this and all future instances of notaword
+[h] Show this help
+[ctrl] + [C] Exit spellr
+
+What do you want to do? [ ]
 ```
 
-If you type `r`, `R` or `e` you'll be shown a prompt with the original word and it prefilled ready for correcting:
+---
+
+If you type `r` or `R` you'll be shown a prompt with the original word and it prefilled ready for correcting:
 ```
 file.txt:1:0 notaword
->> notaword
-=> not_a_word
+[a]dd, [r]eplace, [s]kip, [h]elp, [^C] to exit: [r]
+
+  [^C] to go back
+  Replace notaword with: notaword
 ```
 To submit your choice and continue with the spell checking click enter. Your replacement word will be immediately spellchecked. To instead go back press Ctrl-C once (pressing it twice will exit the spell checking).
 
+Lowercase `r` will correct this particular use of the word, uppercase `R` will also all the future times that word is used.
+
+---
+
 If you instead type `s` or `S` it will skip this word and continue with the spell checking.
+
+Lowercase `s` will skip this particular use of the word, uppercase `S` will also skip future uses of the word.
 
 ---
 
 If you instead type `a` you'll be shown a list of possible wordlists to add to. This list is based on the file path, and is configurable in `.spellr.yml`.
 ```
-Add notaword to wordlist:
-[e] english
-[r] ruby
+file.txt:1:0 notaword
+[a]dd, [r]eplace, [s]kip, [h]elp, [^C] to exit: [a]
+
+  [e] english
+  [^C] to go back
+  Add notaword to which wordlist? [ ]
 ```
 Type `e` to add this word to the english wordlist and continue on through the spell checking. To instead go back to the prompt press Ctrl-C once (pressing it twice will exit the spell checking).
 
@@ -167,6 +182,10 @@ If the tokenizer finds a word you don't want to add to the wordlist (perhaps it'
 # spellr:enable
 ```
 
+This works with any kind of comment, even in the same line
+```html
+<span><!-- spellr:disable -->nonsenseword<!-- spellr:enable --></span>
+```
 ## Configuration
 
 Spellr's configuration is a `.spellr.yml` file in your project root. This is combined with the gem defaults defined [here](https://github.com/robotdana/spellr/blob/master/lib/.spellr.yml).
@@ -206,8 +225,8 @@ languages:
       - /applies_to/
     key: r # this is the letter used to choose this wordlist when using `spellr --interactive`.
     hashbangs:
-      - ruby # if the hashbang contains ruby, this file will match,
-             # even if it doesn't otherwise match the includes pattern.
+      - ruby # if the file has no extension and the hashbang/shebang contains ruby
+             # this file will match even if it doesn't otherwise match the includes pattern.
 ```
 
 ## Development

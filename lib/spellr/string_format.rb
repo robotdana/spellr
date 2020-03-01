@@ -20,12 +20,20 @@ module Spellr
       "\e[1;39m#{text}#{normal}"
     end
 
+    def lighten(text)
+      "\e[2;39m#{text}#{normal}"
+    end
+
     def red(text)
       "\e[1;31m#{text}#{normal}"
     end
 
     def green(text)
       "\e[1;32m#{text}#{normal}"
+    end
+
+    def key(label)
+      "[#{bold label[0]}]#{label[1..-1]}"
     end
   end
 end

@@ -2,10 +2,12 @@
 
 require_relative '../spellr'
 require_relative 'tokenizer'
+require_relative 'string_format'
 
 module Spellr
   class Check
     attr_reader :files, :reporter
+    include StringFormat
 
     def exit_code
       reporter.exit_code
@@ -32,7 +34,7 @@ module Spellr
       reporter.output.increment(:checked)
     rescue Spellr::InvalidByteSequence
       # sometimes files are binary
-      reporter.warn "Skipped unreadable file: #{file}"
+      reporter.warn "Skipped unreadable file: #{aqua file.relative_path}"
     end
 
     def check_file(file, start_at = nil, found_word_proc = wordlist_proc_for(file))

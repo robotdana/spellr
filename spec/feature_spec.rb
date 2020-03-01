@@ -510,12 +510,17 @@ RSpec.describe 'command line', type: :cli do
       end
     end
 
+    def prompt(key = nil)
+      key = key ? bold(key) : ' '
+      "[#{bold 'a'}]dd, [#{bold 'r'}]eplace, [#{bold 's'}]kip, [#{bold 'h'}]elp, [^#{bold 'C'}] to exit: [#{key}]" # rubocop:disable Layout/LineLength
+    end
+
     describe '--interactive' do
       it 'returns the first unmatched term and a prompt' do
         run_exe 'spellr -i' do |stdout, _|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
         end
       end
@@ -524,20 +529,44 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
-          stdin.print '?'
+          stdin.print 'h'
 
           expect(stdout).to print <<~STDOUT
+
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r]'} Replace #{red 'dolar'}
-            #{bold '[R]'} Replace all future instances of #{red 'dolar'}
-            #{bold '[s]'} Skip #{red 'dolar'}
-            #{bold '[S]'} Skip all future instances of #{red 'dolar'}
-            #{bold '[a]'} Add #{red 'dolar'} to a word list
-            #{bold '[e]'} Edit the whole line
-            #{bold '[?]'} Show this help
+
+            [#{bold 'a'}] Add #{red 'dolar'} to a word list
+            [#{bold 'r'}] Replace #{red 'dolar'}
+            [#{bold 'R'}] Replace this and all future instances of #{red 'dolar'}
+            [#{bold 's'}] Skip #{red 'dolar'}
+            [#{bold 'S'}] Skip this and all future instances of #{red 'dolar'}
+            [#{bold 'h'}] Show this help
+            [ctrl] + [#{bold 'C'}] Exit spellr
+
+            What do you want to do? [ ]
+          STDOUT
+
+          stdin.print 's'
+
+          expect(stdout).to print <<~STDOUT
+
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+
+            [#{bold 'a'}] Add #{red 'dolar'} to a word list
+            [#{bold 'r'}] Replace #{red 'dolar'}
+            [#{bold 'R'}] Replace this and all future instances of #{red 'dolar'}
+            [#{bold 's'}] Skip #{red 'dolar'}
+            [#{bold 'S'}] Skip this and all future instances of #{red 'dolar'}
+            [#{bold 'h'}] Show this help
+            [ctrl] + [#{bold 'C'}] Exit spellr
+
+            What do you want to do? [#{bold 's'}]
+            Skipped #{red 'dolar'}
+            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            #{prompt}
           STDOUT
         end
       end
@@ -546,12 +575,35 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin, pid|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
-          stdin.puts "\u0003" # ctrl c
+          stdin.print "\u0003" # ctrl c
+
+          expect(stdout).to print <<~STDOUT.chomp
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt '^C'}
+          STDOUT
 
           expect(pid).to have_exitstatus(1)
+        end
+      end
+
+      it 'ignores up' do
+        run_exe 'spellr -i' do |stdout, stdin|
+          expect(stdout).to print <<~STDOUT.chomp
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt}
+          STDOUT
+
+          stdin.print "\e[1A"
+
+          sleep 0.1
+
+          expect(stdout).to print <<~STDOUT.chomp
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt}
+          STDOUT
         end
       end
 
@@ -559,37 +611,43 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
+            #{prompt 's'}
             Skipped #{red 'amet'}
 
             1 file checked
@@ -604,32 +662,34 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'S'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt 'S'}
             Skipped #{red 'dolar'}
             Automatically skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'S'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt 'S'}
             Skipped #{red 'dolar'}
             Automatically skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
+            #{prompt 'S'}
             Skipped #{red 'amet'}
 
             1 file checked
             3 errors found
             3 errors skipped
-
           STDOUT
         end
       end
@@ -638,29 +698,45 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin, pid|
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'a'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolar'} to which wordlist? [ ]
           STDOUT
 
-          stdin.puts "\u0003" # ctrl c
+          stdin.print "\u0003" # ctrl c
 
           expect(stdout).to print <<~STDOUT.chomp
+
+
+
+
+
+
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
-            ^C again to exit
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
-          stdin.puts "\u0003" # ctrl c
+          stdin.print "\u0003" # ctrl c
+
+          expect(stdout).to print <<~STDOUT.chomp
+
+
+
+
+
+
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt '^C'}
+          STDOUT
 
           expect(pid).to have_exitstatus(1)
         end
@@ -670,25 +746,31 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'a'
 
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolar'} to which wordlist? [ ]
           STDOUT
 
           stdin.print 'x'
 
+          sleep 0.1 # make sure nothing has changed
+
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
-            Add #{red 'dolar'} to wordlist:
-            [e] english
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolar'} to which wordlist? [ ]
           STDOUT
         end
       end
@@ -697,26 +779,33 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'a'
 
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolar'} to which wordlist? [ ]
           STDOUT
 
           stdin.print 'e'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
-            Added #{red 'dolar'} to english wordlist
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolar'} to which wordlist? [#{bold 'e'}]
+
+            Added #{red 'dolar'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           expect(english_wordlist.read).to eq <<~FILE
@@ -729,25 +818,40 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
-            Added #{red 'dolar'} to english wordlist
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolar'} to which wordlist? [#{bold 'e'}]
+
+            Added #{red 'dolar'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Add #{red 'amet'} to wordlist:
-            [e] english
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'amet'} to which wordlist? [ ]
           STDOUT
 
           stdin.print 'e'
 
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
-            Added #{red 'dolar'} to english wordlist
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolar'} to which wordlist? [#{bold 'e'}]
+
+            Added #{red 'dolar'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Add #{red 'amet'} to wordlist:
-            [e] english
-            Added #{red 'amet'} to english wordlist
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'amet'} to which wordlist? [#{bold 'e'}]
+
+            Added #{red 'amet'} to the #{bold 'english'} wordlist
 
             1 file checked
             2 errors found
@@ -771,28 +875,35 @@ RSpec.describe 'command line', type: :cli do
         run_exe "spellr -i --config=#{Dir.pwd}/.spellr.yml" do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'a'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
-            [l] lorem
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [#{bold 'l'}] lorem
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolar'} to which wordlist? [ ]
           STDOUT
 
           stdin.print 'l'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            Add #{red 'dolar'} to wordlist:
-            [e] english
-            [l] lorem
-            Added #{red 'dolar'} to lorem wordlist
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [#{bold 'l'}] lorem
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolar'} to which wordlist? [#{bold 'l'}]
+
+            Added #{red 'dolar'} to the #{bold 'lorem'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
         end
       end
@@ -801,29 +912,31 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin, pid|
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'R'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolar
+            #{prompt 'R'}
+
+              #{lighten '[^C] to go back'}
+              Replace all #{red 'dolar'} with: \e[32mdolar
           STDOUT
 
-          stdin.puts "\u0003" # ctrl c
+          stdin.print "something\u0003" # ctrl c
 
           expect(stdout).to print <<~STDOUT.chomp
+
+
+
+
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolar
-            ^C again to exit
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
-          stdin.puts "\u0003" # ctrl c
+          stdin.print "\u0003" # ctrl c
 
           expect(pid).to have_exitstatus(1)
         end
@@ -833,26 +946,31 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'R'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolar
+            #{prompt 'R'}
+
+              #{lighten '[^C] to go back'}
+              Replace all #{red 'dolar'} with: \e[32mdolar
           STDOUT
 
           stdin.print "es\n"
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolares
-            Replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'R'}
+
+              #{lighten '[^C] to go back'}
+              Replace all #{red 'dolar'} with: \e[32mdolares
+
+            \e[0mReplaced all #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           expect(check_file.read).to eq <<~FILE
@@ -865,28 +983,41 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolares
-            Replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'R'}
+
+              #{lighten '[^C] to go back'}
+              Replace all #{red 'dolar'} with: \e[32mdolares
+
+            \e[0mReplaced all #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Add #{red 'dolares'} to wordlist:
-            [e] english
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolares'} to which wordlist? [ ]
           STDOUT
 
           stdin.print 'e'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolares
-            Replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'R'}
+
+              #{lighten '[^C] to go back'}
+              Replace all #{red 'dolar'} with: \e[32mdolares
+
+            \e[0mReplaced all #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Add #{red 'dolares'} to wordlist:
-            [e] english
-            Added #{red('dolares')} to english wordlist
-            Automatically replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+
+            Added #{red 'dolares'} to the #{bold 'english'} wordlist
+            Automatically replaced #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           expect(check_file.read).to eq <<~FILE
@@ -905,15 +1036,23 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolares
-            Replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'R'}
+
+              #{lighten '[^C] to go back'}
+              Replace all #{red 'dolar'} with: \e[32mdolares
+
+            \e[0mReplaced all #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Add #{red 'dolares'} to wordlist:
-            [e] english
-            Added #{red('dolares')} to english wordlist
-            Automatically replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+
+            Added #{red 'dolares'} to the #{bold 'english'} wordlist
+            Automatically replaced #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
+            #{prompt 's'}
             Skipped #{red('amet')}
 
             1 file checked
@@ -929,29 +1068,40 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin, pid|
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'r'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolar
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolar
           STDOUT
 
-          stdin.puts "\u0003" # ctrl c
+          stdin.print "\u0003" # ctrl c
 
           expect(stdout).to print <<~STDOUT.chomp
+
+
+
+
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolar
-            ^C again to exit
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
-          stdin.puts "\u0003" # ctrl c
+          stdin.print "\u0003" # ctrl c
+
+          expect(stdout).to print <<~STDOUT.chomp
+
+
+
+
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt '^C'}
+          STDOUT
 
           expect(pid).to have_exitstatus(1)
         end
@@ -961,26 +1111,71 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'r'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolar
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolar
           STDOUT
 
-          stdin.puts "\b" * 17
+          stdin.print "\b" * 17
+
+          expect(stdout).to print <<~STDOUT.chomp
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32m
+          STDOUT
+
+          stdin.puts ''
 
           # just put the prompt again
           expect(stdout).to print <<~STDOUT.chomp
+
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'}
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolar
+          STDOUT
+        end
+      end
+
+      it 'disallows replacing with the same when replacing with r' do
+        run_exe 'spellr -i' do |stdout, stdin|
+          expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
+          STDOUT
+
+          stdin.print 'r'
+
+          expect(stdout).to print <<~STDOUT.chomp
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolar
+          STDOUT
+
+          stdin.puts ''
+          sleep 0.1
+
+          # just put the prompt again
+          expect(stdout).to print <<~STDOUT.chomp
+
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolar
           STDOUT
         end
       end
@@ -989,26 +1184,31 @@ RSpec.describe 'command line', type: :cli do
         run_exe 'spellr -i' do |stdout, stdin|
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 'r'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolar
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolar
           STDOUT
 
           stdin.print "es\n"
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolares
-            Replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolares
+
+            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           expect(check_file.read).to eq <<~FILE
@@ -1021,27 +1221,40 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolares
-            Replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolares
+
+            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Add #{red 'dolares'} to wordlist:
-            [e] english
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolares'} to which wordlist? [ ]
           STDOUT
 
           stdin.print 'e'
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolares
-            Replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolares
+
+            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Add #{red 'dolares'} to wordlist:
-            [e] english
-            Added #{red 'dolares'} to english wordlist
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+
+            Added #{red 'dolares'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           expect(english_wordlist.read).to eq <<~FILE
@@ -1054,33 +1267,50 @@ RSpec.describe 'command line', type: :cli do
 
           expect(stdout).to print <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolares
-            Replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolares
+
+            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Add #{red 'dolares'} to wordlist:
-            [e] english
-            Added #{red 'dolares'} to english wordlist
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+
+            Added #{red 'dolares'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[r,R,s,S,a,e,?]'}
+            #{prompt}
           STDOUT
 
           stdin.print 's'
 
           expect(stdout).to print <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} #{red 'dolar'}
-            #{aqua '=>'} dolares
-            Replaced #{red('dolar')} with #{green('dolares')}
+            #{prompt 'r'}
+
+              #{lighten '[^C] to go back'}
+              Replace #{red 'dolar'} with: \e[32mdolares
+
+            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Add #{red 'dolares'} to wordlist:
-            [e] english
-            Added #{red 'dolares'} to english wordlist
+            #{prompt 'a'}
+
+              [#{bold 'e'}] english
+              [^#{bold 'C'}] to go back
+              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+
+            Added #{red 'dolares'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+            #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
+            #{prompt 's'}
             Skipped #{red 'amet'}
 
             1 file checked
@@ -1088,71 +1318,6 @@ RSpec.describe 'command line', type: :cli do
             2 errors skipped
             1 error fixed
             1 word added
-          STDOUT
-        end
-      end
-
-      it 'returns the next unmatched term and a prompt after replacing with e' do
-        run 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{bold '[r,R,s,S,a,e,?]'}
-          STDOUT
-
-          stdin.print 'e'
-
-          expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} lorem ipsum #{red 'dolar'}
-            #{aqua '=>'} lorem ipsum dolar
-          STDOUT
-          stdin.print "\b" * 17
-          stdin.print "lorem lorem lorem\n"
-
-          expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} lorem ipsum #{red 'dolar'}
-            #{aqua '=>'} lorem lorem lorem
-            Replaced #{red 'lorem ipsum dolar'} with #{green('lorem lorem lorem')}
-            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            #{bold '[r,R,s,S,a,e,?]'}
-          STDOUT
-
-          expect(check_file.read).to eq <<~FILE
-            lorem lorem lorem
-
-              dolar amet
-          FILE
-
-          stdin.print 's'
-
-          expect(stdout).to print <<~STDOUT.chomp
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} lorem ipsum #{red 'dolar'}
-            #{aqua '=>'} lorem lorem lorem
-            Replaced #{red 'lorem ipsum dolar'} with #{green('lorem lorem lorem')}
-            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            Skipped #{red 'dolar'}
-            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            #{bold '[r,R,s,S,a,e,?]'}
-          STDOUT
-
-          stdin.print 's'
-
-          expect(stdout).to print <<~STDOUT
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
-            #{aqua '>>'} lorem ipsum #{red 'dolar'}
-            #{aqua '=>'} lorem lorem lorem
-            Replaced #{red 'lorem ipsum dolar'} with #{green('lorem lorem lorem')}
-            #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            Skipped #{red 'dolar'}
-            #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Skipped #{red 'amet'}
-
-            1 file checked
-            3 errors found
-            2 errors skipped
-            1 error fixed
           STDOUT
         end
       end

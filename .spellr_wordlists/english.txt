@@ -33,9 +33,11 @@ dockerfile
 dockerhub
 dockerignore
 downloader
+elp
 env
 eos
 eot
+eplace
 erb
 ercim
 esque
@@ -82,6 +84,7 @@ json
 jsx
 keio
 keydata
+keypress
 khz
 klass
 kwargs
