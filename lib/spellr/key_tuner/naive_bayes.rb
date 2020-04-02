@@ -26,7 +26,7 @@ class NaiveBayes
   end
 
   def load_from_yaml(path = YAML_PATH)
-    data = YAML.safe_load(::File.read(path), [Symbol])
+    data = YAML.safe_load(::File.read(path), permitted_classes: [Symbol])
 
     @feature_set = data[:feature_set]
     @num_classes = data[:num_classes]

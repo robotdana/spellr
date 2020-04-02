@@ -41,3 +41,20 @@ unless ruby_version >= Gem::Version.new('2.5')
     end
   end
 end
+
+# all this to avoid a deprecation warning
+unless ruby_version >= Gem::Version.new('2.6')
+  require 'yaml'
+  module YAML
+    class << self
+      alias_method :safe_load_without_permitted_classes, :safe_load
+      def safe_load(path, *args, permitted_classes: nil, **kwargs)
+        if permitted_classes
+          safe_load_without_permitted_classes(path, permitted_classes, *args, **kwargs)
+        else
+          safe_load_without_permitted_classes(path, *args, **kwargs)
+        end
+      end
+    end
+  end
+end
