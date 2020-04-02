@@ -6,3 +6,4 @@ pkg
 /tmp/
 /bin/possible_key_data/*.txt
 Gemfile.lock
+.ruby-version
