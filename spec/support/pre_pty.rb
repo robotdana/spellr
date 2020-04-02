@@ -2,5 +2,5 @@
 
 require 'simplecov'
 
-SimpleCov.command_name "CLI #{Process.pid} #{ENV['SPELLR_TEST_DESCRIPTION']}"
+SimpleCov.command_name "CLI #{Process.pid} #{ENV['SPELLR_TEST_DESCRIPTION']} #{rand}"
 SimpleCov.start

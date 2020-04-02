@@ -4,15 +4,21 @@ require 'fileutils'
 require 'pathname'
 FileUtils.rm_rf(File.join(__dir__, '..', 'coverage'))
 
-require 'simplecov'
-SimpleCov.print_error_status = true
-if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.5')
+# There were intermittent issues on travis with 2.5 that i don't understand.
+if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
+  require 'simplecov'
+  require 'simplecov-console'
+
+  SimpleCov.print_error_status = true
   SimpleCov.minimum_coverage line: 100, branch: 100
-else
-  SimpleCov.minimum_coverage 100
+
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::Console
+  ])
+
+  SimpleCov.start
 end
-SimpleCov.formatter = SimpleCov::Formatter::HTMLFormatter
-SimpleCov.start
 
 require 'bundler/setup'
 require 'webmock/rspec'
