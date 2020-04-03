@@ -7,7 +7,7 @@ RSpec.describe Spellr::File do
   describe '#hashbang' do
     subject { described_class.new(path) }
 
-    around { |example| with_temp_dir { example.run } }
+    around { |example| with_temp_dir(example) }
 
     context 'when it has an extension' do
       let(:path) { stub_fs_file('whatever.rb', <<~FILE) }

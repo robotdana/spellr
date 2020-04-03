@@ -8,17 +8,15 @@ module Spellr
   class FileList
     include Enumerable
 
-    def initialize(*patterns)
+    def initialize(patterns = nil)
       @patterns = patterns
     end
 
     def each
+      return enum_for(:each) unless block_given?
+
       fast_ignore.each do |file|
-        next unless cli_patterns_ignore.allowed?(file)
-
-        file = Spellr::File.new(file)
-
-        yield(file)
+        yield(Spellr::File.new(file))
       end
     end
 
@@ -28,28 +26,13 @@ module Spellr
 
     private
 
-    # anchored patterns are significantly faster on large codebases
-    def cli_patterns
-      @patterns.map do |pattern|
-        pattern.sub(%r{^(?!(?:[/~*]|\.{1,2}/))}, '/')
-      end
-    end
-
-    def gitignore_path
-      gitignore = ::File.join(Dir.pwd, '.gitignore')
-      gitignore if ::File.exist?(gitignore)
-    end
-
-    def fast_ignore
+    def fast_ignore # rubocop:disable Metrics/MethodLength
       FastIgnore.new(
         ignore_rules: Spellr.config.excludes,
         include_rules: Spellr.config.includes,
-        gitignore: gitignore_path
+        argv_rules: @patterns,
+        root: Spellr.config.pwd_s
       )
-    end
-
-    def cli_patterns_ignore
-      @cli_patterns_ignore ||= FastIgnore.new(include_rules: cli_patterns, gitignore: false)
     end
   end
 end

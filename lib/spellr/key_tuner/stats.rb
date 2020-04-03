@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../backports'
+
 module Stats
   module_function
 

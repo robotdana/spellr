@@ -4,12 +4,12 @@
 
 require_relative 'util/mdn_words'
 
-ADDITIONAL_WORDS=[
-  "khz" # doc lists as kHz and it can also be written khz
-]
+ADDITIONAL_WORDS = [
+  'khz' # doc lists as kHz and it can also be written khz
+].freeze
 # sass documentation has no structure for me to automate this.
 # fortunately sass is small
-SASS_WORDS=%w{
+SASS_WORDS = %w{
   functions abs acos adjust alpha append arglist asin at atan blue bool
   bracketed call case ceil change clamp color comparable compatible complement
   content cos css darken debug default desaturate each else error exists extend
@@ -21,9 +21,9 @@ SASS_WORDS=%w{
   saturation scale selector selectors separator set simple sin slice sqrt str
   string superselector tan to transparentize type unify unique unit unitless
   unquote upper use values variable warn while zip
-}
+}.freeze
 
-PATHS=%w{
+PATHS = %w{
   /en-US/docs/Web/CSS/WebKit_Extensions?raw&macros
   /en-US/docs/Web/CSS/Microsoft_extensions?raw&macros
   /en-US/docs/Web/CSS/Mozilla_Extensions?raw&macros
@@ -36,14 +36,15 @@ PATHS=%w{
   /en-US/docs/Web/CSS/@viewport?raw&macros&section=Descriptors
   /en-US/docs/Web/CSS/@counter-style?raw&section=Descriptors&macros
   /en-US/docs/Web/CSS/@font-feature-values?raw&section=Feature_value_blocks&macros&raw
-}
+}.freeze
 
-EXCLUDE_PATHS=%w{
+EXCLUDE_PATHS = %w{
   /en-US/docs/Web/API/Window/matchMedia
-}
+}.freeze
 
-MDNWords.new('css', PATHS,
+MDNWords.new(
+  'css', PATHS,
   sections: %w{Values Syntax},
   additional_words: ADDITIONAL_WORDS,
-  exclude_proc: ->(c) { c.start_with?(/[#<]/) }
+  exclude_proc: ->(c) { c.start_with?('#') || c.start_with?('<') }
 )

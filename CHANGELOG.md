@@ -1,3 +1,12 @@
+- dry_run checks config validity
+- require fast_ignore 6.0
+- misc performance improvements
+
+# v0.6.0
+- add CSS wordlist from MDN
+- improve html wordlist comprehensiveness from MDN and W3C
+- add ruby 2.7 words
+
 # v0.5.3
 - update fast_ignore requirement. it's slightly faster.
 - misc other performance improvements

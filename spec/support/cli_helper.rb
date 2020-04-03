@@ -11,7 +11,7 @@ RSpec::Matchers.define :print do |expected|
       @actual = render_io(actual)
     end
 
-    expect(@actual).to eq(expected)
+    expect(@actual.chomp).to eq(expected.chomp)
   end
 
   diffable
@@ -36,11 +36,48 @@ module CLIHelper
   end
   attr_reader :result
 
-  def run(cmd, &block)
-    if block_given?
-      PTY.spawn("#{EXE_PATH}/#{cmd}", &block)
+  def run_exe(cmd, &block) # rubocop:disable Metrics/MethodLength
+    exe = if defined?(SimpleCov)
+      "ruby -r./spec/support/pre_pty.rb exe/#{cmd}"
     else
-      @stdout, @stderr, @status = Open3.capture3("#{EXE_PATH}/#{cmd}")
+      "exe/#{cmd}"
+    end
+
+    run(exe, &block)
+  end
+
+  def run_bin(cmd, &block) # rubocop:disable Metrics/MethodLength
+    exe = if defined?(SimpleCov)
+      "ruby -r./spec/support/pre_pty.rb -r./spec/support/mock_generate.rb bin/#{cmd}"
+    else
+      "ruby -r./spec/support/mock_generate.rb bin/#{cmd}"
+    end
+
+    run(exe, &block)
+  end
+
+  def run(cmd, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    env = {
+      'SPELLR_TEST_PWD' => Dir.pwd,
+      'SPELLR_TEST_DESCRIPTION' => @_example.full_description.tr(' /', '__')
+    }
+
+    Dir.chdir("#{__dir__}/../../") do
+      if block_given?
+        stderr_reader, stderr_writer = IO.pipe
+        PTY.spawn(env, cmd, err: stderr_writer.fileno) do |stdout, stdin, pid|
+          block.call(stdout, stdin, pid, stderr_reader)
+
+          sleep 0.1 if defined?(SimpleCov) # it just needs a moment
+
+          stdout.close
+          stderr_reader.close
+          stderr_writer.close
+          stdin.close
+        end
+      else
+        @stdout, @stderr, @status = Open3.capture3(env, cmd)
+      end
     end
   end
 
@@ -102,5 +139,8 @@ module CLIHelper
 end
 
 RSpec.configure do |c|
+  c.before do |example|
+    @_example = example
+  end
   c.include CLIHelper, type: :cli
 end

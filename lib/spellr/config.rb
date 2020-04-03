@@ -3,36 +3,20 @@
 require_relative '../spellr'
 require_relative 'config_loader'
 require_relative 'language'
-require_relative 'reporter'
+require_relative 'config_validator'
 require 'pathname'
 
 module Spellr
   class Config
     attr_writer :reporter
+    attr_writer :checker
     attr_reader :config_file
     attr_accessor :quiet
     alias_method :quiet?, :quiet
+    attr_accessor :dry_run
 
     def initialize
       @config = ConfigLoader.new
-    end
-
-    def valid?
-      only_has_one_key_per_language
-      keys_are_single_characters
-      errors.empty?
-    end
-
-    def print_errors
-      if $stderr.tty?
-        errors.each { |e| warn "\e[31m#{e}\e[0m" }
-      else
-        errors.each { |e| warn e }
-      end
-    end
-
-    def errors
-      @errors ||= []
     end
 
     def word_minimum_length
@@ -55,10 +39,6 @@ module Spellr
       @excludes ||= @config[:excludes] || []
     end
 
-    def color
-      @config[:color]
-    end
-
     def languages
       @languages ||= @config[:languages].map do |key, args|
         Spellr::Language.new(key, **args)
@@ -66,7 +46,11 @@ module Spellr
     end
 
     def pwd
-      @pwd ||= Pathname.pwd
+      @pwd ||= Pathname.new(ENV['SPELLR_TEST_PWD'] || Dir.pwd)
+    end
+
+    def pwd_s
+      @pwd_s ||= pwd.to_s
     end
 
     def languages_for(file)
@@ -78,7 +62,7 @@ module Spellr
     end
 
     def config_file=(value)
-      ::File.read(value) # raise Errno::ENOENT if the file doesn't exist
+      reset!
       @config = ConfigLoader.new(value)
     end
 
@@ -86,32 +70,46 @@ module Spellr
       @reporter ||= default_reporter
     end
 
+    def checker
+      return dry_run_checker if @dry_run
+
+      @checker ||= default_checker
+    end
+
+    def valid?
+      Spellr::ConfigValidator.new.valid?
+    end
+
+    def reset! # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+      @config = ConfigLoader.new
+      remove_instance_variable(:@languages) if defined?(@languages)
+      remove_instance_variable(:@excludes) if defined?(@excludes)
+      remove_instance_variable(:@includes) if defined?(@includes)
+      remove_instance_variable(:@word_minimum_length) if defined?(@word_minimum_length)
+      remove_instance_variable(:@key_heuristic_weight) if defined?(@key_heuristic_weight)
+      remove_instance_variable(:@key_minimum_length) if defined?(@key_minimum_length)
+    end
+
     private
 
-    def only_has_one_key_per_language
-      languages_with_conflicting_keys.each do |conflicts|
-        errors << "Error: #{conflicts.map(&:name).join(' & ')} share the same language key "\
-        "(#{conflicts.first.key}). Please define one to be different with `key:`"
-      end
-    end
-
-    def languages_with_conflicting_keys
-      languages.select(&:addable?).group_by(&:key).values.select do |g|
-        g.length > 1
-      end
-    end
-
-    def keys_are_single_characters
-      bad_languages = languages.select { |l| l.key.length > 1 }
-
-      bad_languages.each do |language|
-        errors << "Error: #{language.name} defines a key that is too long (#{language.key}). "\
-          'Please change it to be a single character'
-      end
+    def dry_run_checker
+      require_relative 'check_dry_run'
+      Spellr::CheckDryRun
     end
 
     def default_reporter
+      require_relative 'reporter'
       Spellr::Reporter.new
+    end
+
+    def default_checker
+      require_relative 'check_parallel'
+      Spellr::CheckParallel
+    end
+
+    def clear_pwd
+      remove_instance_variable(:@pwd) if defined?(@pwd)
+      remove_instance_variable(:@pwd_s) if defined?(@pwd_s)
     end
   end
 end

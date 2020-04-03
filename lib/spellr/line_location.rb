@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'file'
+
 module Spellr
   class LineLocation
     attr_reader :line_number
@@ -23,13 +25,6 @@ module Spellr
 
     def file
       @file ||= Spellr::File.wrap(@filename)
-    end
-
-    def advance(line)
-      LineLocation.new(@filename,
-                       line_number + 1,
-                       char_offset: char_offset + line.length,
-                       byte_offset: byte_offset + line.bytesize)
     end
   end
 end

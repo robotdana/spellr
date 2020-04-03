@@ -8,39 +8,32 @@ module Spellr
       "#{count} #{word}#{'s' if count != 1}"
     end
 
-    # TODO: make it work without color
-    def color_enabled?
-      true
-    end
-
     def aqua(text)
-      return text unless Spellr::StringFormat.color_enabled?
-
       "\e[36m#{text}#{normal}"
     end
 
     def normal(text = '')
-      return text unless Spellr::StringFormat.color_enabled?
-
       "\e[0m#{text}"
     end
 
     def bold(text)
-      return text unless Spellr::StringFormat.color_enabled?
-
       "\e[1;39m#{text}#{normal}"
     end
 
-    def red(text)
-      return text unless Spellr::StringFormat.color_enabled?
+    def lighten(text)
+      "\e[2;39m#{text}#{normal}"
+    end
 
+    def red(text)
       "\e[1;31m#{text}#{normal}"
     end
 
     def green(text)
-      return text unless Spellr::StringFormat.color_enabled?
-
       "\e[1;32m#{text}#{normal}"
+    end
+
+    def key(label)
+      "[#{bold label[0]}]#{label[1..-1]}"
     end
   end
 end

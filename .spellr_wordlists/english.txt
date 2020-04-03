@@ -6,6 +6,7 @@ arglist
 args
 backports
 baz
+behaviour
 beihang
 bundler
 capfile
@@ -32,9 +33,11 @@ dockerfile
 dockerhub
 dockerignore
 downloader
+elp
 env
 eos
 eot
+eplace
 erb
 ercim
 esque
@@ -58,6 +61,7 @@ grayscale
 grepping
 gtm
 haml
+hardcoded
 hashbang
 hashbangs
 hashbangs
@@ -67,6 +71,8 @@ hostnames
 href
 htt
 hyperwallet
+i'll
+i'm
 ico
 inclusions
 ise
@@ -78,6 +84,7 @@ json
 jsx
 keio
 keydata
+keypress
 khz
 klass
 kwargs
@@ -90,6 +97,7 @@ matchers
 maths
 mdn
 merchantability
+multibyte
 multiline
 newlines
 noninfringement
@@ -127,6 +135,7 @@ stdout
 str
 stringscanner
 strscan
+struct
 sublicense
 subwords
 sudo

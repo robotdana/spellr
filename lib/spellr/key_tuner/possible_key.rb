@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'pathname'
 require_relative 'stats'
+require_relative '../backports'
 
 class PossibleKey # rubocop:disable Metrics/ClassLength
   include Stats
@@ -15,28 +15,10 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
     B C D F G H J K L M N P Q R S T V W X Y Z
   }.freeze
   BASE_64 = VOWELS + CONSONANTS + %i{0 1 2 3 4 5 6 7 8 9 - _ + / =}.freeze
-  LETTER_COUNT_HASH = BASE_64.map { |k| [k.to_sym, 0] }.to_h
+  letter_count_hash = BASE_64.map { |k| [k.to_sym, 0] }.to_h
+  letter_count_hash.default = 0
+  LETTER_COUNT_HASH = letter_count_hash
   FEATURE_LETTERS = %i{+ - _ / A z Z q Q X x}.freeze
-
-  class << self
-    def keys
-      @keys ||= begin
-        load_from_file('false_positives.txt', false) +
-          load_from_file('keys.txt', true)
-      end
-    end
-
-    private
-
-    def load_from_file(filename, key)
-      Pathname.new(__dir__).join('data', filename).each_line.map! do |line|
-        line = line.chomp
-        next if line.empty?
-
-        PossibleKey.new(line, key)
-      end.compact
-    end
-  end
 
   attr_reader :string
 
@@ -100,8 +82,6 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
     when /^[a-z0-9]+$/ then :lower36
     when /^[A-Z0-9]+$/ then :upper36
     when %r{^[A-Za-z0-9\-_+/]+={0,2}$} then :base64
-    else
-      raise "#{string.inspect} is an unrecognised character set"
     end
   end
 
@@ -111,6 +91,7 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
     when :lower36 then 36
     when :upper36 then 36
     when :base64 then 64
+    else 0
     end
   end
 

@@ -14,7 +14,7 @@ end
 
 RSpec.describe Spellr::FileList do
   around do |example|
-    with_temp_dir { example.run }
+    with_temp_dir(example)
   end
 
   before do
@@ -23,6 +23,57 @@ RSpec.describe Spellr::FileList do
       foo/bar.txt
       spec/foo_spec.rb
     }
+  end
+
+  describe '#each' do
+    it 'can be given a block' do
+      paths = []
+
+      described_class.new.each do |path|
+        paths << path
+      end
+
+      expect(paths).to match_relative_paths(
+        'foo.rb',
+        'foo/bar.txt',
+        'spec/foo_spec.rb'
+      )
+    end
+
+    it 'can be given random enumerable method' do
+      object = described_class.new.each_with_object([]) do |path, paths|
+        paths << path
+      end
+
+      expect(object).to match_relative_paths(
+        'foo.rb',
+        'foo/bar.txt',
+        'spec/foo_spec.rb'
+      )
+    end
+
+    it 'can return an enumerator' do
+      expect(described_class.new.each).to be_a Enumerator
+
+      expect(described_class.new.each.to_a).to match_relative_paths(
+        'foo.rb',
+        'foo/bar.txt',
+        'spec/foo_spec.rb'
+      )
+    end
+
+    it 'yields ::Spellr::File objects to the block argument' do
+      # rubocop:disable RSpec/IteratedExpectation
+      # I'm directly testing each and blocks here
+      described_class.new.each do |file|
+        expect(file).to be_a ::Spellr::File
+      end
+      # rubocop:enable RSpec/IteratedExpectation
+    end
+
+    it 'returns ::Spellr::File objects when an enumerator' do
+      expect(described_class.new.each.to_a).to all(be_a ::Spellr::File)
+    end
   end
 
   it 'globs everything' do

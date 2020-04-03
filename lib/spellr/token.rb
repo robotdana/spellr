@@ -17,32 +17,10 @@ module Spellr
   class Token < String
     attr_reader :location, :line, :replacement
 
-    def self.wrap(value)
-      return value if value.is_a?(Spellr::Token)
-
-      Spellr::Token.new(value || '')
-    end
-
     def initialize(string, line: string, location: ColumnLocation.new)
       @location = location
       @line = line
       super(string)
-    end
-
-    def strip
-      @strip ||= begin
-        lstripped = lstrip
-        new_column_location = lstripped_column_location(lstripped)
-        Token.new(lstripped.rstrip, line: line, location: new_column_location)
-      end
-    end
-
-    def lstripped_column_location(lstripped)
-      ColumnLocation.new(
-        byte_offset: bytesize - lstripped.bytesize,
-        char_offset: length - lstripped.length,
-        line_location: location.line_location
-      )
     end
 
     def line=(new_line)
@@ -50,20 +28,30 @@ module Spellr
       location.line_location = new_line.location.line_location
     end
 
+    # :nocov:
     def inspect
       "#<#{self.class.name} #{to_s.inspect} @#{location}>"
     end
+    # :nocov:
 
     def char_range
-      @char_range ||= location.char_offset...(location.char_offset + length)
+      @char_range ||=
+        location.char_offset...(location.char_offset + length)
     end
 
     def byte_range
-      @byte_range ||= location.byte_offset...(location.byte_offset + bytesize)
+      @byte_range ||=
+        location.byte_offset...(location.byte_offset + bytesize)
     end
 
     def file_char_range
-      @file_char_range ||= location.absolute_char_offset...(location.absolute_char_offset + length)
+      @file_char_range ||=
+        location.absolute_char_offset...(location.absolute_char_offset + length)
+    end
+
+    def file_byte_range
+      @file_byte_range ||=
+        location.absolute_byte_offset...(location.absolute_byte_offset + bytesize)
     end
 
     def coordinates
@@ -77,10 +65,6 @@ module Spellr
     def replace(replacement)
       @replacement = replacement
       location.file.insert(replacement, file_char_range)
-    end
-
-    def file_name
-      location.file_name
     end
   end
 end

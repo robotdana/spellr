@@ -48,19 +48,12 @@ module Spellr
       end
     end
 
-    # jump to character-aware position
-    # TODO: handle jump backward
-    def charpos=(new_charpos)
-      skip(/.{#{new_charpos - charpos}}/m)
-    end
-
     private
 
     def column_location(term)
       ColumnLocation.new(
         byte_offset: pos - term.bytesize,
-        char_offset: charpos - term.length,
-        **(line.respond_to?(:location) ? { line_location: line.location.line_location } : {})
+        char_offset: charpos - term.length
       )
     end
 
@@ -97,7 +90,6 @@ module Spellr
     def key?(possible_key)
       # I've come across some large base64 strings by this point they're definitely base64.
       return true if possible_key.length > 200
-      return unless possible_key.length >= Spellr.config.key_minimum_length
       return unless possible_key.match?(min_alpha_re) # or there's no point
 
       BAYES_KEY_HEURISTIC.key?(possible_key)

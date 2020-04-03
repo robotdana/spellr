@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require_relative 'wordlist'
+require_relative 'file'
+require 'pathname'
+require 'fast_ignore'
 
 module Spellr
   class Language
@@ -30,7 +33,7 @@ module Spellr
 
     def project_wordlist
       @project_wordlist ||= Spellr::Wordlist.new(
-        Pathname.pwd.join('.spellr_wordlists', "#{name}.txt"),
+        Spellr.config.pwd.join('.spellr_wordlists', "#{name}.txt"),
         name: name
       )
     end
@@ -49,7 +52,9 @@ module Spellr
     def matches_includes?(file)
       return @hashbangs.empty? if @includes.empty?
 
-      @fast_ignore ||= FastIgnore.new(include_rules: @includes, gitignore: false)
+      @fast_ignore ||= FastIgnore.new(
+        include_rules: @includes, gitignore: false, root: Spellr.config.pwd_s
+      )
       @fast_ignore.allowed?(file.to_s)
     end
 
@@ -65,12 +70,6 @@ module Spellr
           Pathname.new(__dir__).parent.parent.join('wordlists', name.to_s, "#{locale}.txt")
         )
       end
-    end
-
-    def load_wordlists(name, paths)
-      wordlists = paths + default_wordlist_paths(name)
-
-      wordlists.map(&Spellr::Wordlist.method(:new))
     end
 
     def default_wordlists

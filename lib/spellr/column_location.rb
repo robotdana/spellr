@@ -30,17 +30,15 @@ module Spellr
       line_location.file
     end
 
-    def file_name
-      line_location.file_name
-    end
-
     def to_s
       "#{line_location}:#{char_offset}"
     end
 
+    # :nocov:
     def inspect
       "#<#{self.class.name} #{self}>"
     end
+    # :nocov:
 
     def coordinates
       [line_number, char_offset]

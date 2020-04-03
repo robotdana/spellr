@@ -13,7 +13,6 @@ module SCOWLDownloader
   extend Fetch
 
   LOCALES = %i{US AU CA GBs GBz}.freeze
-  BASE_WORDLIST_PATH = OUTPUT_DIR.join('english.txt')
   DEFAULT_PARAMS = {
     max_size: 80,
     spelling: LOCALES.first,
@@ -33,27 +32,34 @@ module SCOWLDownloader
     copy_base_license
   end
 
-  def wordlist_path(locale = nil, suffix = '')
-    if locale
-      OUTPUT_DIR.join('english', "#{locale}#{suffix}.txt")
-    else
-      OUTPUT_DIR.join("english#{suffix}.txt")
-    end
+  def locale_filename(locale = nil)
+    ['english', locale].compact.join('/')
   end
 
-  def license_path(locale)
-    wordlist_path(locale, '.LICENSE')
+  def locale_wordlist_path(locale = nil)
+    wordlist_path(locale_filename(locale))
+  end
+
+  def locale_license_path(locale = nil)
+    license_path(locale_filename(locale))
+  end
+
+  def locale_write_wordlist(words, locale = nil)
+    write_wordlist(words, locale_filename(locale))
+  end
+
+  def locale_write_license(license, locale = nil)
+    write_license(license, locale_filename(locale))
   end
 
   def fetch_all
-    LOCALES.each { |locale| fetch(locale) }
+    LOCALES.each { |locale| fetch_for_locale(locale) }
   end
 
-  def fetch(locale)
-    puts "fetching #{locale}"
-    words = Net::HTTP.get_response(uri(locale)).body
+  def fetch_for_locale(locale)
+    words = fetch(uri(locale).to_s)
     words = extract_and_write_license(words, locale)
-    write_wordlist(words, "english/#{locale}")
+    locale_write_wordlist(words, locale)
   end
 
   def uri(spelling = :US)
@@ -62,29 +68,29 @@ module SCOWLDownloader
   end
 
   def extract_and_write_license(words, locale)
-    puts "writing #{locale} license"
-    words, license = words.split('---', 2).reverse
-
-    license_path(locale).write(license) if license
-
+    license, words = words.split('---', 2)
+    locale_write_license(license, locale) if license
     words
   end
 
   def prepare_common_wordlist
-    puts 'prepare common english wordlist'
-    keep_common(wordlist_path(LOCALES[0]), wordlist_path(LOCALES[1]), wordlist_path)
-    LOCALES.drop(2).each { |locale| keep_common(wordlist_path(locale), wordlist_path) }
+    keep_common(
+      locale_wordlist_path(LOCALES[0]), locale_wordlist_path(LOCALES[1]), locale_wordlist_path
+    )
+    LOCALES.drop(2).each do |locale|
+      keep_common(locale_wordlist_path(locale), locale_wordlist_path)
+    end
   end
 
   def remove_common_words_from_locales
     LOCALES.each do |locale|
-      puts "remove common words from #{locale}"
-      keep_right_only(wordlist_path, wordlist_path(locale))
+      keep_right_only(locale_wordlist_path, locale_wordlist_path(locale))
     end
   end
 
   def keep_common(path1, path2, output = path2)
     system("comm -12 #{path1} #{path2} > #{output}.tmp")
+
     output.sub_ext('.txt.tmp').rename(output)
   end
 
@@ -94,11 +100,12 @@ module SCOWLDownloader
   end
 
   def generate_gb
-    write_wordlist(wordlist_path(:GBs).read + wordlist_path(:GBz).read, :GB)
+    locale_write_wordlist(locale_wordlist_path(:GBs).read + locale_wordlist_path(:GBz).read, :GB)
+    FileUtils.copy(locale_license_path(:GBs), locale_license_path(:GB))
   end
 
   def copy_base_license
-    FileUtils.copy(license_path(:US), license_path)
+    FileUtils.copy(locale_license_path(:US), locale_license_path)
   end
 end
 
