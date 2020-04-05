@@ -43,7 +43,6 @@ module Spellr
         end
 
         def quiet_option(_)
-          Spellr.config.quiet = true
           require_relative 'quiet_reporter'
           Spellr.config.reporter = Spellr::QuietReporter.new
         end

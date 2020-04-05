@@ -38,13 +38,9 @@ PATHS = %w{
   /en-US/docs/Web/CSS/@font-feature-values?raw&section=Feature_value_blocks&macros&raw
 }.freeze
 
-EXCLUDE_PATHS = %w{
-  /en-US/docs/Web/API/Window/matchMedia
-}.freeze
-
 MDNWords.new(
   'css', PATHS,
   sections: %w{Values Syntax},
-  additional_words: ADDITIONAL_WORDS,
+  additional_words: SASS_WORDS + ADDITIONAL_WORDS,
   exclude_proc: ->(c) { c.start_with?('#') || c.start_with?('<') }
 )

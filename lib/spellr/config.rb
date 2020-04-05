@@ -11,9 +11,8 @@ module Spellr
     attr_writer :reporter
     attr_writer :checker
     attr_reader :config_file
-    attr_accessor :quiet
-    alias_method :quiet?, :quiet
     attr_accessor :dry_run
+    alias_method :dry_run?, :dry_run
 
     def initialize
       @config = ConfigLoader.new
@@ -71,7 +70,7 @@ module Spellr
     end
 
     def checker
-      return dry_run_checker if @dry_run
+      return dry_run_checker if dry_run?
 
       @checker ||= default_checker
     end
@@ -107,7 +106,7 @@ module Spellr
       Spellr::CheckParallel
     end
 
-    def clear_pwd
+    def clear_pwd # leftovers:test
       remove_instance_variable(:@pwd) if defined?(@pwd)
       remove_instance_variable(:@pwd_s) if defined?(@pwd_s)
     end

@@ -6,8 +6,6 @@ require_relative 'string_format'
 
 module Spellr
   class CLI
-    attr_reader :argv
-
     def initialize(argv)
       @argv = argv
       CLI::Options.parse(@argv)

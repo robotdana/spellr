@@ -8,7 +8,6 @@ require_relative 'line_tokenizer'
 module Spellr
   class Tokenizer
     attr_reader :file
-    attr_reader :start_at
 
     attr_accessor :disabled
     alias_method :disabled?, :disabled
@@ -21,7 +20,7 @@ module Spellr
       @line_tokenizer = LineTokenizer.new('', skip_key: skip_key)
     end
 
-    def terms
+    def terms # leftovers:test
       enum_for(:each_term).to_a
     end
 

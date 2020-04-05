@@ -23,7 +23,6 @@ module Spellr
     LEFTOVER_NON_WORD_BITS_RE = %r{[/%#\\]|\d+}.freeze # e.g. a / not starting //a-url.com
     HEX_RE = /(?:#(?:\h{6}|\h{3})|0x\h+)(?![[:alpha:]])/.freeze
     SHELL_COLOR_ESCAPE_RE = /\\(?:e|0?33)\[\d+(;\d+)*m/.freeze
-    PUNYCODE_RE = /xn--[a-v0-9\-]+(?:[[:alpha:]])/.freeze
     # TODO: hex escapes e.g. \xAA.
     # TODO: language aware escapes
     BACKSLASH_ESCAPE_RE = /\\[a-zA-Z]/.freeze

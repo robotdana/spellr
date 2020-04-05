@@ -30,11 +30,9 @@ RSpec::Matchers.define :have_exitstatus do |expected|
 end
 
 module CLIHelper
-  EXE_PATH = ::File.expand_path('../../exe', __dir__).freeze
   def self.included(base)
     base.include Spellr::StringFormat
   end
-  attr_reader :result
 
   def run_exe(cmd, &block) # rubocop:disable Metrics/MethodLength
     exe = if defined?(SimpleCov)

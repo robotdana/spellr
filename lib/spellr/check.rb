@@ -16,7 +16,7 @@ module Spellr
     def initialize(files: [], reporter: Spellr.config.reporter)
       @files = files
 
-      @main_reporter = @reporter = reporter
+      @reporter = reporter
     end
 
     def check

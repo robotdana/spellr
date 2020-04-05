@@ -201,3 +201,6 @@ Style/SingleLineBlockParams:
 
 Style/SymbolArray:
   Enabled: false
+
+Style/CommentedKeyword:
+  Enabled: false

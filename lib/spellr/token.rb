@@ -39,7 +39,7 @@ module Spellr
         location.char_offset...(location.char_offset + length)
     end
 
-    def byte_range
+    def byte_range # leftovers:allow i don't want to delete this
       @byte_range ||=
         location.byte_offset...(location.byte_offset + bytesize)
     end
@@ -49,7 +49,7 @@ module Spellr
         location.absolute_char_offset...(location.absolute_char_offset + length)
     end
 
-    def file_byte_range
+    def file_byte_range # leftovers:allow i don't want to delete this
       @file_byte_range ||=
         location.absolute_byte_offset...(location.absolute_byte_offset + bytesize)
     end

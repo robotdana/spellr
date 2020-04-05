@@ -12,7 +12,7 @@ module Spellr
     attr_reader :line
     attr_accessor :disabled
     alias_method :disabled?, :disabled
-    attr_accessor :skip_key
+    attr_reader :skip_key
     alias_method :skip_key?, :skip_key
 
     include TokenRegexps
@@ -77,10 +77,13 @@ module Spellr
       skip(SKIPS) || skip_key_heuristically || skip(AFTER_KEY_SKIPS)
     end
 
-    def skip_key_heuristically
+    def skip_key_heuristically # rubocop:disable Metrics/MethodLength
+      return unless skip_key?
+
       possible_key = check(POSSIBLE_KEY_RE)
 
       return unless possible_key
+      return unless possible_key.length >= Spellr.config.key_minimum_length
       return unless key?(possible_key)
 
       self.pos += possible_key.bytesize

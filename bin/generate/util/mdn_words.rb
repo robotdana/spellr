@@ -23,7 +23,6 @@ class MDNWords # rubocop:disable Metrics/ClassLength
     additional_license: '',
     exclude_proc: ->(_) { false })
     @paths = paths
-    @mutex = Mutex.new
     @wordlist = wordlist
     @additional_words = additional_words
     @additional_license = additional_license
