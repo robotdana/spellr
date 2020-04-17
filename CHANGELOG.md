@@ -1,3 +1,6 @@
+# v0.7.1
+- relax fast_ignore requirement
+
 # v0.7.0
 - dry_run checks config validity
 - require fast_ignore 0.6.0

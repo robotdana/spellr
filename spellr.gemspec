@@ -40,6 +40,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'tty_string', '>= 0.2.1'
   spec.add_development_dependency 'webmock', '~> 3.8'
 
-  spec.add_dependency 'fast_ignore', '~> 0.6.0'
+  spec.add_dependency 'fast_ignore', '>= 0.6.0'
   spec.add_dependency 'parallel', '~> 1.0'
 end

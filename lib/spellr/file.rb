@@ -8,6 +8,8 @@ module Spellr
       file.is_a?(Spellr::File) ? file : Spellr::File.new(file)
     end
 
+    # don't use FastIgnore shebang handling
+    # because i use lots of different FastIgnore instances and each would to open the files.
     def hashbang
       @hashbang ||= begin
         return if extname != ''

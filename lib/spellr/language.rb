@@ -15,6 +15,9 @@ module Spellr
       @key = key
       @includes = includes
       @hashbangs = hashbangs
+      unless hashbangs.empty?
+        @hashbang_pattern = /\A#!.*\b(?:#{hashbangs.map { |s| Regexp.escape(s) }.join('|')})\b/
+      end
       @locales = Array(locale)
       @addable = addable
     end
@@ -41,12 +44,12 @@ module Spellr
     private
 
     def matches_hashbangs?(file)
-      return @includes.empty? if @hashbangs.empty?
+      return @includes.empty? unless @hashbang_pattern
 
       file = Spellr::File.wrap(file)
       return unless file.hashbang
 
-      @hashbangs.any? { |h| file.hashbang.include?(h) }
+      @hashbang_pattern.match?(file.hashbang)
     end
 
     def matches_includes?(file)
