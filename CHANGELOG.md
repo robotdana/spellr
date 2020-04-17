@@ -1,6 +1,9 @@
+# v0.7.0
 - dry_run checks config validity
-- require fast_ignore 6.0
+- require fast_ignore 0.6.0
+- new interactive UI
 - misc performance improvements
+- drop ruby 2.4 support because simplecov does
 
 # v0.6.0
 - add CSS wordlist from MDN
