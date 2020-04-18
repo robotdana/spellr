@@ -15,7 +15,7 @@ module Spellr
     validate :keys_are_single_characters
 
     def valid?
-      raise Spellr::Config::Invalid, errors.join("\n") unless super
+      raise ::Spellr::Config::Invalid, errors.join("\n") unless super
     end
 
     def interactive_is_interactive # rubocop:disable Metrics/MethodLength

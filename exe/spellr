@@ -3,10 +3,4 @@
 
 require_relative '../lib/spellr/cli'
 
-begin
-  Spellr::CLI.new(ARGV).check
-rescue Spellr::Error => e
-  require_relative '../lib/spellr/string_format'
-  warn Spellr::StringFormat.red(e.message)
-  exit 1
-end
+Spellr::CLI.new(ARGV)
