@@ -1,3 +1,6 @@
+# v0.8.1
+- use refinements for backports so that RakeTask doesn't conflict with Rubocop::RakeTask
+
 # v0.8.0
 - add the ability to use spellr as a rake task
 

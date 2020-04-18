@@ -5,6 +5,10 @@ require_relative 'backports'
 
 module Spellr
   class ConfigLoader
+    # :nocov:
+    using ::Spellr::YAMLSymbolizeNames if defined?(::Spellr::YAMLSymbolizeNames)
+    # :nocov:
+
     attr_reader :config_file
 
     def initialize(config_file = ::File.join(Dir.pwd, '.spellr.yml'))

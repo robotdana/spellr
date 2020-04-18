@@ -4,6 +4,9 @@ require_relative 'stats'
 require_relative '../backports'
 
 class PossibleKey # rubocop:disable Metrics/ClassLength
+  # :nocov:
+  using ::Spellr::HashSlice if defined?(::Spellr::HashSlice)
+  # :nocov:
   include Stats
 
   VOWELS = %i{

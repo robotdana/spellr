@@ -4,6 +4,7 @@ matchdata
 nocov
 nokogiri
 pty
+rubo
 simplecov
 subclasses
 vars

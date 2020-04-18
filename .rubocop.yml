@@ -7,12 +7,14 @@ require: rubocop-rspec
 # Each override should have a comment (even if it's just "default is bad")
 
 AllCops:
+  NewCops: enable
   Exclude:
     - db/schema*
     - .bundle/**/*
     - tmp/**/*
     - wordlists/**/*
     - .spellr_wordlists/**/*
+    - vendor/**/*
   DisplayCopNames: true
   DisplayStyleGuide: true
   TargetRubyVersion: 2.4
@@ -197,13 +199,5 @@ Style/SignalException:
 Style/SingleLineBlockParams:
   Enabled: false
 
-Style/HashEachMethods:
-  Enabled: true
-Style/HashTransformKeys:
-  Enabled: true
-Style/HashTransformValues:
-  Enabled: true
-Lint/RaiseException:
-  Enabled: true
-Lint/StructNewOverride:
-  Enabled: true
+Style/SymbolArray:
+  Enabled: false

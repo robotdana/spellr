@@ -7,6 +7,10 @@ require 'yaml'
 # https://www.sitepoint.com/machine-learning-ruby-naive-bayes-theorem/
 
 class NaiveBayes
+  # :nocov:
+  using ::Spellr::YAMLPermittedClasses if defined?(::Spellr::YAMLPermittedClasses)
+  # :nocov:
+
   YAML_PATH = File.join(__dir__, 'data.yml')
 
   attr_reader :feature_set
