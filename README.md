@@ -229,6 +229,15 @@ languages:
              # this file will match even if it doesn't otherwise match the includes pattern.
 ```
 
+If you want a file to have a file-specific wordlist:
+e.g. for terms specific to logstash:
+```yml
+languages:
+  logstash: # this can be anything
+    includes:
+      - path/to/logstash/file
+```
+
 ## Rake and Travis
 
 Create or open a file in the root of your project named `Rakefile`.

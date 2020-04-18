@@ -89,6 +89,7 @@ khz
 klass
 kwargs
 localhost
+logstash
 lstripped
 mailto
 marketplacer
