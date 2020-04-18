@@ -257,14 +257,14 @@ To have this automatically run on travis, add `:spellr` to the default task.
 require 'spellr/rake_task'
 Spellr::RakeTask.generate_task
 
-task :default, :spellr
+task default: :spellr
 ```
 or if you already have :default task, add :spellr to the array.
 ```ruby
 require 'spellr/rake_task'
 Spellr::RakeTask.generate_task
 
-task :default, [:spec, :spellr]
+task default: [:spec, :spellr]
 ```
 or etc.
 
@@ -285,7 +285,7 @@ To provide default cli arguments, the first argument is the name, and subsequent
 require 'spellr/rake_task'
 Spellr::RakeTask.generate_task(:spellr_quiet, '--quiet')
 
-task :default, :spellr_quiet
+task default: :spellr_quiet
 ```
 or `rake spellr` will be in interactive mode unless the CI env variable is set.
 ```ruby
@@ -294,7 +294,7 @@ require 'spellr/rake_task'
 spellr_arguments = ENV['CI'] ? [] : ['--interactive']
 Spellr::RakeTask.generate_task(:spellr, **spellr_arguments)
 
-task :default, :spellr
+task default: :spellr
 ```
 
 ## Development
