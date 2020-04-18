@@ -1,3 +1,6 @@
+# v0.8.0
+- add the ability to use spellr as a rake task
+
 # v0.7.1
 - relax fast_ignore requirement
 
@@ -6,7 +9,6 @@
 - require fast_ignore 0.6.0
 - new interactive UI
 - misc performance improvements
-- drop ruby 2.4 support because simplecov does
 
 # v0.6.0
 - add CSS wordlist from MDN
