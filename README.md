@@ -229,11 +229,70 @@ languages:
              # this file will match even if it doesn't otherwise match the includes pattern.
 ```
 
+## Rake and Travis
+
+Create or open a file in the root of your project named `Rakefile`.
+adding the following lines
+```ruby
+# Rakefile
+require 'spellr/rake_task'
+Spellr::RakeTask.generate_task
+```
+
+This will add the `rake spellr` task. To provide arguments like the cli, use square brackets. (ensure you escape the `[]` if you're using zsh)
+`rake 'spellr[--interactive]'`
+
+To have this automatically run on travis, add `:spellr` to the default task.
+```ruby
+# Rakefile
+require 'spellr/rake_task'
+Spellr::RakeTask.generate_task
+
+task :default, :spellr
+```
+or if you already have :default task, add :spellr to the array.
+```ruby
+require 'spellr/rake_task'
+Spellr::RakeTask.generate_task
+
+task :default, [:spec, :spellr]
+```
+or etc.
+
+Also follow the travis documentation to have travis run rake:
+```yml
+# .travis.yml
+sudo: false
+language: ruby
+cache: bundler
+rvm:
+  - 2.5
+before_install: gem install bundler
+```
+
+To provide default cli arguments, the first argument is the name, and subsequent arguments are the cli arguments.
+```ruby
+# Rakefile
+require 'spellr/rake_task'
+Spellr::RakeTask.generate_task(:spellr_quiet, '--quiet')
+
+task :default, :spellr_quiet
+```
+or `rake spellr` will be in interactive mode unless the CI env variable is set.
+```ruby
+# Rakefile
+require 'spellr/rake_task'
+spellr_arguments = ENV['CI'] ? [] : ['--interactive']
+Spellr::RakeTask.generate_task(:spellr, **spellr_arguments)
+
+task :default, :spellr
+```
+
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Contributing
 

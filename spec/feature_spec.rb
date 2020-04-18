@@ -116,6 +116,144 @@ RSpec.describe 'command line', type: :cli do
     end
   end
 
+  describe 'rake' do
+    around do |example|
+      with_temp_dir(example)
+    end
+
+    context 'with a rake task with no arguments' do
+      before do
+        stub_fs_file 'Rakefile', <<~RUBY
+          require '#{__dir__}/../lib/spellr/rake_task'
+
+          Spellr::RakeTask.generate_task
+          task default: :spellr
+        RUBY
+      end
+
+      it 'shows in the task list' do
+        run_rake('-T')
+
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 0
+        expect(stdout).to eq <<~STDOUT.chomp
+          rake spellr[*args]  # Run spellr
+        STDOUT
+      end
+
+      it 'can be run with no arguments' do
+        run_rake('spellr')
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 0
+        expect(stdout).to eq <<~STDOUT.chomp
+          \e[2mspellr \e[0m
+
+          1 file checked
+          0 errors found
+        STDOUT
+      end
+
+      it 'can be run with arguments' do
+        run_rake('spellr[--quiet]')
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 0
+        expect(stdout).to eq <<~STDOUT.chomp
+          \e[2mspellr --quiet\e[0m
+        STDOUT
+      end
+
+      it 'can be run with the default task' do
+        run_rake
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 0
+        expect(stdout).to eq <<~STDOUT.chomp
+          \e[2mspellr \e[0m
+
+          1 file checked
+          0 errors found
+        STDOUT
+      end
+
+      it 'can run a with a spelling error' do
+        stub_fs_file 'foo.txt', 'notaword'
+
+        run_rake
+
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 1
+        expect(stdout).to eq <<~STDOUT.chomp
+          \e[2mspellr \e[0m
+          #{aqua 'foo.txt:1:0'} #{red 'notaword'}
+
+          2 files checked
+          1 error found
+        STDOUT
+      end
+    end
+
+    context 'with a rake task with default arguments' do
+      before do
+        stub_fs_file 'Rakefile', <<~RUBY
+          require '#{__dir__}/../lib/spellr/rake_task'
+
+          Spellr::RakeTask.generate_task(:spellr_quiet, '--quiet')
+          task default: :spellr_quiet
+        RUBY
+      end
+
+      it 'shows in the task list' do
+        run_rake('-T')
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 0
+        expect(stdout).to eq <<~STDOUT.chomp
+          rake spellr_quiet[*args]  # Run spellr (default args: --quiet)
+        STDOUT
+      end
+
+      it 'can be run with the default arguments' do
+        run_rake('spellr_quiet')
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 0
+        expect(stdout).to eq <<~STDOUT.chomp
+          \e[2mspellr --quiet\e[0m
+        STDOUT
+      end
+
+      it 'can be run with replacement arguments' do
+        run_rake('spellr_quiet[--no-parallel]')
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 0
+        expect(stdout).to eq <<~STDOUT.chomp
+          \e[2mspellr --no-parallel\e[0m
+
+          1 file checked
+          0 errors found
+        STDOUT
+      end
+
+      it 'can be run as the default task' do
+        run_rake
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 0
+        expect(stdout).to eq <<~STDOUT.chomp
+          \e[2mspellr --quiet\e[0m
+        STDOUT
+      end
+
+      it 'can run with a spelling error' do
+        stub_fs_file 'foo.txt', 'notaword'
+
+        run_rake
+
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 1
+        expect(stdout).to eq <<~STDOUT.chomp
+          \e[2mspellr --quiet\e[0m
+        STDOUT
+      end
+    end
+  end
+
   describe '--version' do
     it 'returns the version when given --version' do
       run_exe('spellr --version')

@@ -56,6 +56,15 @@ module CLIHelper
     run(exe, &block)
   end
 
+  def run_rake(cmd = nil, &block) # rubocop:disable Metrics/MethodLength
+    exe = if defined?(SimpleCov)
+      "rake -r./spec/support/pre_pty.rb -f #{Dir.pwd}/Rakefile #{cmd}"
+    else
+      "rake -f #{Dir.pwd}/Rakefile #{cmd}"
+    end
+    run(exe, &block)
+  end
+
   def run(cmd, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     env = {
       'SPELLR_TEST_PWD' => Dir.pwd,

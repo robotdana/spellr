@@ -172,3 +172,4 @@ xit
 xlsx
 yardoc
 yml
+zsh
