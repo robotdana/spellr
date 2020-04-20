@@ -9,9 +9,6 @@ module Spellr
   class Tokenizer
     attr_reader :file
 
-    attr_accessor :disabled
-    alias_method :disabled?, :disabled
-
     def initialize(file, start_at: nil, skip_key: true)
       @start_at = start_at || ColumnLocation.new(line_location: LineLocation.new(file))
       @file = file.is_a?(StringIO) || file.is_a?(IO) ? file : ::File.new(file)

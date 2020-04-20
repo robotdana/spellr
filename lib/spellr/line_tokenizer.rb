@@ -10,16 +10,15 @@ require_relative 'token_regexps'
 module Spellr
   class LineTokenizer < StringScanner
     attr_reader :line
-    attr_accessor :disabled
-    alias_method :disabled?, :disabled
     attr_reader :skip_key
     alias_method :skip_key?, :skip_key
 
     include TokenRegexps
 
-    def initialize(line, skip_key: true)
+    def initialize(line, skip_key: false)
       @line = line
       @skip_key = skip_key
+      @disabled = false
 
       super(@line.to_s)
     end
@@ -32,7 +31,7 @@ module Spellr
     def each_term
       until eos?
         term = next_term
-        next if !term || disabled?
+        next if !term || @disabled
 
         yield term
       end
@@ -42,7 +41,7 @@ module Spellr
       until eos?
         term = next_term
         next unless term
-        next if disabled? || skip_term_proc&.call(term)
+        next if @disabled || skip_term_proc&.call(term)
 
         yield Token.new(term, line: line, location: column_location(term))
       end
@@ -77,13 +76,12 @@ module Spellr
       skip(SKIPS) || skip_key_heuristically || skip(AFTER_KEY_SKIPS)
     end
 
-    def skip_key_heuristically # rubocop:disable Metrics/MethodLength
+    def skip_key_heuristically
       return unless skip_key?
 
       possible_key = check(POSSIBLE_KEY_RE)
 
       return unless possible_key
-      return unless possible_key.length >= Spellr.config.key_minimum_length
       return unless key?(possible_key)
 
       self.pos += possible_key.bytesize
@@ -91,6 +89,7 @@ module Spellr
 
     BAYES_KEY_HEURISTIC = NaiveBayes.new
     def key?(possible_key)
+      return unless possible_key.length >= Spellr.config.key_minimum_length
       # I've come across some large base64 strings by this point they're definitely base64.
       return true if possible_key.length > 200
       return unless possible_key.match?(min_alpha_re) # or there's no point
@@ -99,15 +98,15 @@ module Spellr
     end
 
     def skip_and_track_disable
-      return if disabled?
+      return if @disabled
 
-      skip(SPELLR_DISABLE_RE) && self.disabled = true
+      skip(SPELLR_DISABLE_RE) && @disabled = true
     end
 
     def skip_and_track_enable
-      return unless disabled?
+      return unless @disabled
 
-      skip(SPELLR_ENABLE_RE) && self.disabled = false
+      skip(SPELLR_ENABLE_RE) && @disabled = false
     end
   end
 end

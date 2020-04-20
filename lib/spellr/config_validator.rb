@@ -23,9 +23,9 @@ module Spellr
 
       # I have no idea how to check for this other than call it
       Timeout.timeout(0.0000000000001) do
-        $stdin.getch
+        Spellr.config.output.stdin.getch
       end
-    rescue Errno::ENOTTY, Errno::ENODEV
+    rescue Errno::ENOTTY, Errno::ENODEV, IOError
       errors << 'CLI error: --interactive is unavailable in a non-interactive terminal'
     rescue Timeout::Error
       nil

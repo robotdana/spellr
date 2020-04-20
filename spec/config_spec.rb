@@ -5,8 +5,8 @@ require_relative '../lib/spellr'
 
 RSpec.describe Spellr::Config do
   describe '#config_file=' do
-    around do |example|
-      with_temp_dir(example)
+    before do
+      with_temp_dir
     end
 
     it "reloads the config even if you've already asked it something" do
@@ -15,7 +15,7 @@ RSpec.describe Spellr::Config do
       YML
 
       expect(Spellr.config.word_minimum_length).to be 3
-      Spellr.config.config_file = "#{Dir.pwd}/my-spellr.yml"
+      Spellr.config.config_file = "#{Spellr.pwd}/my-spellr.yml"
       expect(Spellr.config.word_minimum_length).to be 2
     end
 
@@ -24,7 +24,7 @@ RSpec.describe Spellr::Config do
         word_minimum_length: 2
       YML
 
-      Spellr.config.config_file = "#{Dir.pwd}/my-spellr.yml"
+      Spellr.config.config_file = "#{Spellr.pwd}/my-spellr.yml"
       expect(Spellr.config.word_minimum_length).to be 2
     end
 
@@ -50,7 +50,7 @@ RSpec.describe Spellr::Config do
       expect(Spellr.config.includes).not_to include('*.*')
       expect(Spellr.config.excludes).not_to include('*.rb')
 
-      Spellr.config.config_file = "#{Dir.pwd}/my-spellr.yml"
+      Spellr.config.config_file = "#{Spellr.pwd}/my-spellr.yml"
 
       expect(Spellr.config.word_minimum_length).to be 2
       expect(Spellr.config.key_heuristic_weight).to be 1

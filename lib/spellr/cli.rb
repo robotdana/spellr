@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'pathname'
 require_relative '../spellr'
 require_relative 'cli_options'
 require_relative 'string_format'
@@ -7,24 +8,26 @@ require_relative 'string_format'
 module Spellr
   class CLI
     def initialize(argv)
+      Spellr.config.reset!
       @argv = argv
-      CLI::Options.parse(@argv)
-      check
-    rescue Spellr::Error => e
-      exit_with_error(e.message)
     end
 
-    def exit_with_error(message)
-      warn Spellr::StringFormat.red(message)
-      exit 1
+    def run
+      catch(:spellr_exit) { check }
+    rescue Spellr::Error => e
+      Spellr.config.output.warn(Spellr::StringFormat.red(e.message)) && 1
+      1
     end
+
+    private
 
     def check
+      CLI::Options.parse(@argv)
       Spellr.config.valid?
       checker = Spellr.config.checker.new(files: files)
       checker.check
 
-      exit checker.exit_code
+      checker.exit_code
     end
 
     def files

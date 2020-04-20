@@ -31,7 +31,7 @@ module Spellr
         ignore_rules: Spellr.config.excludes,
         include_rules: Spellr.config.includes,
         argv_rules: @patterns,
-        root: Spellr.config.pwd_s
+        root: Spellr.pwd_s
       )
     end
   end

@@ -2,6 +2,7 @@
 
 require_relative 'spellr/backports'
 require_relative 'spellr/config'
+require_relative 'spellr/pwd'
 
 module Spellr
   class Error < StandardError; end
@@ -26,5 +27,9 @@ module Spellr
 
   def config
     @config ||= Spellr::Config.new
+  end
+
+  def exit(status = 0)
+    throw(:spellr_exit, status)
   end
 end

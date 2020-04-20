@@ -1,3 +1,10 @@
+# v0.8.2
+- Massive test refactor
+  - Spellr now only pays attention to Spellr.pwd. Dir.pwd can be whatever
+  - All output goes through Spellr.config.output. Now we can override it.
+  - tests are twice as fast. Fewer warnings
+- upgrade fast_ignore dependency
+
 # v0.8.1
 - use refinements for backports so that RakeTask doesn't conflict with Rubocop::RakeTask
 

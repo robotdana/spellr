@@ -6,11 +6,11 @@ require_relative '../lib/spellr/tokenizer'
 require_relative '../lib/spellr/file'
 
 RSpec.describe Spellr::Token do
-  around { |example| with_temp_dir(example) }
+  before { with_temp_dir }
 
   let(:file) do
     stub_fs_file 'foo', "first line\n  second line\n🤷🏼‍♀️ 🇳🇿 char vs byte\ncafé"
-    Spellr::File.new(Pathname.pwd.join('foo'))
+    Spellr::File.new(Spellr.pwd.join('foo'))
   end
 
   let(:tokens) do

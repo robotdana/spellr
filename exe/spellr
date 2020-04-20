@@ -3,4 +3,4 @@
 
 require_relative '../lib/spellr/cli'
 
-Spellr::CLI.new(ARGV)
+exit Spellr::CLI.new(ARGV).run

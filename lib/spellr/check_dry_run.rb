@@ -7,7 +7,7 @@ module Spellr
   class CheckDryRun < Check
     def check
       files.each do |file|
-        puts file.relative_path
+        @reporter.puts file.relative_path
       end
     end
   end

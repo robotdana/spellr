@@ -2,146 +2,97 @@
 
 require 'open3'
 require 'pty'
-require 'tty_string'
+require 'shellwords'
+
+require_relative 'io_string_methods'
+
+require_relative '../../lib/spellr/cli'
+require_relative '../../lib/spellr/output_stubbed'
 require_relative '../../lib/spellr/string_format'
-
-RSpec::Matchers.define :print do |expected|
-  match do |actual|
-    loop_within_or_match(2, expected) do
-      @actual = render_io(actual)
-    end
-
-    expect(@actual.chomp).to eq(expected.chomp)
-  end
-
-  diffable
-end
-
-RSpec::Matchers.define :have_exitstatus do |expected|
-  match do |actual|
-    loop_within_or_match(2, expected) do
-      @actual = PTY.check(actual)&.exitstatus
-    end
-
-    expect(@actual).to eq(expected)
-  end
-
-  diffable
-end
 
 module CLIHelper
   def self.included(base)
     base.include Spellr::StringFormat
   end
 
-  def run_exe(cmd, &block) # rubocop:disable Metrics/MethodLength
-    exe = if defined?(SimpleCov)
-      "ruby -r./spec/support/pre_pty.rb exe/#{cmd}"
+  def spellr(argv = '', &block) # rubocop:disable Metrics/MethodLength
+    if block_given?
+      run("ruby ./exe/spellr #{argv}", &block)
     else
-      "exe/#{cmd}"
-    end
+      stub_config(output: output)
 
-    run(exe, &block)
+      @exitstatus = Spellr::CLI.new(Shellwords.split(argv)).run
+    end
   end
 
-  def run_bin(cmd, &block) # rubocop:disable Metrics/MethodLength
-    exe = if defined?(SimpleCov)
-      "ruby -r./spec/support/pre_pty.rb -r./spec/support/mock_generate.rb bin/#{cmd}"
-    else
-      "ruby -r./spec/support/mock_generate.rb bin/#{cmd}"
-    end
-
-    run(exe, &block)
+  def run_bin(cmd, &block)
+    run("ruby -r./spec/support/mock_generate.rb ./bin/#{cmd}", &block)
   end
 
-  def run_rake(cmd = nil, &block) # rubocop:disable Metrics/MethodLength
-    exe = if defined?(SimpleCov)
-      "rake -r./spec/support/pre_pty.rb -f #{Dir.pwd}/Rakefile #{cmd}"
-    else
-      "rake -f #{Dir.pwd}/Rakefile #{cmd}"
-    end
-    run(exe, &block)
+  def run_rake(task = nil, &block)
+    run("rake -f #{Spellr.pwd}/Rakefile #{task}", &block)
+  end
+
+  def insert_pre_pty(cmd)
+    cmd, args = cmd.split(' ', 2)
+    "#{cmd} -r./spec/support/pre_pty.rb #{args}"
   end
 
   def run(cmd, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    cmd = insert_pre_pty(cmd)
     env = {
-      'SPELLR_TEST_PWD' => Dir.pwd,
+      'SPELLR_TEST_PWD' => Spellr.pwd_s,
       'SPELLR_TEST_DESCRIPTION' => @_example.full_description.tr(' /', '__')
     }
+    env['SPELLR_SIMPLECOV'] = '1' if defined?(SimpleCov)
 
-    Dir.chdir("#{__dir__}/../../") do
-      if block_given?
-        stderr_reader, stderr_writer = IO.pipe
-        PTY.spawn(env, cmd, err: stderr_writer.fileno) do |stdout, stdin, pid|
-          block.call(stdout, stdin, pid, stderr_reader)
+    if block_given?
+      stderr_reader, stderr_writer = IO.pipe
+      PTY.spawn(env, cmd, err: stderr_writer.fileno) do |stdout, stdin, pid|
+        stdout.extend(StringIOStringMethods)
+        stdout.extend(IOStringMethods)
 
-          sleep 0.1 if defined?(SimpleCov) # it just needs a moment
+        stderr_reader.extend(StringIOStringMethods)
+        stderr_reader.extend(IOStringMethods)
 
-          stdout.close
-          stderr_reader.close
-          stderr_writer.close
-          stdin.close
-        end
-      else
-        @stdout, @stderr, @status = Open3.capture3(env, cmd)
+        @stdout = stdout
+        @stderr = stderr_reader
+        @stdin = stdin
+        @exitstatus = ExitStatus.new(pid)
+
+        block.call(stdout, stdin, stderr_reader)
+
+        sleep 0.1 if defined?(SimpleCov) # it just needs a moment
+
+        stdout.close
+        stderr_reader.close
+        stderr_writer.close
+        stdin.close
       end
+    else
+      @stdout, @stderr, status = Open3.capture3(env, cmd)
+      @exitstatus = status.exitstatus
     end
   end
 
-  def loop_within_or_match(seconds, value)
-    loop_within(seconds) do
-      output = yield
-      return output if output == value
-    end
-  end
-
-  def loop_within(seconds)
-    # timeout is just because it gets stuck sometimes
-    Timeout.timeout(seconds * 10) do
-      start_time = monotonic_time
-      yield until start_time + seconds < monotonic_time
-    end
-  end
-
-  def monotonic_time
-    Process.clock_gettime(Process::CLOCK_MONOTONIC)
-  end
-
-  def render_io(io, clear_style: false, process_cursor: true)
-    string = accumulate_io(io)
-    return string unless process_cursor
-
-    TTYString.new(string, clear_style: clear_style).to_s
-  end
-
-  def accumulate_io(io)
-    @accumulate_io ||= {}
-    @accumulate_io[io] ||= ''
-    @accumulate_io[io] += read_while_readable(io)
-  end
-
-  def read_while_readable(io, str = '')
-    str += io.read_nonblock(4096)
-  rescue IO::WaitReadable
-    (readable?(io) && retry) || str
-  rescue EOFError, Errno::EIO
-    str
-  end
-
-  def readable?(io)
-    IO.select([io], nil, nil, 0)
+  def output
+    @output ||= Spellr::OutputStubbed.new
   end
 
   def stdout
-    @stdout.chomp
+    @stdout ||= output.stdout.tap { |s| s.extend(StringIOStringMethods) }
+  end
+
+  def stdin
+    @stdin ||= output.stdin
   end
 
   def stderr
-    @stderr&.chomp
+    @stderr ||= output.stderr.tap { |s| s.extend(StringIOStringMethods) }
   end
 
   def exitstatus
-    @status.exitstatus
+    @exitstatus
   end
 end
 
@@ -149,5 +100,12 @@ RSpec.configure do |c|
   c.before do |example|
     @_example = example
   end
+
+  c.after(type: :cli) do
+    stdin.close if stdin.respond_to?(:close)
+    stdout.close if stdout.respond_to?(:close)
+    stderr.close if stderr.respond_to?(:close)
+  end
+
   c.include CLIHelper, type: :cli
 end

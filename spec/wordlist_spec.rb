@@ -3,9 +3,9 @@
 require_relative '../lib/spellr/wordlist'
 
 RSpec.describe Spellr::Wordlist do
-  subject { described_class.new(Pathname.pwd.join('wordlist').to_s) }
+  subject { described_class.new(Spellr.pwd.join('wordlist').to_s) }
 
-  around { |e| with_temp_dir(e) }
+  before { with_temp_dir }
 
   context 'when missing' do
     describe '#include?' do

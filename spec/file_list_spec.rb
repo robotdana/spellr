@@ -5,7 +5,7 @@ require_relative '../lib/spellr/file_list'
 
 RSpec::Matchers.define :match_relative_paths do |*expected|
   match do |actual|
-    @actual = actual.map { |a| Pathname.new(a.to_s).relative_path_from(Pathname.pwd).to_s }
+    @actual = actual.map { |a| Pathname.new(a.to_s).relative_path_from(Spellr.pwd).to_s }
     expect(@actual).to match_array(expected)
   end
 
@@ -13,11 +13,9 @@ RSpec::Matchers.define :match_relative_paths do |*expected|
 end
 
 RSpec.describe Spellr::FileList do
-  around do |example|
-    with_temp_dir(example)
-  end
-
   before do
+    with_temp_dir
+
     stub_fs_file_list %w{
       foo.rb
       foo/bar.txt
@@ -98,7 +96,7 @@ RSpec.describe Spellr::FileList do
   end
 
   it 'can respect absolute paths' do
-    expect(described_class.new(Pathname.pwd.join('foo.rb').to_s).to_a).to match_relative_paths(
+    expect(described_class.new(Spellr.pwd.join('foo.rb').to_s).to_a).to match_relative_paths(
       'foo.rb'
     )
   end

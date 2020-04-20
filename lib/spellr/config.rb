@@ -4,6 +4,8 @@ require_relative '../spellr'
 require_relative 'config_loader'
 require_relative 'language'
 require_relative 'config_validator'
+require_relative 'output'
+
 require 'pathname'
 
 module Spellr
@@ -44,14 +46,6 @@ module Spellr
       end
     end
 
-    def pwd
-      @pwd ||= Pathname.new(ENV['SPELLR_TEST_PWD'] || Dir.pwd)
-    end
-
-    def pwd_s
-      @pwd_s ||= pwd.to_s
-    end
-
     def languages_for(file)
       languages.select { |l| l.matches?(file) }
     end
@@ -63,6 +57,10 @@ module Spellr
     def config_file=(value)
       reset!
       @config = ConfigLoader.new(value)
+    end
+
+    def output
+      @output ||= Spellr::Output.new
     end
 
     def reporter
@@ -104,11 +102,6 @@ module Spellr
     def default_checker
       require_relative 'check_parallel'
       Spellr::CheckParallel
-    end
-
-    def clear_pwd # leftovers:test
-      remove_instance_variable(:@pwd) if defined?(@pwd)
-      remove_instance_variable(:@pwd_s) if defined?(@pwd_s)
     end
   end
 end

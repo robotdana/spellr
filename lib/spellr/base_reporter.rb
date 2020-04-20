@@ -40,7 +40,7 @@ module Spellr
     end
 
     def output
-      @output ||= Spellr::Output.new
+      @output ||= Spellr.config.output
     end
 
     def counts

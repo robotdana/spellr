@@ -6,18 +6,19 @@ require_relative '../../lib/spellr'
 
 module StubHelper
   def stub_config(**configs)
+    unless defined?(@stubbed_config)
+      allow(Spellr).to receive_messages(config: Spellr::Config.new)
+      @stubbed_config = true
+    end
     allow(Spellr.config).to receive_messages(configs)
   end
 
-  def with_temp_dir(example) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-    dirname = "#{example.full_description.tr(' /', '__-')}_#{rand.to_s[2..-1]}"
-    dir = Pathname.new(__dir__).join('..', '..', 'tmp', dirname).expand_path
+  def with_temp_dir
+    dirname = "#{@_example.full_description.tr(' /', '__-')}_#{rand.to_s[2..-1]}"
+    dir = Pathname.new("#{__dir__}/../../tmp/#{dirname}").expand_path
     dir.mkpath
-    dir = dir
-    Dir.chdir(dir.to_s) { example.run }
-  ensure
-    dir.rmtree
-    Spellr.config.send(:clear_pwd)
+    @_temp_dir = dir
+    allow(Spellr).to receive_messages(pwd: @_temp_dir, pwd_s: @_temp_dir.to_s)
   end
 
   def stub_fs_file_list(filenames)
@@ -27,7 +28,7 @@ module StubHelper
   end
 
   def stub_fs_file(filename, body = '')
-    path = Pathname.pwd.join(filename)
+    path = Spellr.pwd.join(filename)
     path.parent.mkpath
     path.write(body)
     path
@@ -35,5 +36,11 @@ module StubHelper
 end
 
 RSpec.configure do |config|
+  config.before do |example|
+    @_example = example
+  end
   config.include StubHelper
+  config.after do
+    @_temp_dir.rmtree if defined?(@_temp_dir)
+  end
 end

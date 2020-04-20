@@ -117,7 +117,7 @@ Metrics/BlockLength:
     - describe
     - context
     - it
-    - run_exe
+    - spellr
 
 Layout/LineLength:
   Max: 100

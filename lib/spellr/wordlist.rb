@@ -12,7 +12,7 @@ module Spellr
 
     def initialize(file, name: file)
       path = @file = file
-      @path = Spellr.config.pwd.join('.spellr_wordlists').join(path).expand_path
+      @path = Spellr.pwd.join('.spellr_wordlists').join(path).expand_path
       @name = name
       @include = {}
     end

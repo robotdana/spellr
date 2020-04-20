@@ -24,7 +24,7 @@ module Spellr
     end
 
     def relative_path
-      @relative_path ||= relative_path_from(Spellr.config.pwd)
+      @relative_path ||= relative_path_from(Spellr.pwd)
     end
 
     def insert(string, range)

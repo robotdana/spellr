@@ -49,9 +49,8 @@ module Spellr
     end
 
     def run(argv)
-      Spellr::CLI.new(argv)
-    rescue SystemExit => e
-      raise unless e.status == 0
+      status = Spellr::CLI.new(argv).run
+      exit 1 unless status == 0
     end
 
     def argv_or_default(task_argv)

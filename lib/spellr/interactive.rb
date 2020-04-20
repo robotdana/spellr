@@ -126,7 +126,7 @@ module Spellr
       case stdin_getch("qaAsSrR?h\u0003\u0004")
       # :nocov:
       when 'q', "\u0003" # ctrl c
-        exit 1
+        Spellr.exit 1
       when 'a', 'A'
         Spellr::InteractiveAdd.new(token, self)
       when 's', "\u0004" # ctrl d

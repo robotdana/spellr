@@ -9,6 +9,8 @@ module Spellr
     class Options
       class << self
         def parse(argv)
+          @parallel_option = false
+
           options.parse!(argv)
         end
 
@@ -55,7 +57,7 @@ module Spellr
         end
 
         def config_option(file)
-          file = Pathname.pwd.join(file).expand_path
+          file = Spellr.pwd.join(file).expand_path
 
           unless ::File.readable?(file)
             raise Spellr::Config::NotFound, "Config error: #{file} not found or not readable"
@@ -81,15 +83,15 @@ module Spellr
 
         def version_option(_)
           require_relative 'version'
-          puts(Spellr::VERSION)
+          Spellr.config.output.puts(Spellr::VERSION)
 
-          exit
+          Spellr.exit
         end
 
         def options_help(_)
-          puts options.help
+          Spellr.config.output.puts options.help
 
-          exit
+          Spellr.exit
         end
       end
     end

@@ -4,9 +4,9 @@ require_relative '../lib/spellr/version'
 RSpec.describe 'command line', type: :cli do
   describe '--help' do
     it 'returns the help' do
-      run_exe('spellr --help')
+      spellr('--help')
 
-      expect(stdout.chomp).to eq <<~HELP.chomp
+      expect(stdout).to have_output <<~HELP
         Usage: spellr [options] [files]
 
             -w, --wordlist                   Outputs errors in wordlist format
@@ -26,8 +26,8 @@ RSpec.describe 'command line', type: :cli do
   end
 
   describe 'bin/generate' do
-    around do |example|
-      with_temp_dir(example)
+    before do
+      with_temp_dir
     end
 
     describe 'bin/generate/ruby' do
@@ -38,14 +38,14 @@ RSpec.describe 'command line', type: :cli do
         expect(stderr).to be_empty
         # expect(stdout).to be_empty
         expect(exitstatus).to eq 0
-        expect(Pathname.pwd.join('wordlists/ruby.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/ruby.txt')).to exist
 
         run_bin 'generate/ruby'
 
         expect(stderr).to be_empty
         # expect(stdout).to be_empty
         expect(exitstatus).to eq 0
-        expect(Pathname.pwd.join('wordlists/ruby.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/ruby.txt')).to exist
       end
     end
 
@@ -70,7 +70,7 @@ RSpec.describe 'command line', type: :cli do
         expect(stderr).to be_empty
         expect(stdout).to be_empty
         expect(exitstatus).to eq 0
-        expect(Pathname.pwd.join('data.yml')).to exist
+        expect(Spellr.pwd.join('data.yml')).to exist
       end
     end
 
@@ -82,8 +82,8 @@ RSpec.describe 'command line', type: :cli do
         expect(stdout).to be_empty
         expect(exitstatus).to eq 0
 
-        expect(Pathname.pwd.join('wordlists/css.txt')).to exist
-        expect(Pathname.pwd.join('wordlists/css.LICENSE.md')).to exist
+        expect(Spellr.pwd.join('wordlists/css.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/css.LICENSE.md')).to exist
       end
     end
 
@@ -94,8 +94,8 @@ RSpec.describe 'command line', type: :cli do
         expect(stderr).to be_empty
         expect(stdout).to be_empty
         expect(exitstatus).to eq 0
-        expect(Pathname.pwd.join('wordlists/html.txt')).to exist
-        expect(Pathname.pwd.join('wordlists/html.LICENSE.md')).to exist
+        expect(Spellr.pwd.join('wordlists/html.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/html.LICENSE.md')).to exist
       end
     end
 
@@ -106,19 +106,19 @@ RSpec.describe 'command line', type: :cli do
         expect(stderr).to be_empty
         expect(stdout).to be_empty
         expect(exitstatus).to eq 0
-        expect(Pathname.pwd.join('wordlists/english.txt')).to exist
-        expect(Pathname.pwd.join('wordlists/english.LICENSE.txt')).to exist
-        expect(Pathname.pwd.join('wordlists/english/US.txt')).to exist
-        expect(Pathname.pwd.join('wordlists/english/US.LICENSE.txt')).to exist
-        expect(Pathname.pwd.join('wordlists/english/GB.txt')).to exist
-        expect(Pathname.pwd.join('wordlists/english/GB.LICENSE.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/english.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/english.LICENSE.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/english/US.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/english/US.LICENSE.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/english/GB.txt')).to exist
+        expect(Spellr.pwd.join('wordlists/english/GB.LICENSE.txt')).to exist
       end
     end
   end
 
   describe 'rake' do
-    around do |example|
-      with_temp_dir(example)
+    before do
+      with_temp_dir
     end
 
     context 'with a rake task with no arguments' do
@@ -136,7 +136,7 @@ RSpec.describe 'command line', type: :cli do
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           rake spellr[*args]  # Run spellr
         STDOUT
       end
@@ -145,7 +145,7 @@ RSpec.describe 'command line', type: :cli do
         run_rake('spellr')
         expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           \e[2mspellr \e[0m
 
           1 file checked
@@ -157,7 +157,7 @@ RSpec.describe 'command line', type: :cli do
         run_rake('spellr[--quiet]')
         expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           \e[2mspellr --quiet\e[0m
         STDOUT
       end
@@ -166,7 +166,7 @@ RSpec.describe 'command line', type: :cli do
         run_rake
         expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           \e[2mspellr \e[0m
 
           1 file checked
@@ -181,7 +181,7 @@ RSpec.describe 'command line', type: :cli do
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           \e[2mspellr \e[0m
           #{aqua 'foo.txt:1:0'} #{red 'notaword'}
 
@@ -205,7 +205,7 @@ RSpec.describe 'command line', type: :cli do
         run_rake('-T')
         expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           rake spellr_quiet[*args]  # Run spellr (default args: --quiet)
         STDOUT
       end
@@ -214,7 +214,7 @@ RSpec.describe 'command line', type: :cli do
         run_rake('spellr_quiet')
         expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           \e[2mspellr --quiet\e[0m
         STDOUT
       end
@@ -223,7 +223,7 @@ RSpec.describe 'command line', type: :cli do
         run_rake('spellr_quiet[--no-parallel]')
         expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           \e[2mspellr --no-parallel\e[0m
 
           1 file checked
@@ -235,7 +235,7 @@ RSpec.describe 'command line', type: :cli do
         run_rake
         expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           \e[2mspellr --quiet\e[0m
         STDOUT
       end
@@ -247,7 +247,7 @@ RSpec.describe 'command line', type: :cli do
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
-        expect(stdout).to eq <<~STDOUT.chomp
+        expect(stdout).to have_output <<~STDOUT
           \e[2mspellr --quiet\e[0m
         STDOUT
       end
@@ -256,58 +256,72 @@ RSpec.describe 'command line', type: :cli do
 
   describe '--version' do
     it 'returns the version when given --version' do
-      run_exe('spellr --version')
+      spellr('--version')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout).to eq Spellr::VERSION
+      expect(stdout).to have_output <<~STDOUT
+        #{Spellr::VERSION}
+      STDOUT
     end
 
     it 'returns the version when given -v' do
-      run_exe('spellr -v')
+      spellr('-v')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout).to eq Spellr::VERSION
+      expect(stdout).to have_output <<~STDOUT
+        #{Spellr::VERSION}
+      STDOUT
     end
 
     it 'returns the version and exits when given additional options' do
-      run_exe('spellr --version --interactive')
+      spellr('--version --interactive')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout).to eq Spellr::VERSION
+      expect(stdout).to have_output <<~STDOUT
+        #{Spellr::VERSION}
+      STDOUT
     end
 
     it 'returns the version and exits when given additional short options' do
-      run_exe('spellr -vi')
+      spellr('-vi')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout).to eq Spellr::VERSION
+      expect(stdout).to have_output <<~STDOUT
+        #{Spellr::VERSION}
+      STDOUT
     end
 
     it 'returns the version when given both short and long options' do
-      run_exe('spellr -v --version')
+      spellr('-v --version')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout).to eq Spellr::VERSION
+      expect(stdout).to have_output <<~STDOUT
+        #{Spellr::VERSION}
+      STDOUT
     end
   end
 
   describe 'combining --parallel and --interactive' do
     it 'complains when --interactive then --parallel' do
-      run_exe('spellr --interactive --parallel') do |_stdout, _stdin, _pid, stderr|
-        expect(stderr).to print <<~STDERR.chomp
+      spellr('--interactive --parallel') do
+        expect(exitstatus).to eq 1
+        expect(stdout).to be_empty
+        expect(stderr).to have_output <<~STDERR
           #{red('CLI error: --interactive is incompatible with --parallel')}
         STDERR
       end
     end
 
     it 'complains when --parallel then --interactive' do
-      run_exe('spellr --parallel --interactive') do |_stdout, _stdin, _pid, stderr|
-        expect(stderr).to print <<~STDERR.chomp
+      spellr('--parallel --interactive') do
+        expect(exitstatus).to eq 1
+        expect(stdout).to be_empty
+        expect(stderr).to have_output <<~STDERR
           #{red('CLI error: --interactive is incompatible with --parallel')}
         STDERR
       end
@@ -316,17 +330,20 @@ RSpec.describe 'command line', type: :cli do
 
   describe '--interactive in a non tty' do
     it 'complains' do
-      run_exe('spellr --interactive')
+      stdin.close
+      spellr('--interactive')
 
-      expect(stderr).to eq <<~STDERR.chomp
+      expect(exitstatus).to eq 1
+      expect(stdout).to be_empty
+      expect(stderr).to have_output <<~STDERR
         #{red('CLI error: --interactive is unavailable in a non-interactive terminal')}
       STDERR
     end
   end
 
   describe 'config validations' do
-    around do |example|
-      with_temp_dir(example)
+    before do
+      with_temp_dir
     end
 
     it 'complains with conflicting implicit keys' do
@@ -336,14 +353,16 @@ RSpec.describe 'command line', type: :cli do
           russian: {}
       YML
 
-      run_exe("spellr --config=#{Dir.pwd}/.spellr.yml")
+      spellr("--config=#{Spellr.pwd}/.spellr.yml")
 
-      expect(stderr).to eq(
-        red(
+      expect(stderr).to have_output <<~STDERR
+        #{red(
           'Config error: ruby & russian share the same language key (r). '\
           'Please define one to be different with `key:`'
-        )
-      )
+        )}
+      STDERR
+      expect(stdout).to be_empty
+      expect(exitstatus).to eq 1
     end
 
     it 'complains with conflicting explicit keys' do
@@ -354,14 +373,16 @@ RSpec.describe 'command line', type: :cli do
             key: e
       YML
 
-      run_exe("spellr --config=#{Dir.pwd}/.spellr.yml")
+      spellr("--config=#{Spellr.pwd}/.spellr.yml")
 
-      expect(stderr).to eq(
-        red(
+      expect(stderr).to have_output <<~STDERR
+        #{red(
           'Config error: english & spanish share the same language key (e). '\
           'Please define one to be different with `key:`'
-        )
-      )
+        )}
+      STDERR
+      expect(stdout).to be_empty
+      expect(exitstatus).to eq 1
     end
 
     it 'complains with multicharacter keys' do
@@ -373,27 +394,33 @@ RSpec.describe 'command line', type: :cli do
             key: ru
       YML
 
-      run_exe("spellr --config=#{Dir.pwd}/.spellr.yml")
+      spellr("--config=#{Spellr.pwd}/.spellr.yml")
 
-      expect(stderr).to eq red(<<~STDERR.chomp)
-        Config error: english defines a key that is too long (en). Please change it to be a single character
-        Config error: ruby defines a key that is too long (ru). Please change it to be a single character
+      expect(stderr).to have_output <<~STDERR
+        #{red(
+          "Config error: english defines a key that is too long (en). Please change it to be a single character\n" \
+          'Config error: ruby defines a key that is too long (ru). Please change it to be a single character'
+        )}
       STDERR
+      expect(stdout).to be_empty
+      expect(exitstatus).to eq 1
     end
 
     it 'complains with a missing specified config' do
-      run_exe("spellr --config=#{Dir.pwd}/my-spellr.yml")
+      spellr("--config=#{Spellr.pwd}/my-spellr.yml")
 
-      expect(stderr).to eq red("Config error: #{Dir.pwd}/my-spellr.yml not found or not readable")
+      expect(stderr).to have_output <<~STDERR
+        #{red("Config error: #{Spellr.pwd}/my-spellr.yml not found or not readable")}
+      STDERR
+      expect(stdout).to be_empty
+      expect(exitstatus).to eq 1
     end
   end
 
   context 'with ruby files without errors' do
-    around do |example|
-      with_temp_dir(example)
-    end
-
     before do
+      with_temp_dir
+
       stub_fs_file 'test.rb', <<~RUBY
         "string".casecmp "STRING"
       RUBY
@@ -421,11 +448,11 @@ RSpec.describe 'command line', type: :cli do
     end
 
     it 'allows the ruby files to say casecmp but not the txt file' do
-      run_exe('spellr --no-parallel') # parallel was making this test failure order random
+      spellr('--no-parallel') # parallel was making this test failure order random
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 1
-      expect(stdout).to eq <<~WORDS.chomp
+      expect(stdout).to have_output <<~WORDS
         #{aqua 'test_control.txt:1:9'} "string".#{red 'casecmp'} "STRING"
         #{aqua 'test_control_no_ext:1:9'} "string".#{red 'casecmp'} "STRING"
 
@@ -436,11 +463,9 @@ RSpec.describe 'command line', type: :cli do
   end
 
   context 'with some files' do
-    around do |example|
-      with_temp_dir(example)
-    end
-
     before do
+      with_temp_dir
+
       stub_fs_file_list %w{
         foo.md
         lib/bar.rb
@@ -448,57 +473,61 @@ RSpec.describe 'command line', type: :cli do
     end
 
     it 'returns the list of files when given no further arguments' do
-      run_exe('spellr --dry-run')
+      spellr('--dry-run')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout.split("\n")).to contain_exactly(
-        'lib/bar.rb',
-        'foo.md'
+      expect(stdout.each_line.to_a).to contain_exactly(
+        "lib/bar.rb\n",
+        "foo.md\n"
       )
     end
 
     it 'can combine dry-run with no-parallel (by not being parallel in the firsts place)' do
-      run_exe('spellr --dry-run --no-parallel')
+      spellr('--dry-run --no-parallel')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout.split("\n")).to contain_exactly(
-        'lib/bar.rb',
-        'foo.md'
+      expect(stdout.each_line.to_a).to contain_exactly(
+        "lib/bar.rb\n",
+        "foo.md\n"
       )
     end
 
     it 'can combine dry-run with parallel (by ignoring --parallel)' do
-      run_exe('spellr --dry-run --parallel')
+      spellr('--dry-run --parallel')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout.split("\n")).to contain_exactly(
-        'lib/bar.rb',
-        'foo.md'
+      expect(stdout.each_line.to_a).to contain_exactly(
+        "lib/bar.rb\n",
+        "foo.md\n"
       )
     end
 
     it 'returns the list of files when given an extensions to subset' do
-      run_exe('spellr --dry-run \*.rb')
+      spellr('--dry-run \*.rb')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout).to eq 'lib/bar.rb'
+      expect(stdout).to have_output <<~STDOUT
+        lib/bar.rb
+      STDOUT
     end
 
     it 'returns the list of files when given a dir to subset' do
-      run_exe('spellr --dry-run lib/')
+      spellr('--dry-run lib/')
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 0
-      expect(stdout).to eq 'lib/bar.rb'
+      expect(stdout).to have_output <<~STDOUT
+        lib/bar.rb
+      STDOUT
     end
 
     describe '--quiet' do
       it "doesn't output to stdout or stderr but does return the correct exitstatus" do
-        run_exe 'spellr --quiet'
+        spellr '--quiet'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 0
@@ -508,8 +537,8 @@ RSpec.describe 'command line', type: :cli do
   end
 
   context 'with files with errors' do
-    around do |example|
-      with_temp_dir(example)
+    before do
+      with_temp_dir
     end
 
     let!(:english_wordlist) do
@@ -529,7 +558,7 @@ RSpec.describe 'command line', type: :cli do
 
     describe '--quiet' do
       it "doesn't output to stdout or stderr but does return the correct exitstatus" do
-        run_exe 'spellr --quiet'
+        spellr '--quiet'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
@@ -537,7 +566,7 @@ RSpec.describe 'command line', type: :cli do
       end
 
       it "doesn't output anything but exitstatus when combined with no-parallel" do
-        run_exe 'spellr --quiet --no-parallel'
+        spellr '--quiet --no-parallel'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
@@ -545,7 +574,7 @@ RSpec.describe 'command line', type: :cli do
       end
 
       it "doesn't output anything but exitstatus when combined with parallel" do
-        run_exe 'spellr --quiet --parallel'
+        spellr '--quiet --parallel'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
@@ -555,33 +584,33 @@ RSpec.describe 'command line', type: :cli do
 
     describe '--wordlist' do
       it 'returns the list of unmatched words' do
-        run_exe 'spellr --wordlist'
+        spellr '--wordlist'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
-        expect(stdout).to eq <<~WORDS.chomp
+        expect(stdout).to have_output <<~WORDS
           amet
           dolar
         WORDS
       end
 
       it 'can be combined with --parallel' do
-        run_exe 'spellr --wordlist --parallel'
+        spellr '--wordlist --parallel'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
-        expect(stdout).to eq <<~WORDS.chomp
+        expect(stdout).to have_output <<~WORDS
           amet
           dolar
         WORDS
       end
 
       it 'can be combined with --no-parallel' do
-        run_exe 'spellr --wordlist --no-parallel'
+        spellr '--wordlist --no-parallel'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
-        expect(stdout).to eq <<~WORDS.chomp
+        expect(stdout).to have_output <<~WORDS
           amet
           dolar
         WORDS
@@ -591,7 +620,7 @@ RSpec.describe 'command line', type: :cli do
         stub_fs_file '.spellr.yml', <<~YML
           word_minimum_length: 6
         YML
-        run_exe "spellr --wordlist --config=#{Dir.pwd}/.spellr.yml"
+        spellr "--wordlist --config=#{Spellr.pwd}/.spellr.yml"
 
         expect(stderr).to be_empty
         expect(stdout).to be_empty
@@ -599,17 +628,18 @@ RSpec.describe 'command line', type: :cli do
       end
 
       it 'returns an error for invalid files' do
-        FileUtils.mkdir 'invalid_dir'
+        invalid_dir = Spellr.pwd.join('invalid_dir')
+        FileUtils.mkdir_p invalid_dir
 
-        FileUtils.cp("#{__dir__}/support/invalid_file", './invalid_dir')
-        run_exe 'spellr --wordlist'
+        FileUtils.cp("#{__dir__}/support/invalid_file", invalid_dir)
+        spellr '--wordlist'
 
-        expect(stderr).to eq <<~WORDS.chomp
+        expect(stderr).to have_output <<~WORDS
           Skipped unreadable file: #{aqua 'invalid_dir/invalid_file'}
         WORDS
 
         expect(exitstatus).to eq 1
-        expect(stdout).to eq <<~WORDS.chomp
+        expect(stdout).to have_output <<~WORDS
           amet
           dolar
         WORDS
@@ -618,11 +648,11 @@ RSpec.describe 'command line', type: :cli do
 
     describe 'spellr' do
       it 'returns the list of unmatched words and their locations' do
-        run_exe 'spellr'
+        spellr
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
-        expect(stdout).to eq <<~WORDS.chomp
+        expect(stdout).to have_output <<~WORDS
           #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
           #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
           #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
@@ -633,11 +663,11 @@ RSpec.describe 'command line', type: :cli do
       end
 
       it 'can be run with --no-parallel' do
-        run_exe 'spellr --no-parallel'
+        spellr '--no-parallel'
 
         expect(stderr).to be_empty
         expect(exitstatus).to eq 1
-        expect(stdout).to eq <<~WORDS.chomp
+        expect(stdout).to have_output <<~WORDS
           #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
           #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
           #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
@@ -655,24 +685,29 @@ RSpec.describe 'command line', type: :cli do
 
     describe '--interactive' do
       it 'returns the first unmatched term and a prompt' do
-        run_exe 'spellr -i' do |stdout, _|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
+
+          expect(exitstatus).to eq nil
+          expect(stderr).to be_empty
         end
       end
 
       it 'returns the interactive command help' do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
+          expect(exitstatus).to eq nil
+          expect(stderr).to be_empty
 
           stdin.print 'h'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT.chomp
 
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
 
@@ -689,7 +724,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT.chomp
 
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
 
@@ -706,30 +741,34 @@ RSpec.describe 'command line', type: :cli do
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
             #{prompt}
           STDOUT
+
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq nil
         end
       end
 
       it 'exits when ctrl C' do
-        run_exe 'spellr -i' do |stdout, stdin, pid|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print "\u0003" # ctrl c
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt '^C'}
           STDOUT
 
-          expect(pid).to have_exitstatus(1)
+          expect(exitstatus).to eq 1
+          expect(stderr).to be_empty
         end
       end
 
       it 'ignores up' do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
@@ -738,23 +777,26 @@ RSpec.describe 'command line', type: :cli do
 
           sleep 0.1
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
+
+          expect(exitstatus).to eq nil
+          expect(stderr).to be_empty
         end
       end
 
       it 'returns the next unmatched term and a prompt after skipping' do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 's'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 's'}
             Skipped #{red 'dolar'}
@@ -764,7 +806,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 's'}
             Skipped #{red 'dolar'}
@@ -777,7 +819,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 's'}
             Skipped #{red 'dolar'}
@@ -791,21 +833,23 @@ RSpec.describe 'command line', type: :cli do
             1 file checked
             3 errors found
             3 errors skipped
-
           STDOUT
+
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq 1
         end
       end
 
       it 'returns the next unmatched term and a prompt after skipping with S' do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'S'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'S'}
             Skipped #{red 'dolar'}
@@ -816,7 +860,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'S'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'S'}
             Skipped #{red 'dolar'}
@@ -829,19 +873,22 @@ RSpec.describe 'command line', type: :cli do
             3 errors found
             3 errors skipped
           STDOUT
+
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq 1
         end
       end
 
       it 'can bail early when trying to add with a' do
-        run_exe 'spellr -i' do |stdout, stdin, pid|
-          expect(stdout).to print <<~STDOUT
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'a'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'a'}
 
@@ -852,7 +899,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "\u0003" # ctrl c
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
 
 
 
@@ -865,7 +912,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "\u0003" # ctrl c
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT
 
 
 
@@ -876,20 +923,21 @@ RSpec.describe 'command line', type: :cli do
             #{prompt '^C'}
           STDOUT
 
-          expect(pid).to have_exitstatus(1)
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq 1
         end
       end
 
       it "asks me again when i chose a language that doesn't exist when adding with a" do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'a'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'a'}
 
@@ -902,7 +950,7 @@ RSpec.describe 'command line', type: :cli do
 
           sleep 0.1 # make sure nothing has changed
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'a'}
 
@@ -910,19 +958,22 @@ RSpec.describe 'command line', type: :cli do
               [^#{bold 'C'}] to go back
               Add #{red 'dolar'} to which wordlist? [ ]
           STDOUT
+
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq nil
         end
       end
 
       it 'returns the next unmatched term and a prompt after adding with a' do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'a'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'a'}
 
@@ -933,7 +984,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'e'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'a'}
 
@@ -954,7 +1005,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'a'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'a'}
 
@@ -973,7 +1024,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'e'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'a'}
 
@@ -1002,6 +1053,9 @@ RSpec.describe 'command line', type: :cli do
             ipsum
             lorem
           FILE
+
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq 0
         end
       end
 
@@ -1010,15 +1064,16 @@ RSpec.describe 'command line', type: :cli do
           languages:
             lorem: {}
         YML
-        run_exe "spellr -i --config=#{Dir.pwd}/.spellr.yml" do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+
+        spellr "-i --config=#{Spellr.pwd}/.spellr.yml" do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'a'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'a'}
 
@@ -1030,7 +1085,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'l'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'a'}
 
@@ -1047,15 +1102,15 @@ RSpec.describe 'command line', type: :cli do
       end
 
       it 'can bail early when trying to replace with R' do
-        run_exe 'spellr -i' do |stdout, stdin, pid|
-          expect(stdout).to print <<~STDOUT
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'R'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'R'}
 
@@ -1065,7 +1120,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "something\u0003" # ctrl c
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
 
 
 
@@ -1076,20 +1131,30 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "\u0003" # ctrl c
 
-          expect(pid).to have_exitstatus(1)
+          expect(stdout).to have_output <<~STDOUT
+
+
+
+
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+            #{prompt '^C'}
+          STDOUT
+
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq 1
         end
       end
 
       it 'returns the next unmatched term and a prompt after replacing with R' do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'R'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'R'}
 
@@ -1099,7 +1164,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "es\n"
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'R'}
 
@@ -1119,7 +1184,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'a'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'R'}
 
@@ -1137,7 +1202,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'e'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'R'}
 
@@ -1172,7 +1237,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'R'}
 
@@ -1199,19 +1264,22 @@ RSpec.describe 'command line', type: :cli do
             2 errors fixed
             1 word added
           STDOUT
+
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq 1
         end
       end
 
       it 'can bail early when trying to replace with r' do
-        run_exe 'spellr -i' do |stdout, stdin, pid|
-          expect(stdout).to print <<~STDOUT
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'r'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1221,7 +1289,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "\u0003" # ctrl c
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
 
 
 
@@ -1232,7 +1300,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "\u0003" # ctrl c
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT
 
 
 
@@ -1241,20 +1309,21 @@ RSpec.describe 'command line', type: :cli do
             #{prompt '^C'}
           STDOUT
 
-          expect(pid).to have_exitstatus(1)
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq 1
         end
       end
 
       it 'disallows replacing with nothing when replacing with r' do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'r'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1264,7 +1333,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "\b" * 17
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1275,7 +1344,7 @@ RSpec.describe 'command line', type: :cli do
           stdin.puts ''
 
           # just put the prompt again
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
 
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
@@ -1283,19 +1352,22 @@ RSpec.describe 'command line', type: :cli do
               #{lighten '[^C] to go back'}
               Replace #{red 'dolar'} with: \e[32mdolar
           STDOUT
+
+          expect(stderr).to have_output ''
+          expect(exitstatus).to eq nil
         end
       end
 
       it 'disallows replacing with the same when replacing with r' do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'r'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1307,7 +1379,7 @@ RSpec.describe 'command line', type: :cli do
           sleep 0.1
 
           # just put the prompt again
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
 
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
@@ -1315,19 +1387,22 @@ RSpec.describe 'command line', type: :cli do
               #{lighten '[^C] to go back'}
               Replace #{red 'dolar'} with: \e[32mdolar
           STDOUT
+
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq nil
         end
       end
 
       it 'returns the next unmatched term and a prompt after replacing with r' do
-        run_exe 'spellr -i' do |stdout, stdin|
-          expect(stdout).to print <<~STDOUT.chomp
+        spellr '-i' do
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt}
           STDOUT
 
           stdin.print 'r'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1337,7 +1412,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print "es\n"
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1357,7 +1432,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'a'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1375,7 +1450,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 'e'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1403,7 +1478,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect(stdout).to print <<~STDOUT.chomp
+          expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1428,7 +1503,7 @@ RSpec.describe 'command line', type: :cli do
 
           stdin.print 's'
 
-          expect(stdout).to print <<~STDOUT
+          expect(stdout).to have_output <<~STDOUT
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             #{prompt 'r'}
 
@@ -1457,6 +1532,9 @@ RSpec.describe 'command line', type: :cli do
             1 error fixed
             1 word added
           STDOUT
+
+          expect(stderr).to be_empty
+          expect(exitstatus).to eq 1
         end
       end
     end

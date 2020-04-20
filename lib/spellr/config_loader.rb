@@ -11,7 +11,7 @@ module Spellr
 
     attr_reader :config_file
 
-    def initialize(config_file = ::File.join(Dir.pwd, '.spellr.yml'))
+    def initialize(config_file = ::File.join(Spellr.pwd, '.spellr.yml'))
       @config_file = config_file
     end
 

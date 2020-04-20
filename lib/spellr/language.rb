@@ -15,8 +15,8 @@ module Spellr
       @key = key
       @includes = includes
       @hashbangs = hashbangs
-      unless hashbangs.empty?
-        @hashbang_pattern = /\A#!.*\b(?:#{hashbangs.map { |s| Regexp.escape(s) }.join('|')})\b/
+      @hashbang_pattern = unless hashbangs.empty?
+        /\A#!.*\b(?:#{hashbangs.map { |s| Regexp.escape(s) }.join('|')})\b/
       end
       @locales = Array(locale)
       @addable = addable
@@ -36,7 +36,7 @@ module Spellr
 
     def project_wordlist
       @project_wordlist ||= Spellr::Wordlist.new(
-        Spellr.config.pwd.join('.spellr_wordlists', "#{name}.txt"),
+        Spellr.pwd.join('.spellr_wordlists', "#{name}.txt"),
         name: name
       )
     end
@@ -56,7 +56,7 @@ module Spellr
       return @hashbangs.empty? if @includes.empty?
 
       @fast_ignore ||= FastIgnore.new(
-        include_rules: @includes, gitignore: false, root: Spellr.config.pwd_s
+        include_rules: @includes, gitignore: false, root: Spellr.pwd_s
       )
       @fast_ignore.allowed?(file.to_s)
     end

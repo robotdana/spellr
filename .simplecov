@@ -24,6 +24,9 @@ module Parallel
     pid = Process.fork do
       # here begins my additions
       SimpleCov.command_name "Parallel #{Process.pid}"
+      SimpleCov.formatter SimpleCov::Formatter::SimpleFormatter
+      SimpleCov.minimum_coverage 0
+      SimpleCov.print_error_status = false
       SimpleCov.start
       # here ends my additions
 
