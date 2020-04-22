@@ -1,6 +1,0 @@
-rules:
-  - method: validate
-    caller:
-      position: 1
-gems:
-  - rspec

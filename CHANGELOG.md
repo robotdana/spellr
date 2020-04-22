@@ -1,3 +1,6 @@
+# v0.8.3
+- Update fast_ignore dependency fixing symlinks to directories handling.
+
 # v0.8.2
 - Massive test refactor
   - Spellr now only pays attention to Spellr.pwd. Dir.pwd can be whatever

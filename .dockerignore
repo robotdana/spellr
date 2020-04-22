@@ -3,9 +3,11 @@
 /spec/
 /.dockerignore
 /.gitignore
+/.leftovers.yml
 /.rspec
 /.rspec_status
 /.rubocop.yml
+/.simplecov
 /.spellr.yml
 /.travis.yml
 /Dockerfile
