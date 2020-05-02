@@ -18,7 +18,7 @@ module Spellr
     end
 
     def languages
-      @languages ||= Spellr.config.languages_for(token.location.file.to_path)
+      @languages ||= Spellr.config.languages_for(token.location.file)
     end
 
     def addable_languages

@@ -204,3 +204,6 @@ Style/SymbolArray:
 
 Style/CommentedKeyword:
   Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false

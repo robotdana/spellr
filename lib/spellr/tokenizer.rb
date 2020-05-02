@@ -7,9 +7,10 @@ require_relative 'line_tokenizer'
 
 module Spellr
   class Tokenizer
-    attr_reader :file
+    attr_reader :file, :filename
 
     def initialize(file, start_at: nil, skip_key: true)
+      @filename = file
       @start_at = start_at || ColumnLocation.new(line_location: LineLocation.new(file))
       @file = file.is_a?(StringIO) || file.is_a?(IO) ? file : ::File.new(file)
       @file.pos = @start_at.line_location.byte_offset
@@ -45,7 +46,7 @@ module Spellr
 
     def prepare_line(line, line_number, char_offset, byte_offset)
       line_location = LineLocation.new(
-        file, line_number, char_offset: char_offset, byte_offset: byte_offset
+        filename, line_number, char_offset: char_offset, byte_offset: byte_offset
       )
       column_location = ColumnLocation.new(line_location: line_location)
       Token.new(line, location: column_location)

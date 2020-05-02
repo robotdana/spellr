@@ -10,24 +10,16 @@ module Spellr
     attr_reader :name
     attr_reader :key
 
-    def initialize(name, key: name[0], includes: [], hashbangs: [], locale: [], addable: true) # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
+    def initialize(name, key: name[0], includes: [], hashbangs: [], locale: [], addable: true) # rubocop:disable Metrics/ParameterLists
       @name = name
       @key = key
-      @includes = includes
-      @hashbangs = hashbangs
-      @hashbang_pattern = unless hashbangs.empty?
-        /\A#!.*\b(?:#{hashbangs.map { |s| Regexp.escape(s) }.join('|')})\b/
-      end
+      @includes = includes + hashbangs.map { |h| "#!:#{h}" }
       @locales = Array(locale)
       @addable = addable
     end
 
     def addable?
       @addable
-    end
-
-    def matches?(file)
-      matches_includes?(file) || matches_hashbangs?(file)
     end
 
     def wordlists
@@ -41,24 +33,18 @@ module Spellr
       )
     end
 
-    private
+    def matches?(file)
+      return true if @includes.empty?
 
-    def matches_hashbangs?(file)
-      return @includes.empty? unless @hashbang_pattern
-
-      file = Spellr::File.wrap(file)
-      return unless file.hashbang
-
-      @hashbang_pattern.match?(file.hashbang)
+      fast_ignore.allowed?(file.to_s, directory: false, content: file.first_line)
     end
 
-    def matches_includes?(file)
-      return @hashbangs.empty? if @includes.empty?
+    private
 
+    def fast_ignore
       @fast_ignore ||= FastIgnore.new(
         include_rules: @includes, gitignore: false, root: Spellr.pwd_s
       )
-      @fast_ignore.allowed?(file.to_s)
     end
 
     def gem_wordlist

@@ -97,6 +97,7 @@ matcher
 matchers
 maths
 mdn
+memoized
 merchantability
 multibyte
 multiline

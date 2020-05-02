@@ -4,25 +4,6 @@ require 'pathname'
 
 module Spellr
   class File < Pathname
-    def self.wrap(file)
-      file.is_a?(Spellr::File) ? file : Spellr::File.new(file)
-    end
-
-    # don't use FastIgnore shebang handling
-    # because i use lots of different FastIgnore instances and each would to open the files.
-    def hashbang
-      @hashbang ||= begin
-        return if extname != ''
-        return unless first_line&.start_with?('#!')
-
-        first_line
-      end
-    end
-
-    def first_line
-      @first_line ||= each_line.first
-    end
-
     def relative_path
       @relative_path ||= relative_path_from(Spellr.pwd)
     end
@@ -32,6 +13,24 @@ module Spellr
         body[range] = string
         body
       end
+    end
+
+    # the bulk of this method is copied from fast_ignore
+    def first_line # rubocop:disable Metrics/MethodLength
+      return @first_line if defined?(@first_line)
+
+      @first_line = nil
+
+      file = ::File.new(to_s)
+      @first_line = file.sysread(25)
+      @first_line += file.sysread(50) until @first_line.include?("\n")
+      file.close
+      @first_line
+    rescue ::EOFError, ::SystemCallError
+      # :nocov:
+      file&.close
+      # :nocov:
+      @first_line
     end
 
     def read_write

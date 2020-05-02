@@ -7,24 +7,22 @@ module Spellr
     attr_reader :line_number
     attr_reader :char_offset
     attr_reader :byte_offset
+    attr_reader :file
 
-    def initialize(file = '[String]', line_number = 1, char_offset: 0, byte_offset: 0)
-      @filename = file
+    def initialize(
+      file = ::Spellr::File.new('[string]'),
+      line_number = 1,
+      char_offset: 0,
+      byte_offset: 0
+    )
+      @file = file
       @line_number = line_number
       @char_offset = char_offset
       @byte_offset = byte_offset
     end
 
     def to_s
-      "#{file_relative_path}:#{line_number}"
-    end
-
-    def file_relative_path
-      file.relative_path
-    end
-
-    def file
-      @file ||= Spellr::File.wrap(@filename)
+      "#{file.relative_path}:#{line_number}"
     end
   end
 end
