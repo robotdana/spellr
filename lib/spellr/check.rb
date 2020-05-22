@@ -7,6 +7,7 @@ require_relative 'string_format'
 module Spellr
   class Check
     attr_reader :files, :reporter
+
     include StringFormat
 
     def exit_code
