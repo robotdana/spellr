@@ -1,3 +1,6 @@
+# v0.8.5
+- Single line disable! use `spellr:disable-line` #25
+
 # v0.8.4
 - Update fast_ignore dependency, it's faster now (about 0.5s faster on rails codebase)
 
