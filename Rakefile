@@ -13,7 +13,7 @@ RSpec::Core::RakeTask.new(:spec)
 Spellr::RakeTask.generate_task
 Leftovers::RakeTask.generate_task
 
-task default: [:spec, :rubocop, :spellr, :leftovers]
+task default: [:spec, :rubocop, :spellr, :leftovers, :build]
 
 Rake::Task[:release].clear
 desc "Create tag #{Bundler::GemHelper.instance.send(:version_tag)} and push"
