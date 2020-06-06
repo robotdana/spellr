@@ -98,5 +98,6 @@ module Spellr
 
     SPELLR_DISABLE_RE = /spellr:disable/.freeze
     SPELLR_ENABLE_RE = /spellr:enable/.freeze
+    SPELLR_LINE_DISABLE_RE = /spellr:disable[-:]line/.freeze
   end
 end

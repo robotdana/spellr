@@ -536,6 +536,43 @@ RSpec.describe 'command line', type: :cli do
     end
   end
 
+  context 'with files with disables' do
+    before do
+      with_temp_dir
+
+      stub_fs_file '.spellr_wordlists/english.txt', <<~FILE
+        ipsum
+        lorem
+      FILE
+
+      stub_fs_file 'check.txt', <<~FILE
+        lorem ipsum dolar
+        lorem ipsum dolar spellr:disable-line
+
+          spellr:disable
+          dolar amet
+          spellr:enable
+
+          dolar amet
+      FILE
+    end
+
+    it 'returns the list of unmatched words and their locations' do
+      spellr
+
+      expect(stderr).to be_empty
+      expect(exitstatus).to eq 1
+      expect(stdout).to have_output <<~WORDS
+        #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+        #{aqua 'check.txt:8:2'} #{red 'dolar'} amet
+        #{aqua 'check.txt:8:8'} dolar #{red 'amet'}
+
+        1 file checked
+        3 errors found
+      WORDS
+    end
+  end
+
   context 'with files with errors' do
     before do
       with_temp_dir

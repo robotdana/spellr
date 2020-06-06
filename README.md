@@ -175,14 +175,21 @@ Type `e` to add this word to the english wordlist and continue on through the sp
 
 ### Disabling the tokenizer
 
-If the tokenizer finds a word you don't want to add to the wordlist (perhaps it's an intentional example of a typo, or a non-word string not excluded by the heuristic) then place on the lines before and after
+If the tokenizer finds a word you don't want to add to the wordlist (perhaps it's an intentional example of a typo, or a non-word string not excluded by the heuristic) then add any kind of comment containing `spellr:disable-line` to the line.
+```ruby
+open('mispeled_filename.txt') # spellr:disable-line
+```
+
+You can also disable multiple lines, by surrounding the offending code with `spellr:disable` and `spellr:enable`
 ```ruby
 # spellr:disable
-"Test typo of the: teh"
+it "Test typo of the: teh" do
+  fill_in(field, with: "teh")
+end
 # spellr:enable
 ```
 
-This works with any kind of comment, even in the same line
+If your language supports inline comments you can also surround with `spellr:disable` and `spellr:enable` in the same line:
 ```html
 <span><!-- spellr:disable -->nonsenseword<!-- spellr:enable --></span>
 ```

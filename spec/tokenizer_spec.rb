@@ -259,6 +259,18 @@ RSpec.describe Spellr::Tokenizer do
       expect('this spellr:disable and spellr:enable that').to have_tokens 'this', 'that'
     end
 
+    it 'excludes whole line with spellr:disable-line' do
+      expect('this spellr:disable-line and that').to have_no_tokens
+      expect('spellr:disable-line this and that').to have_no_tokens
+      expect('this and that spellr:disable-line').to have_no_tokens
+    end
+
+    it 'excludes whole line with spellr:disable:line' do
+      expect('this spellr:disable:line and that').to have_no_tokens
+      expect('spellr:disable:line this and that').to have_no_tokens
+      expect('this and that spellr:disable:line').to have_no_tokens
+    end
+
     it 'excludes terms between spellr:disable and spellr:enable across multiple lines' do
       expect("this\nspellr:disable\nand\nspellr:enable\nthat").to have_tokens 'this', 'that'
     end

@@ -28,7 +28,7 @@ module Spellr
 
     def each_term(&block)
       file.each_line do |line|
-        prepare_tokenizer_for_line(line).each_term(&block)
+        prepare_tokenizer_for_line(line)&.each_term(&block)
       end
     ensure
       file.close
@@ -36,7 +36,7 @@ module Spellr
 
     def each_token(skip_term_proc: nil) # rubocop:disable Metrics/MethodLength
       each_line_with_stats do |line, line_number, char_offset, byte_offset|
-        prepare_tokenizer_for_line(line).each_token(skip_term_proc: skip_term_proc) do |token|
+        prepare_tokenizer_for_line(line)&.each_token(skip_term_proc: skip_term_proc) do |token|
           token.line = prepare_line(line, line_number, char_offset, byte_offset)
 
           yield token
@@ -75,6 +75,8 @@ module Spellr
     attr_reader :line_tokenizer
 
     def prepare_tokenizer_for_line(line)
+      return if line.match?(Spellr::TokenRegexps::SPELLR_LINE_DISABLE_RE)
+
       line_tokenizer.string = line
       line_tokenizer.pos = 0
       line_tokenizer
