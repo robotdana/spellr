@@ -1,6 +1,6 @@
 # Spellr
 
-[![Build Status](https://travis-ci.com/robotdana/spellr.svg?branch=master)](https://travis-ci.com/robotdana/spellr)
+[![Build Status](https://travis-ci.com/robotdana/spellr.svg?branch=main)](https://travis-ci.com/robotdana/spellr)
 [![Gem Version](https://badge.fury.io/rb/spellr.svg)](https://rubygems.org/gems/spellr)
 
 Spell check your source code for fun and occasionally finding bugs
@@ -195,7 +195,7 @@ If your language supports inline comments you can also surround with `spellr:dis
 ```
 ## Configuration
 
-Spellr's configuration is a `.spellr.yml` file in your project root. This is combined with the gem defaults defined [here](https://github.com/robotdana/spellr/blob/master/lib/.spellr.yml).
+Spellr's configuration is a `.spellr.yml` file in your project root. This is combined with the gem defaults defined [here](https://github.com/robotdana/spellr/blob/main/lib/.spellr.yml).
 There are top-level keys and per-language keys.
 ```yml
 word_minimum_length: 3 # any words shorter than this will be ignored
@@ -317,4 +317,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/robotd
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-Wordlists packaged with this gem have their own licenses, see them in https://github.com/robotdana/spellr/tree/master/wordlists
+Wordlists packaged with this gem have their own licenses, see them in https://github.com/robotdana/spellr/tree/main/wordlists

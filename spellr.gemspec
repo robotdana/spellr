@@ -14,6 +14,12 @@ Gem::Specification.new do |spec|
   spec.homepage = 'http://github.com/robotdana/spellr'
   spec.license = 'MIT'
 
+  if spec.respond_to?(:metadata)
+    spec.metadata['homepage_uri'] = spec.homepage
+    spec.metadata['source_code_uri'] = spec.homepage
+    spec.metadata['changelog_uri'] = "#{spec.homepage}/blob/main/CHANGELOG.md"
+  end
+
   spec.required_ruby_version = '>= 2.4'
 
   spec.files = Dir.glob('{lib,exe,wordlists}/**/{*,.*}') + %w{
