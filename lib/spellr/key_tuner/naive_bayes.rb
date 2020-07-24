@@ -13,10 +13,7 @@ class NaiveBayes
 
   YAML_PATH = File.join(__dir__, 'data.yml')
 
-  attr_reader :feature_set
-  attr_reader :num_classes
-  attr_reader :classes
-  attr_reader :features
+  attr_reader :feature_set, :num_classes, :classes, :features
 
   def initialize(path = YAML_PATH)
     load_from_yaml(path)

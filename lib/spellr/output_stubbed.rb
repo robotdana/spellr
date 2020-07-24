@@ -16,7 +16,7 @@ module Spellr
       @stderr ||= StringIO.new
     end
 
-    def marshal_dump # rubocop:disable Metrics/MethodLength
+    def marshal_dump # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
       l_exit_code = @exit_code if defined?(@exit_code)
       l_counts = @counts if defined?(@counts)
       l_stdin = @stdin if defined?(@stdin)

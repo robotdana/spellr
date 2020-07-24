@@ -10,8 +10,8 @@ require 'pathname'
 
 module Spellr
   class Config
-    attr_writer :reporter
-    attr_writer :checker
+    attr_writer :reporter, :checker
+
     attr_reader :config_file
     attr_accessor :dry_run
     alias_method :dry_run?, :dry_run
@@ -77,7 +77,7 @@ module Spellr
       Spellr::ConfigValidator.new.valid?
     end
 
-    def reset! # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+    def reset! # rubocop:disable Metrics/MethodLength
       @config = ConfigLoader.new
       remove_instance_variable(:@languages) if defined?(@languages)
       remove_instance_variable(:@excludes) if defined?(@excludes)

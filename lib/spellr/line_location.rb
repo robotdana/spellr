@@ -4,10 +4,7 @@ require_relative 'file'
 
 module Spellr
   class LineLocation
-    attr_reader :line_number
-    attr_reader :char_offset
-    attr_reader :byte_offset
-    attr_reader :file
+    attr_reader :line_number, :char_offset, :byte_offset, :file
 
     def initialize(
       file = ::Spellr::File.new('[string]'),

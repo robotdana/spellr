@@ -9,8 +9,8 @@ require_relative 'token_regexps'
 
 module Spellr
   class LineTokenizer < StringScanner
-    attr_reader :line
-    attr_reader :skip_key
+    attr_reader :line, :skip_key
+
     alias_method :skip_key?, :skip_key
 
     include TokenRegexps

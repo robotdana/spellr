@@ -7,8 +7,7 @@ require 'fast_ignore'
 
 module Spellr
   class Language
-    attr_reader :name
-    attr_reader :key
+    attr_reader :name, :key
 
     def initialize(name, key: name[0], includes: [], hashbangs: [], locale: [], addable: true) # rubocop:disable Metrics/ParameterLists
       @name = name
