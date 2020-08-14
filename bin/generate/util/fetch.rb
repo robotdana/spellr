@@ -7,7 +7,7 @@ require_relative '../../../lib/spellr/string_format'
 module Fetch
   module_function
 
-  def fetch(uri_str, uri_proc: URI.method(:parse), limit: 10) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+  def fetch(uri_str, uri_proc: URI.method(:parse), limit: 10) # rubocop:disable Metrics/MethodLength
     sleep 0.5
     if limit == 0
       warn Spellr::StringFormat.red(

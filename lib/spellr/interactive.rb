@@ -58,7 +58,7 @@ module Spellr
       Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
 
-    def stdin_getch(legal_chars) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def stdin_getch(legal_chars) # rubocop:disable Metrics/MethodLength
       choice = output.stdin.getch
 
       if legal_chars.include?(choice)
