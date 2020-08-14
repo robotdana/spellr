@@ -133,7 +133,7 @@ class MDNWords # rubocop:disable Metrics/ClassLength
     end.compact.to_h
   end
 
-  def values_from_uri(uri) # rubocop:disable Metrics/MethodLength
+  def values_from_uri(uri) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     response = ''
     @sections.each do |section|
       uri.query = "raw&macros&section=#{section}"
