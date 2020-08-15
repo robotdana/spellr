@@ -1,3 +1,6 @@
+# v0.8.6
+- `--suppress--file-rules` so you can check files that would usually be ignored
+
 # v0.8.5
 - Single line disable! use `spellr:disable-line` #25
 
