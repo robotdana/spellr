@@ -126,4 +126,40 @@ RSpec.describe Spellr::FileList do
       )
     end
   end
+
+  context 'with excluded files and suppressing those files' do
+    before { stub_config(excludes: ['foo.rb', '*.txt'], suppress_file_rules: true) }
+
+    it 'ignores excluded files' do
+      expect(described_class.new.to_a).to match_relative_paths(
+        'foo.rb',
+        'foo/bar.txt',
+        'spec/foo_spec.rb'
+      )
+    end
+  end
+
+  context 'with suppressing default exclusions files' do
+    before { stub_config(suppress_file_rules: true) }
+
+    it 'ignores excluded files' do
+      stub_fs_file '.git/COMMIT_EDITMSG'
+
+      expect(described_class.new('.git/COMMIT_EDITMSG').to_a).to match_relative_paths(
+        '.git/COMMIT_EDITMSG'
+      )
+    end
+  end
+
+  context 'without suppressing default exclusions files' do
+    before { stub_config(suppress_file_rules: false) }
+
+    it 'ignores excluded files' do
+      stub_fs_file '.git/COMMIT_EDITMSG'
+
+      expect(described_class.new('.git/COMMIT_EDITMSG').to_a).not_to match_relative_paths(
+        '.git/COMMIT_EDITMSG'
+      )
+    end
+  end
 end

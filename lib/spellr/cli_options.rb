@@ -28,6 +28,9 @@ module Spellr
           opts.separator('')
           opts.on('--[no-]parallel', 'Run in parallel or not, default --parallel', &method(:parallel_option))
           opts.on('-d', '--dry-run', 'List files to be checked', &method(:dry_run_option))
+          opts.on('-f', '--suppress-file-rules', <<~HELP, &method(:suppress_file_rules))
+            Suppress all configured, default, and gitignore include and exclude patterns
+          HELP
           opts.separator('')
           opts.on('-c', '--config FILENAME', String, <<~HELP, &method(:config_option))
             Path to the config file (default ./.spellr.yml)
@@ -54,6 +57,10 @@ module Spellr
           require_relative 'check_interactive'
           Spellr.config.reporter = Spellr::Interactive.new
           Spellr.config.checker = Spellr::CheckInteractive unless @parallel_option
+        end
+
+        def suppress_file_rules(_)
+          Spellr.config.suppress_file_rules = true
         end
 
         def config_option(file)

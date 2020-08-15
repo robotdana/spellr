@@ -304,6 +304,18 @@ Spellr::RakeTask.generate_task(:spellr, **spellr_arguments)
 task default: :spellr
 ```
 
+## Ignoring the configured patterns
+
+Sometimes you'll want to spell check something that would usually be ignored,
+e.g. `.git/COMMIT_EDITMSG` even though `spellr` ignores the `.git` directory.
+
+For this you can use the `--suppress-file-rules` command line argument.
+```bash
+$ spellr --suppress-file-rules .git/COMMIT_EDITMSG
+```
+
+**Note: This still ignores files outside of the current directory**
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests.

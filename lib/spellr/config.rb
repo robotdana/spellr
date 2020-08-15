@@ -12,8 +12,9 @@ module Spellr
   class Config
     attr_writer :reporter, :checker
 
+    attr_accessor :suppress_file_rules, :dry_run
+
     attr_reader :config_file
-    attr_accessor :dry_run
     alias_method :dry_run?, :dry_run
 
     def initialize

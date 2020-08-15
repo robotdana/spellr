@@ -15,6 +15,7 @@ RSpec.describe 'command line', type: :cli do
 
                 --[no-]parallel              Run in parallel or not, default --parallel
             -d, --dry-run                    List files to be checked
+            -f, --suppress-file-rules        Suppress all configured, default, and gitignore include and exclude patterns
 
             -c, --config FILENAME            Path to the config file (default ./.spellr.yml)
             -v, --version                    Returns the current version
@@ -480,6 +481,19 @@ RSpec.describe 'command line', type: :cli do
       expect(stdout.each_line.to_a).to contain_exactly(
         "lib/bar.rb\n",
         "foo.md\n"
+      )
+    end
+
+    it 'returns the list of files including otherwise excluded files when --suppress-file-rules' do
+      stub_fs_file '.git/COMMIT_EDITMSG'
+      spellr('--dry-run --suppress-file-rules')
+
+      expect(stderr).to be_empty
+      expect(exitstatus).to eq 0
+      expect(stdout.each_line.to_a).to contain_exactly(
+        "lib/bar.rb\n",
+        "foo.md\n",
+        ".git/COMMIT_EDITMSG\n"
       )
     end
 

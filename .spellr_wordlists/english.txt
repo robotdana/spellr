@@ -33,6 +33,7 @@ dockerfile
 dockerhub
 dockerignore
 downloader
+editmsg
 elp
 env
 eos

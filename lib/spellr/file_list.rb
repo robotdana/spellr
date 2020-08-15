@@ -26,10 +26,18 @@ module Spellr
 
     private
 
+    def configured_rules
+      return { gitignore: false } if Spellr.config.suppress_file_rules
+
+      {
+        ignore_rules: Spellr.config.excludes,
+        include_rules: Spellr.config.includes
+      }
+    end
+
     def fast_ignore # rubocop:disable Metrics/MethodLength
       FastIgnore.new(
-        ignore_rules: Spellr.config.excludes,
-        include_rules: Spellr.config.includes,
+        **configured_rules,
         argv_rules: @patterns,
         follow_symlinks: true,
         root: Spellr.pwd_s
