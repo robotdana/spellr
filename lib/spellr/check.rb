@@ -3,6 +3,7 @@
 require_relative '../spellr'
 require_relative 'tokenizer'
 require_relative 'string_format'
+require_relative 'wordlist_set'
 
 module Spellr
   class Check
@@ -38,18 +39,12 @@ module Spellr
       reporter.warn "Skipped unreadable file: #{aqua file.relative_path}"
     end
 
-    def check_file(file, start_at = nil, found_word_proc = wordlist_proc_for(file))
+    def check_file(file, start_at = nil, wordlist_set = ::Spellr::WordlistSet.for_file(file))
       Spellr::Tokenizer.new(file, start_at: start_at)
-        .each_token(skip_term_proc: found_word_proc) do |token|
+        .each_token(skip_if_included: wordlist_set) do |token|
           reporter.call(token)
           reporter.output.exit_code = 1
         end
-    end
-
-    def wordlist_proc_for(file)
-      wordlists = Spellr.config.wordlists_for(file).sort_by(&:length).reverse
-
-      ->(term) { wordlists.any? { |w| w.include?(term) } }
     end
   end
 end

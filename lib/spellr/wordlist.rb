@@ -3,6 +3,7 @@
 require 'pathname'
 require_relative '../spellr'
 require_relative 'token' # for spellr_normalize
+require_relative 'wordlist_set'
 
 module Spellr
   class Wordlist
@@ -72,6 +73,7 @@ module Spellr
       @path.dirname.mkpath
       @path.write('')
       clear_cache
+      ::Spellr::WordlistSet.clear_cache
     end
 
     def length

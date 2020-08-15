@@ -5,6 +5,7 @@ require_relative 'config_loader'
 require_relative 'language'
 require_relative 'config_validator'
 require_relative 'output'
+require_relative 'wordlist_set'
 
 require 'pathname'
 
@@ -51,10 +52,6 @@ module Spellr
       languages.select { |l| l.matches?(file) }
     end
 
-    def wordlists_for(file)
-      languages_for(file).flat_map(&:wordlists)
-    end
-
     def config_file=(value)
       reset!
       @config = ConfigLoader.new(value)
@@ -86,6 +83,7 @@ module Spellr
       remove_instance_variable(:@word_minimum_length) if defined?(@word_minimum_length)
       remove_instance_variable(:@key_heuristic_weight) if defined?(@key_heuristic_weight)
       remove_instance_variable(:@key_minimum_length) if defined?(@key_minimum_length)
+      ::Spellr::WordlistSet.clear_cache
     end
 
     private

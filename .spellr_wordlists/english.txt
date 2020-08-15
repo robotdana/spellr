@@ -23,6 +23,7 @@ css
 ctrl
 customisations
 cyclomatic
+damerau
 def
 desaturate
 dict
