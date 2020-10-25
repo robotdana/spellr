@@ -207,3 +207,6 @@ Style/CommentedKeyword:
 
 RSpec/MessageSpies:
   Enabled: false
+
+Style/ClassEqualityComparison:
+  Enabled: false

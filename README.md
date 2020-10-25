@@ -27,6 +27,8 @@ However, in a programming context spelling things _consistently_ is useful, wher
 
 ## Installation
 
+This is tested against ruby 2.4.0-3.0.0.preview1.
+
 ### With Bundler
 
 Add this line to your application's `Gemfile`:
