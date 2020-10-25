@@ -2,7 +2,6 @@
 
 require 'net/http'
 require_relative '../../../lib/spellr/string_format'
-require_relative '../../../lib/spellr/string_format'
 
 module Fetch
   module_function
