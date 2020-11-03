@@ -1,9 +1,6 @@
 exclude_paths:
   - vendor
 
-rules:
-  - name: validate
-    calls:
-      argument: 1
-gems:
-  - rspec
+dynamic:
+  name: validate
+  calls: 0
