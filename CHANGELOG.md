@@ -1,3 +1,6 @@
+# v0.8.7
+- Recognize URL with tilde in path
+
 # v0.8.6
 - `--suppress--file-rules` so you can check files that would usually be ignored
 
