@@ -39,7 +39,7 @@ module Spellr
     # literal \ so that i can match on domains in regexps. no-one cares but me.
     URL_HOSTNAME = /(?:[[:alnum:]\-\\]+(?:\.[[:alnum:]\-\\]+)+|localhost|#{URL_IP_ADDRESS})/.freeze
     URL_PORT = /:\d+/.freeze
-    URL_PATH = %r{/(?:[[:alnum:]=@!$&\-/._\\]|%\h{2})+}.freeze
+    URL_PATH = %r{/(?:[[:alnum:]=@!$&~\-/._\\]|%\h{2})+}.freeze
     URL_QUERY = %r{\?(?:[[:alnum:]=!$\-/.\\]|%\h{2})+(?:&(?:[[:alnum:]=!$\-/.\\]|%\h{2})+)*}.freeze
     URL_FRAGMENT = %r{#(?:[[:alnum:]=!$&\-/.\\]|%\h{2})+}.freeze
 

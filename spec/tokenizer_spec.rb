@@ -88,6 +88,10 @@ RSpec.describe Spellr::Tokenizer do
       expect('https://external.xx.fbcdn.net/safe_image.php').to have_no_tokens
     end
 
+    it 'excludes URLs with tilde in the path' do
+      expect('https://www.in-ulm.de/~mascheck/various/shebang').to have_no_tokens
+    end
+
     it 'excludes URLs with backslash escaped characters' do
       expect('https://external.xx.fbcdn.net/safe_image.php?url=https\\u00253A\\u00252F\\u00252F')
         .to have_no_tokens
