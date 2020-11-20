@@ -81,6 +81,7 @@ ize
 javascript
 jbuilder
 jpg
+jruby
 json
 jsx
 keio

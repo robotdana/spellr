@@ -454,8 +454,8 @@ RSpec.describe 'command line', type: :cli do
       expect(stderr).to be_empty
       expect(exitstatus).to eq 1
       expect(stdout).to have_output <<~WORDS
-        #{aqua 'test_control.txt:1:9'} "string".#{red 'casecmp'} "STRING"
         #{aqua 'test_control_no_ext:1:9'} "string".#{red 'casecmp'} "STRING"
+        #{aqua 'test_control.txt:1:9'} "string".#{red 'casecmp'} "STRING"
 
         6 files checked
         2 errors found
