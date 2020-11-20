@@ -14,3 +14,7 @@
 /Rakefile
 /vendor/
 /.bundle/
+/.github
+/spec
+/bin
+/.spellr_wordlists
