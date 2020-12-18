@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base_reporter'
+require 'shellwords'
 
 module Spellr
   class Reporter < Spellr::BaseReporter
@@ -8,12 +9,31 @@ module Spellr
       puts "\n"
       puts "#{pluralize 'file', counts[:checked]} checked"
       puts "#{pluralize 'error', counts[:total]} found"
+
+      interactive_command if counts[:total].positive?
     end
 
     def call(token)
       super
 
+      filenames << token.location.file.relative_path.to_s
       increment(:total)
+    end
+
+    private
+
+    def interactive_command
+      puts "\nto add or replace words interactively, run:"
+      command = ['spellr', '--interactive']
+      # sort is purely for repeatability for tests. so
+      command.concat(counts[:filenames].to_a.sort) unless counts[:filenames].length > 20
+
+      puts "  #{Shellwords.join(command)}"
+    end
+
+    def filenames
+      output.counts[:filenames] = Set.new unless output.counts.key?(:filenames)
+      output.counts[:filenames]
     end
   end
 end

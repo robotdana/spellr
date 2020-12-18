@@ -170,6 +170,9 @@ Style/CollectionMethods:
 Style/Documentation:
   Enabled: false
 
+Style/FormatStringToken:
+  Enabled: false
+
 # [a, b].include?(x) is more unclear than a == x || b == x
 Style/MultipleComparison:
   Enabled: false

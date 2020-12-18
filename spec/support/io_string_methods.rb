@@ -33,6 +33,16 @@ RSpec::Matchers.define :have_output do |expected|
   diffable
 end
 
+# just so i get a nice diff.
+RSpec::Matchers.define :have_unordered_output do |expected|
+  match do |actual|
+    @actual = TTYString.new(actual, clear_style: false).to_s.split("\n")
+    expect(@actual).to match_array(expected.to_s.split("\n"))
+  end
+
+  diffable
+end
+
 module StringIOStringMethods
   def ==(other)
     to_s == other
