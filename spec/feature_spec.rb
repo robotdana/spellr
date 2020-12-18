@@ -188,6 +188,9 @@ RSpec.describe 'command line', type: :cli do
 
           2 files checked
           1 error found
+
+          to add or replace words interactively, run:
+            spellr --interactive foo.txt
         STDOUT
       end
     end
@@ -449,16 +452,19 @@ RSpec.describe 'command line', type: :cli do
     end
 
     it 'allows the ruby files to say casecmp but not the txt file' do
-      spellr('--no-parallel') # parallel was making this test failure order random
+      spellr
 
       expect(stderr).to be_empty
       expect(exitstatus).to eq 1
-      expect(stdout).to have_output <<~WORDS
+      expect(stdout).to have_unordered_output <<~WORDS
         #{aqua 'test_control_no_ext:1:9'} "string".#{red 'casecmp'} "STRING"
         #{aqua 'test_control.txt:1:9'} "string".#{red 'casecmp'} "STRING"
 
         6 files checked
         2 errors found
+
+        to add or replace words interactively, run:
+          spellr --interactive test_control.txt test_control_no_ext
       WORDS
     end
   end
@@ -583,6 +589,9 @@ RSpec.describe 'command line', type: :cli do
 
         1 file checked
         3 errors found
+
+        to add or replace words interactively, run:
+          spellr --interactive check.txt
       WORDS
     end
   end
@@ -710,6 +719,54 @@ RSpec.describe 'command line', type: :cli do
 
           1 file checked
           3 errors found
+
+          to add or replace words interactively, run:
+            spellr --interactive check.txt
+        WORDS
+      end
+
+      it 'returns the list of unmatched words and their locations with lots of files' do
+        20.times do |i|
+          i = format '%02i', i
+          stub_fs_file "check_#{i}.txt", <<~FILE
+            #{i}dolar
+          FILE
+        end
+
+        spellr
+
+        expect(stderr).to be_empty
+        expect(exitstatus).to eq 1
+        expect(stdout).to have_unordered_output <<~WORDS
+          #{aqua 'check_00.txt:1:2'} 00#{red 'dolar'}
+          #{aqua 'check_01.txt:1:2'} 01#{red 'dolar'}
+          #{aqua 'check_10.txt:1:2'} 10#{red 'dolar'}
+          #{aqua 'check_11.txt:1:2'} 11#{red 'dolar'}
+          #{aqua 'check_12.txt:1:2'} 12#{red 'dolar'}
+          #{aqua 'check_13.txt:1:2'} 13#{red 'dolar'}
+          #{aqua 'check_14.txt:1:2'} 14#{red 'dolar'}
+          #{aqua 'check_15.txt:1:2'} 15#{red 'dolar'}
+          #{aqua 'check_16.txt:1:2'} 16#{red 'dolar'}
+          #{aqua 'check_17.txt:1:2'} 17#{red 'dolar'}
+          #{aqua 'check_18.txt:1:2'} 18#{red 'dolar'}
+          #{aqua 'check_19.txt:1:2'} 19#{red 'dolar'}
+          #{aqua 'check_02.txt:1:2'} 02#{red 'dolar'}
+          #{aqua 'check_03.txt:1:2'} 03#{red 'dolar'}
+          #{aqua 'check_04.txt:1:2'} 04#{red 'dolar'}
+          #{aqua 'check_05.txt:1:2'} 05#{red 'dolar'}
+          #{aqua 'check_06.txt:1:2'} 06#{red 'dolar'}
+          #{aqua 'check_07.txt:1:2'} 07#{red 'dolar'}
+          #{aqua 'check_08.txt:1:2'} 08#{red 'dolar'}
+          #{aqua 'check_09.txt:1:2'} 09#{red 'dolar'}
+          #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
+          #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
+          #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
+
+          21 files checked
+          23 errors found
+
+          to add or replace words interactively, run:
+            spellr --interactive
         WORDS
       end
 
@@ -725,6 +782,9 @@ RSpec.describe 'command line', type: :cli do
 
           1 file checked
           3 errors found
+
+          to add or replace words interactively, run:
+            spellr --interactive check.txt
         WORDS
       end
     end
