@@ -84,8 +84,17 @@ RSpec.describe Spellr::Tokenizer do
       expect('query https://the-google.com?query-string=whatever%2Bthing').to have_tokens 'query'
     end
 
+    it 'excludes URLs with a query string and a root path' do
+      expect('query https://the-google.com/?query-string=whatever%2Bthing').to have_tokens 'query'
+    end
+
     it 'excludes URLs with underscores in the path' do
       expect('https://external.xx.fbcdn.net/safe_image.php').to have_no_tokens
+    end
+
+    it 'excludes URLs with underscore and dash in the query string' do
+      expect('https://external.xx.fbcdn.net/?safe_image-suffix&safe_image-suffix.php')
+        .to have_no_tokens
     end
 
     it 'excludes URLs with tilde in the path' do
