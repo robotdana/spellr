@@ -2,6 +2,7 @@
 
 require 'pathname'
 require_relative '../../../lib/spellr/wordlist'
+require_relative '../../../lib/spellr/stringio_with_encoding'
 
 module Write
   OUTPUT_DIR = Pathname.new(
@@ -14,11 +15,12 @@ module Write
 
   def write_wordlist(words, name)
     wordlist_path(name).parent.mkpath
-    Spellr::Wordlist.new(wordlist_path(name)).clean(StringIO.new(words.force_encoding('UTF-8')))
+    Spellr::Wordlist.new(wordlist_path(name))
+      .clean(::Spellr::StringIOWithEncoding.new(words.force_encoding(::Encoding::UTF_8)))
   end
 
   def append_wordlist(words, name)
-    old_words = wordlist_path(name).read if wordlist_path(name).exist?
+    old_words = wordlist_path(name).read(encoding: ::Encoding::UTF_8) if wordlist_path(name).exist?
     write_wordlist("#{words}\n#{old_words}".dup, name)
   end
 
@@ -28,6 +30,6 @@ module Write
 
   def write_license(license, name, ext = '.txt')
     license_path(name).parent.mkpath
-    license_path(name, ext).write(license)
+    license_path(name, ext).write(license, encoding: ::Encoding::UTF_8)
   end
 end

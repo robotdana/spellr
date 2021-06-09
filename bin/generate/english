@@ -100,7 +100,11 @@ module SCOWLDownloader
   end
 
   def generate_gb
-    locale_write_wordlist(locale_wordlist_path(:GBs).read + locale_wordlist_path(:GBz).read, :GB)
+    locale_write_wordlist(
+      locale_wordlist_path(:GBs).read(encoding: ::Encoding::UTF_8) +
+        locale_wordlist_path(:GBz).read(encoding: ::Encoding::UTF_8),
+      :GB
+    )
     FileUtils.copy(locale_license_path(:GBs), locale_license_path(:GB))
   end
 

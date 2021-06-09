@@ -35,7 +35,7 @@ class TrainPossibleKeyData
   private
 
   def load_from_file(filename, key)
-    Pathname.new(KEY_DATA_DIR).join(filename).each_line.map do |line|
+    Pathname.new(KEY_DATA_DIR).join(filename).each_line(encoding: ::Encoding::UTF_8).map do |line|
       line = line.chomp
       next if line.empty?
 
@@ -46,7 +46,7 @@ class TrainPossibleKeyData
   def write_yaml(path = YAML_PATH, **hash)
     require 'yaml'
 
-    File.write(path, hash.to_yaml)
+    File.write(path, hash.to_yaml, encoding: ::Encoding::UTF_8)
   end
 
   def training_data

@@ -110,7 +110,7 @@ class RubyWords
 
   def add_words(words)
     @strings ||= Set.new
-    @strings += Array(words).map { |x| x.to_s.encode('UTF-8') }
+    @strings += Array(words).map { |x| x.to_s.encode(::Encoding::UTF_8) }
   end
 
   def require_stdlibs

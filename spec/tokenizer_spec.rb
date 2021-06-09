@@ -2,10 +2,11 @@
 
 require 'spec_helper'
 require_relative '../lib/spellr/tokenizer'
+require_relative '../lib/spellr/stringio_with_encoding'
 
 RSpec::Matchers.define :have_tokens do |*expected|
   match do |actual|
-    @actual = Spellr::Tokenizer.new(StringIO.new(actual)).terms
+    @actual = ::Spellr::Tokenizer.new(::Spellr::StringIOWithEncoding.new(actual)).terms
     expect(@actual).to match(expected)
   end
 
@@ -15,7 +16,7 @@ RSpec::Matchers.alias_matcher :have_no_tokens, :have_tokens
 
 RSpec::Matchers.define :have_token_positions do |*expected|
   match do |actual|
-    @actual = Spellr::Tokenizer.new(StringIO.new(actual)).map(&:coordinates)
+    @actual = Spellr::Tokenizer.new(::Spellr::StringIOWithEncoding.new(actual)).map(&:coordinates)
     expect(@actual).to match(expected)
   end
 
