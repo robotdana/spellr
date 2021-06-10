@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+::Encoding.default_external = ::Encoding::UTF_8
+
 require 'fileutils'
 require 'pathname'
 FileUtils.rm_rf(File.join(__dir__, '..', 'coverage'))

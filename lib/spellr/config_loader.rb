@@ -32,7 +32,7 @@ module Spellr
     def load_yaml(path)
       return {} unless ::File.exist?(path)
 
-      YAML.safe_load(::File.read(path, encoding: ::Encoding::UTF_8), symbolize_names: true)
+      YAML.safe_load(::File.read(path), symbolize_names: true)
     end
 
     def merge_config(default, project) # rubocop:disable Metrics/MethodLength

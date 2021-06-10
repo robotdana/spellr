@@ -30,7 +30,7 @@ module StubHelper
   def stub_fs_file(filename, body = '')
     path = Spellr.pwd.join(filename)
     path.parent.mkpath
-    path.write(body, encoding: ::Encoding::UTF_8)
+    path.write(body)
     path
   end
 end
