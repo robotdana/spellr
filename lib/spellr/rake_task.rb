@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rake'
-require 'spellr/cli'
 require 'shellwords'
 
 module Spellr
@@ -36,11 +35,13 @@ module Spellr
       desc("Run spellr (default args: #{escaped_argv})")
     end
 
-    def define_task
+    def define_task # rubocop:disable Metrics/MethodLength
       task(@name, :'*args') do |_, task_argv|
-        argv = argv_or_default(task_argv)
-        write_cli_cmd(argv)
-        run(argv)
+        with_utf_8 do
+          argv = argv_or_default(task_argv)
+          write_cli_cmd(argv)
+          run(argv)
+        end
       end
     end
 
@@ -49,6 +50,7 @@ module Spellr
     end
 
     def run(argv)
+      require 'spellr/cli'
       status = Spellr::CLI.new(argv).run
       exit 1 unless status == 0
     end
@@ -56,6 +58,16 @@ module Spellr
     def argv_or_default(task_argv)
       task_argv = task_argv.to_a.compact
       task_argv.empty? ? @default_argv : task_argv
+    end
+
+    def with_utf_8 # rubocop:disable Metrics/MethodLength
+      old_default_external = ::Encoding.default_external
+      old_default_internal = ::Encoding.default_internal
+      ::Encoding.default_external = ::Encoding::UTF_8
+      ::Encoding.default_internal = ::Encoding::UTF_8
+      yield
+      ::Encoding.default_external = old_default_external
+      ::Encoding.default_internal = old_default_internal
     end
   end
 end

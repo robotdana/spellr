@@ -41,7 +41,7 @@ module Spellr
       touch
       @include[term] = true
       insert_sorted(term)
-      @path.write(words.join, encoding: ::Encoding::UTF_8) # we don't need to clear the cache
+      @path.write(words.join) # we don't need to clear the cache
     end
 
     def words
@@ -55,7 +55,7 @@ module Spellr
     end
 
     def write(content)
-      @path.write(content, encoding: ::Encoding::UTF_8)
+      @path.write(content)
 
       clear_cache
     end
@@ -70,7 +70,7 @@ module Spellr
       return if exist?
 
       @path.dirname.mkpath
-      @path.write('', encoding: ::Encoding::UTF_8)
+      @path.write('')
       clear_cache
     end
 

@@ -4,6 +4,9 @@
 # use mac terminal not vs code terminal
 # ensure nothing else is watching that dir in the filesystem e.g. webpack
 
+::Encoding.default_external = ::Encoding::UTF_8
+::Encoding.default_internal = ::Encoding::UTF_8
+
 require 'open3'
 require 'shellwords'
 RUNS = 10

@@ -27,7 +27,7 @@ module Spellr
     end
 
     def each_term(&block)
-      file.each_line(encoding: ::Encoding::UTF_8) do |line|
+      file.each_line do |line|
         prepare_tokenizer_for_line(line)&.each_term(&block)
       end
     ensure
@@ -56,14 +56,12 @@ module Spellr
       char_offset = @start_at.line_location.char_offset
       byte_offset = @start_at.line_location.byte_offset
 
-      file
-        .each_line(encoding: ::Encoding::UTF_8)
-        .with_index(@start_at.line_location.line_number) do |line, line_number|
-          yield line, line_number, char_offset, byte_offset
+      file.each_line.with_index(@start_at.line_location.line_number) do |line, line_number|
+        yield line, line_number, char_offset, byte_offset
 
-          char_offset += line.length
-          byte_offset += line.bytesize
-        end
+        char_offset += line.length
+        byte_offset += line.bytesize
+      end
     ensure
       file.close
     end

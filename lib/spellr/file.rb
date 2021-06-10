@@ -34,7 +34,7 @@ module Spellr
     end
 
     def read_write
-      write(yield(read(encoding: ::Encoding::UTF_8)), encoding: ::Encoding::UTF_8)
+      write(yield read)
     end
   end
 end

@@ -1,3 +1,6 @@
+# v0.9.1
+- Assume all files are utf8, more comprehensively. (Sets ::Encoding.default_external and default_internal while running)
+
 # v0.9.0
 - Recognize url with _ in query string and zero length path
 - Assume all files are utf8
