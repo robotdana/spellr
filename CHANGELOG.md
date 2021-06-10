@@ -1,3 +1,7 @@
+# v0.9.0
+- Recognize url with _ in query string and zero length path
+- Assume all files are utf8
+
 # v0.8.8
 - output a suggested `spellr --interactive` command with filenames, when running this without --interactive
 
