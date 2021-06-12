@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../lib/spellr/version'
+require_relative 'support/eventually'
+
 RSpec.describe 'command line', type: :cli do
   describe '--help' do
     it 'returns the help' do
       spellr('--help')
 
       expect(stdout).to have_output <<~HELP
-        Usage: spellr [options] [files]
+        Usage: spellr [options] [file patterns]
 
             -w, --wordlist                   Outputs errors in wordlist format
             -q, --quiet                      Silences output
@@ -16,6 +18,7 @@ RSpec.describe 'command line', type: :cli do
                 --[no-]parallel              Run in parallel or not, default --parallel
             -d, --dry-run                    List files to be checked
             -f, --suppress-file-rules        Suppress all configured, default, and gitignore include and exclude patterns
+                --prune-wordlists            Prune unused words from .spellr_wordlists/*.txt after checking.
 
             -c, --config FILENAME            Path to the config file (default ./.spellr.yml)
             -v, --version                    Returns the current version
@@ -23,6 +26,153 @@ RSpec.describe 'command line', type: :cli do
       HELP
       expect(exitstatus).to eq 0
       expect(stderr).to be_empty
+    end
+  end
+
+  describe '--prune-wordlists' do
+    before do
+      with_temp_dir
+      english_wordlist
+      ruby_wordlist
+    end
+
+    let(:english_wordlist) do
+      stub_fs_file('.spellr_wordlists/english.txt', <<~FILE)
+        entrya
+        entryb
+        entryc
+        entryd
+        entrye
+      FILE
+    end
+
+    let(:ruby_wordlist) do
+      stub_fs_file('.spellr_wordlists/ruby.txt', <<~FILE)
+        entryc
+        entryd
+      FILE
+    end
+
+    context 'with some unnecessary words' do
+      before do
+        stub_fs_file('checkable_file.rb', 'entrya entryc')
+        stub_fs_file('checkable_file.txt', 'entryb')
+      end
+
+      it 'removes unnecessary words, most general file first.' do
+        spellr '--prune-wordlists'
+
+        expect(stderr).to be_empty
+        expect(exitstatus).to be 0
+        expect(stdout).to have_output <<~STDOUT
+
+          2 files checked
+          0 errors found
+
+          pruned: english.txt 3 words removed
+          pruned: ruby.txt 1 word removed
+        STDOUT
+
+        expect(english_wordlist.read).to eq <<~FILE
+          entrya
+          entryb
+        FILE
+
+        expect(ruby_wordlist.read).to eq <<~FILE
+          entryc
+        FILE
+      end
+
+      describe '--quiet' do
+        it 'removes unnecessary words, most general file first, quietly' do
+          spellr '--prune-wordlists --quiet' do
+            expect { exitstatus }.to eventually_eq 0
+            expect(stderr).to be_empty
+            expect(stdout).to be_empty
+          end
+
+          expect(english_wordlist.read).to eq <<~FILE
+            entrya
+            entryb
+          FILE
+
+          expect(ruby_wordlist.read).to eq <<~FILE
+            entryc
+          FILE
+        end
+      end
+
+      describe '--dry-run' do
+        it 'complains when --prune-wordlists then --dry-run' do
+          spellr('--prune-wordlists --dry-run')
+
+          expect(exitstatus).to eq 1
+          expect(stdout).to be_empty
+          expect(stderr).to have_output <<~STDERR
+            #{red('CLI error: --prune-wordlists is incompatible with --dry-run')}
+          STDERR
+        end
+
+        it 'complains when --dry-run then --prune-wordlists' do
+          spellr('--dry-run --prune-wordlists')
+
+          expect(exitstatus).to eq 1
+          expect(stdout).to be_empty
+          expect(stderr).to have_output <<~STDERR
+            #{red('CLI error: --prune-wordlists is incompatible with --dry-run')}
+          STDERR
+        end
+      end
+
+      describe 'ARGV' do
+        it 'complains when --prune-wordlists with file patterns' do
+          spellr("--prune-wordlists 'checkable_file.*'")
+
+          expect(exitstatus).to eq 1
+          expect(stdout).to be_empty
+          expect(stderr).to have_output <<~STDERR
+            #{red('CLI error: --prune-wordlists is incompatible with file patterns')}
+          STDERR
+        end
+      end
+    end
+
+    context 'with some unrecognized words' do
+      before do
+        stub_fs_file('checkable_file.rb', 'entrya entryc')
+        stub_fs_file('checkable_file.txt', 'entryb entryf entryg')
+      end
+
+      it 'runs spellr first as normal reporting errors' do
+        spellr '--prune-wordlists'
+
+        expect(stderr).to be_empty
+        expect(exitstatus).to be 1
+
+        expect(stdout).to eq <<~STDOUT
+          #{aqua 'checkable_file.txt:1:7'} entryb #{red 'entryf'} entryg
+          #{aqua 'checkable_file.txt:1:14'} entryb entryf #{red 'entryg'}
+
+          2 files checked
+          2 errors found
+
+          to add or replace words interactively, run:
+            spellr --interactive checkable_file.txt
+        STDOUT
+
+        expect(english_wordlist.read).to eq <<~FILE
+          entrya
+          entryb
+          entryc
+          entryd
+          entrye
+        FILE
+
+        expect(ruby_wordlist.read).to eq <<~FILE
+          entryc
+          entryd
+        FILE
+      end
     end
   end
 
@@ -312,23 +462,23 @@ RSpec.describe 'command line', type: :cli do
 
   describe 'combining --parallel and --interactive' do
     it 'complains when --interactive then --parallel' do
-      spellr('--interactive --parallel') do
-        expect(exitstatus).to eq 1
-        expect(stdout).to be_empty
-        expect(stderr).to have_output <<~STDERR
-          #{red('CLI error: --interactive is incompatible with --parallel')}
-        STDERR
-      end
+      spellr('--interactive --parallel')
+
+      expect(exitstatus).to eq 1
+      expect(stdout).to be_empty
+      expect(stderr).to have_output <<~STDERR
+        #{red('CLI error: --interactive is incompatible with --parallel')}
+      STDERR
     end
 
     it 'complains when --parallel then --interactive' do
-      spellr('--parallel --interactive') do
-        expect(exitstatus).to eq 1
-        expect(stdout).to be_empty
-        expect(stderr).to have_output <<~STDERR
-          #{red('CLI error: --interactive is incompatible with --parallel')}
-        STDERR
-      end
+      spellr('--parallel --interactive')
+
+      expect(exitstatus).to eq 1
+      expect(stdout).to be_empty
+      expect(stderr).to have_output <<~STDERR
+        #{red('CLI error: --interactive is incompatible with --parallel')}
+      STDERR
     end
   end
 

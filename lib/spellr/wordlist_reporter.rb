@@ -13,8 +13,6 @@ module Spellr
       words << token.spellr_normalize
     end
 
-    private
-
     def words
       @words ||= begin
         output.counts[:words] = Set.new unless output.counts.key?(:words)

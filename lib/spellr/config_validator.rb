@@ -13,6 +13,8 @@ module Spellr
     validate :only_has_one_key_per_language
     validate :languages_with_conflicting_keys
     validate :keys_are_single_characters
+    validate :prune_wordlists_with_no_argv_patterns
+    validate :prune_wordlists_with_no_dry_run
 
     def valid?
       raise ::Spellr::Config::Invalid, errors.join("\n") unless super
@@ -32,10 +34,10 @@ module Spellr
     end
 
     def checker_and_reporter_coexist
-      if Spellr.config.reporter.class.name == 'Spellr::Interactive' &&
-          Spellr.config.checker.name == 'Spellr::CheckParallel'
-        errors << 'CLI error: --interactive is incompatible with --parallel'
-      end
+      return unless Spellr.config.reporter.class.name == 'Spellr::Interactive' &&
+        Spellr.config.checker.name == 'Spellr::CheckParallel'
+
+      errors << 'CLI error: --interactive is incompatible with --parallel'
     end
 
     def only_has_one_key_per_language
@@ -43,6 +45,18 @@ module Spellr
         errors << "Config error: #{conflicts.map(&:name).join(' & ')} share the same language key "\
         "(#{conflicts.first.key}). Please define one to be different with `key:`"
       end
+    end
+
+    def prune_wordlists_with_no_argv_patterns
+      return unless Spellr.config.prune_wordlists? && !Spellr.config.file_list_patterns.empty?
+
+      errors << 'CLI error: --prune-wordlists is incompatible with file patterns'
+    end
+
+    def prune_wordlists_with_no_dry_run
+      return unless Spellr.config.prune_wordlists? && Spellr.config.dry_run?
+
+      errors << 'CLI error: --prune-wordlists is incompatible with --dry-run'
     end
 
     def languages_with_conflicting_keys

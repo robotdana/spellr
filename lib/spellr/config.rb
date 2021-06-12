@@ -10,12 +10,13 @@ require 'pathname'
 
 module Spellr
   class Config
-    attr_writer :reporter, :checker
+    attr_writer :reporter, :checker, :output
 
-    attr_accessor :suppress_file_rules, :dry_run
+    attr_accessor :suppress_file_rules, :dry_run, :prune_wordlists, :file_list_patterns
 
     attr_reader :config_file
     alias_method :dry_run?, :dry_run
+    alias_method :prune_wordlists?, :prune_wordlists
 
     def initialize
       @config = ConfigLoader.new
@@ -86,6 +87,13 @@ module Spellr
       remove_instance_variable(:@word_minimum_length) if defined?(@word_minimum_length)
       remove_instance_variable(:@key_heuristic_weight) if defined?(@key_heuristic_weight)
       remove_instance_variable(:@key_minimum_length) if defined?(@key_minimum_length)
+    end
+
+    def file_list
+      @file_list ||= begin
+        require_relative 'file_list'
+        Spellr::FileList.new(file_list_patterns)
+      end
     end
 
     private
