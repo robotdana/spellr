@@ -25,3 +25,15 @@ module Eventually
     end
   end
 end
+
+RSpec::Matchers.define :eventually_eq do |expected, wait: 2|
+  match do |actual|
+    Eventually.equal?(expected, wait, &actual)
+
+    @actual = actual.call
+    expect(@actual).to eq(expected)
+  end
+
+  diffable
+  supports_block_expectations
+end

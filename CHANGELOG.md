@@ -1,5 +1,8 @@
+# v0.10.0
+- add `spellr --prune-wordlists` to remove unused terms.
+
 # v0.9.1
-- Assume all files are utf8, more comprehensively. (Sets ::Encoding.default_external and default_internal while running)
+- Assume all files are utf8, more comprehensively. (Sets `::Encoding.default_external` and `.default_internal` while running)
 
 # v0.9.0
 - Recognize url with _ in query string and zero length path

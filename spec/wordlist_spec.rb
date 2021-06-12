@@ -10,7 +10,13 @@ RSpec.describe Spellr::Wordlist do
   context 'when missing' do
     describe '#include?' do
       it "doesn't raise Errno::ENOENT" do
-        expect(subject).not_to include 'bar'
+        expect { subject.include?('bar') }.not_to raise_error
+      end
+    end
+
+    describe '#delete' do
+      it "doesn't raise Errno::ENOENT" do
+        expect { subject.delete }.not_to raise_error
       end
     end
   end

@@ -1,11 +1,5 @@
 cov
-kwarg
-matchdata
 nocov
 nokogiri
-pty
 rubo
-simplecov
-subclasses
-vars
 webmock

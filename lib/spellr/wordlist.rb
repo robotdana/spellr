@@ -54,6 +54,12 @@ module Spellr
       write(Spellr::Tokenizer.new(file, skip_key: false).normalized_terms.join)
     end
 
+    def force_nonexistence
+      clear_cache
+
+      @exist = false
+    end
+
     def write(content)
       @path.write(content)
 
@@ -64,6 +70,13 @@ module Spellr
       return @exist if defined?(@exist)
 
       @exist = @path.exist?
+    end
+
+    def delete
+      return unless exist?
+
+      @path.delete
+      clear_cache
     end
 
     def touch
@@ -78,17 +91,17 @@ module Spellr
       to_a.length
     end
 
+    def clear_cache
+      @words = nil
+      @include = {}
+      remove_instance_variable(:@exist) if defined?(@exist)
+    end
+
     private
 
     def insert_sorted(term)
       insert_at = words.bsearch_index { |value| value >= term }
       insert_at ? words.insert(insert_at, term) : words.push(term)
-    end
-
-    def clear_cache
-      @words = nil
-      @include = {}
-      remove_instance_variable(:@exist) if defined?(@exist)
     end
   end
 end

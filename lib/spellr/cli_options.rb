@@ -12,6 +12,8 @@ module Spellr
           @parallel_option = false
 
           options.parse!(argv)
+
+          Spellr.config.file_list_patterns = argv
         end
 
         private
@@ -20,7 +22,7 @@ module Spellr
         def options # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
           opts = OptionParser.new
 
-          opts.banner = 'Usage: spellr [options] [files]'
+          opts.banner = 'Usage: spellr [options] [file patterns]'
           opts.separator('')
           opts.on('-w', '--wordlist', 'Outputs errors in wordlist format', &method(:wordlist_option))
           opts.on('-q', '--quiet', 'Silences output', &method(:quiet_option))
@@ -28,8 +30,11 @@ module Spellr
           opts.separator('')
           opts.on('--[no-]parallel', 'Run in parallel or not, default --parallel', &method(:parallel_option))
           opts.on('-d', '--dry-run', 'List files to be checked', &method(:dry_run_option))
-          opts.on('-f', '--suppress-file-rules', <<~HELP, &method(:suppress_file_rules))
+          opts.on('-f', '--suppress-file-rules', <<~HELP, &method(:suppress_file_rules_option))
             Suppress all configured, default, and gitignore include and exclude patterns
+          HELP
+          opts.on('--prune-wordlists', <<~HELP, &method(:prune_wordlists_option))
+            Prune unused words from .spellr_wordlists/*.txt after checking.
           HELP
           opts.separator('')
           opts.on('-c', '--config FILENAME', String, <<~HELP, &method(:config_option))
@@ -49,6 +54,8 @@ module Spellr
 
         def quiet_option(_)
           require_relative 'quiet_reporter'
+          require_relative 'output_stubbed'
+          Spellr.config.output = Spellr::OutputStubbed.new
           Spellr.config.reporter = Spellr::QuietReporter.new
         end
 
@@ -59,8 +66,12 @@ module Spellr
           Spellr.config.checker = Spellr::CheckInteractive unless @parallel_option
         end
 
-        def suppress_file_rules(_)
+        def suppress_file_rules_option(_)
           Spellr.config.suppress_file_rules = true
+        end
+
+        def prune_wordlists_option(_)
+          Spellr.config.prune_wordlists = true
         end
 
         def config_option(file)

@@ -77,6 +77,7 @@ $ spellr --wordlist '*.rb' '*_test.js'
 There are some support commands available:
 
 ```bash
+$ spellr --prune-wordlists # after succeeding, remove unused words from the .spellr_wordlists/ files
 $ spellr --dry-run # list files that will be checked
 $ spellr --version # for the current version
 $ spellr --help # for the list of flags available

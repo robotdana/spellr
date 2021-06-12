@@ -158,6 +158,9 @@ RSpec/MultipleExpectations:
 RSpec/NamedSubject:
   Enabled: false
 
+RSpec/NestedGroups:
+  Enabled: false
+
 
 # This matches the style we've been using all along (ever so slightly more frequently)
 Style/Alias:
