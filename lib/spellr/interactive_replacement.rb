@@ -70,8 +70,8 @@ module Spellr
 
     def handle_ctrl_c
       print "\e[0m"
-      reporter.clear_line(5)
-      reporter.call(token)
+      reporter.clear_line(4)
+      reporter.call(token, only_prompt: true)
     end
 
     private

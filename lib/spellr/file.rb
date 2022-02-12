@@ -36,5 +36,9 @@ module Spellr
     def read_write
       write(yield read)
     end
+
+    def wordlists
+      ::Spellr.config.wordlists_for(self).sort_by { |wordlist| -wordlist.length }
+    end
   end
 end

@@ -79,7 +79,7 @@ class PossibleKey # rubocop:disable Metrics/ClassLength
     letter_frequency_difference.slice(*FEATURE_LETTERS)
   end
 
-  def character_set # rubocop:disable Metrics/MethodLength
+  def character_set
     @character_set ||= case string
     when /^[a-fA-F0-9\-]+$/ then :hex
     when /^[a-z0-9]+$/ then :lower36

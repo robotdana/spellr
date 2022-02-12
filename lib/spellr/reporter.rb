@@ -7,8 +7,8 @@ module Spellr
   class Reporter < Spellr::BaseReporter
     def finish
       puts "\n"
-      puts "#{pluralize 'file', counts[:checked]} checked"
-      puts "#{pluralize 'error', counts[:total]} found"
+      print_count(:checked, 'file')
+      print_count(:total, 'error', 'found')
 
       interactive_command if counts[:total].positive?
     end

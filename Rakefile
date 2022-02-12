@@ -12,7 +12,7 @@ RuboCop::RakeTask.new
 RSpec::Core::RakeTask.new(:spec)
 Spellr::RakeTask.generate_task
 Leftovers::RakeTask.generate_task
-
+ENV['COVERAGE'] = '1'
 task default: [:spec, :rubocop, :spellr, :leftovers, :build]
 
 namespace :release do

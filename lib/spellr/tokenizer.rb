@@ -34,7 +34,7 @@ module Spellr
       file.close
     end
 
-    def each_token(skip_term_proc: nil) # rubocop:disable Metrics/MethodLength
+    def each_token(skip_term_proc: nil)
       each_line_with_stats do |line, line_number, char_offset, byte_offset|
         prepare_tokenizer_for_line(line)&.each_token(skip_term_proc: skip_term_proc) do |token|
           token.line = prepare_line(line, line_number, char_offset, byte_offset)

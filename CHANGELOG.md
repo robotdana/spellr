@@ -1,3 +1,8 @@
+# v0.10.0
+- Drop ruby 2.4 support, to allow for...
+- Spelling suggestions while using `spellr --interactive`
+- And a new, probably frequently wrong, `spellr --autocorrect`
+
 # v0.9.1
 - Assume all files are utf8, more comprehensively. (Sets ::Encoding.default_external and default_internal while running)
 

@@ -39,8 +39,8 @@ module Spellr
     end
 
     def handle_ctrl_c
-      reporter.clear_line(language_keys.length + 6)
-      reporter.call(token)
+      reporter.clear_line(language_keys.length + 5)
+      reporter.call(token, only_prompt: true)
     end
 
     def handle_wordlist_choice

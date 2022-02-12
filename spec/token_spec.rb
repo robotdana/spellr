@@ -128,4 +128,23 @@ RSpec.describe Spellr::Token do
       expect(tokens[6].file_byte_range).to eq 65...70
     end
   end
+
+  describe '#case_method' do
+    it 'can recognize lowercase' do
+      expect(described_class.new('word').case_method).to eq :downcase
+    end
+
+    it 'can recognize title case' do
+      expect(described_class.new('Word').case_method).to eq :capitalize
+    end
+
+    it 'can recognize uppercase' do
+      expect(described_class.new('WORD').case_method).to eq :upcase
+    end
+
+    it 'returns a method leaving unchanged for unrecognized case' do
+      expect(described_class.new('WoRD').case_method).to eq :itself
+      expect(described_class.new('مرحبا').case_method).to eq :itself # spellr:disable-line
+    end
+  end
 end

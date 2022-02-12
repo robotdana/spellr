@@ -75,7 +75,7 @@ class MDNWords # rubocop:disable Metrics/ClassLength
       " is licensed under [CC-BY-SA 2.5](http://creativecommons.org/licenses/by-sa/2.5/)\n"
   end
 
-  def prepare_and_write_license(paths) # rubocop:disable Metrics/MethodLength
+  def prepare_and_write_license(paths)
     license = Parallel.map(paths, in_threads: 20) do |u|
       license_for_uri(u)
     end
@@ -117,12 +117,10 @@ class MDNWords # rubocop:disable Metrics/ClassLength
 
   def values_from_paths(paths) # rubocop:disable Metrics/MethodLength
     uris = paths.map do |p|
-      begin
-        base_uri(p)
-      rescue URI::InvalidURIError
-        puts red("#{p} is not a valid uri")
-        nil
-      end
+      base_uri(p)
+    rescue URI::InvalidURIError
+      puts red("#{p} is not a valid uri")
+      nil
     end.uniq.compact
 
     Parallel.map(uris, in_threads: 10) do |u|

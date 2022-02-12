@@ -7,7 +7,7 @@ require 'pathname'
 FileUtils.rm_rf(File.join(__dir__, '..', 'coverage'))
 
 # There were intermittent issues on travis with 2.5 that i don't understand.
-if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
+if ENV['COVERAGE'] && Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
   require 'simplecov'
   require 'simplecov-console'
 

@@ -27,7 +27,7 @@ module Stats
     yield values.max_by(&block)
   end
 
-  def variance(values, &block) # rubocop:disable Metrics/MethodLength
+  def variance(values, &block)
     return 0 if values.empty?
 
     mean = mean(values, &block)

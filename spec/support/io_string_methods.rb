@@ -74,7 +74,7 @@ module StringIOStringMethods
 end
 
 module IOStringMethods
-  def string # rubocop:disable Metrics/MethodLength
+  def string
     @string ||= ''
     @string += read_nonblock(4096)
   rescue IO::WaitReadable
@@ -84,7 +84,7 @@ module IOStringMethods
   end
 
   def ==(other)
-    Eventually.equal?(other, 2) { to_s }
+    Eventually.equal?(other, 4) { to_s }
   end
 
   def readable?

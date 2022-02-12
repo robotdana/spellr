@@ -27,7 +27,7 @@ However, in a programming context spelling things _consistently_ is useful, wher
 
 ## Installation
 
-This is tested against ruby 2.4-3.0.
+This is tested against ruby 2.5-3.0.
 
 ### With Bundler
 
@@ -66,6 +66,7 @@ $ spellr # will run the spell checker
 $ spellr --interactive # will run the spell checker, interactively
 $ spellr --wordlist # will output all words that fail the spell checker in spellr wordlist format
 $ spellr --quiet # will suppress all output
+$ spellr --autocorrect # for if you're feeling lucky
 ```
 
 To check a single file or subset of files, just add paths or globs:
@@ -123,14 +124,16 @@ To start an interactive spell checking session:
 $ spellr --interactive
 ```
 
-You'll be shown each word that's not found in a dictionary, it's location (path:line:column), along with a prompt.
+You'll be shown each word that's not found in a dictionary, it's location (path:line:column), along with suggestions, and a prompt.
 ```
 file.rb:1:0 notaword
+Did you mean: [1] notwork, [2] nonword
 [a]dd, [r]eplace, [s]kip, [h]elp, [^C] to exit: [ ]
 ```
 
 Type `h` for this list of what each letter command does
 ```
+[1]...[2] Replace notaword with the numbered suggestion
 [a] Add notaword to a word list
 [r] Replace notaword
 [R] Replace this and all future instances of notaword
@@ -144,9 +147,20 @@ What do you want to do? [ ]
 
 ---
 
+If you type a numeral the word will be replaced with that numbered suggestion
+```
+file.txt:1:0 notaword
+Did you mean: [1] notwork, [2] nonword
+[a]dd, [r]eplace, [s]kip, [h]elp, [^C] to exit: [2]
+Replaced notaword with nonword
+```
+
+---
+
 If you type `r` or `R` you'll be shown a prompt with the original word and it prefilled ready for correcting:
 ```
 file.txt:1:0 notaword
+Did you mean: [1] notwork, [2] nonword
 [a]dd, [r]eplace, [s]kip, [h]elp, [^C] to exit: [r]
 
   [^C] to go back
@@ -167,6 +181,7 @@ Lowercase `s` will skip this particular use of the word, uppercase `S` will also
 If you instead type `a` you'll be shown a list of possible wordlists to add to. This list is based on the file path, and is configurable in `.spellr.yml`.
 ```
 file.txt:1:0 notaword
+Did you mean: [1] notwork, [2] nonword
 [a]dd, [r]eplace, [s]kip, [h]elp, [^C] to exit: [a]
 
   [e] english
@@ -247,7 +262,7 @@ languages:
       - path/to/logstash/file
 ```
 
-## Rake and Travis
+## Rake
 
 Create or open a file in the root of your project named `Rakefile`.
 adding the following lines
@@ -260,7 +275,27 @@ Spellr::RakeTask.generate_task
 This will add the `rake spellr` task. To provide arguments like the cli, use square brackets. (ensure you escape the `[]` if you're using zsh)
 `rake 'spellr[--interactive]'`
 
-To have this automatically run on travis, add `:spellr` to the default task.
+To provide default cli arguments, the first argument is the name, and subsequent arguments are the cli arguments.
+```ruby
+# Rakefile
+require 'spellr/rake_task'
+Spellr::RakeTask.generate_task(:spellr_quiet, '--quiet')
+
+task default: :spellr_quiet
+```
+or `rake spellr` will be in interactive mode unless the CI env variable is set.
+```ruby
+# Rakefile
+require 'spellr/rake_task'
+spellr_arguments = ENV['CI'] ? [] : ['--interactive']
+Spellr::RakeTask.generate_task(:spellr, **spellr_arguments)
+
+task default: :spellr
+```
+
+## Travis
+
+To have this automatically run on travis, add `:spellr` to the default rake task.
 ```ruby
 # Rakefile
 require 'spellr/rake_task'
@@ -284,26 +319,8 @@ sudo: false
 language: ruby
 cache: bundler
 rvm:
-  - 2.5
+  - 3.0
 before_install: gem install bundler
-```
-
-To provide default cli arguments, the first argument is the name, and subsequent arguments are the cli arguments.
-```ruby
-# Rakefile
-require 'spellr/rake_task'
-Spellr::RakeTask.generate_task(:spellr_quiet, '--quiet')
-
-task default: :spellr_quiet
-```
-or `rake spellr` will be in interactive mode unless the CI env variable is set.
-```ruby
-# Rakefile
-require 'spellr/rake_task'
-spellr_arguments = ENV['CI'] ? [] : ['--interactive']
-Spellr::RakeTask.generate_task(:spellr, **spellr_arguments)
-
-task default: :spellr
 ```
 
 ## Ignoring the configured patterns

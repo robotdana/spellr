@@ -5,18 +5,17 @@ require_relative '../spellr'
 require_relative 'interactive_add'
 require_relative 'interactive_replacement'
 require_relative 'base_reporter'
+require_relative 'suggester'
 
 module Spellr
   class Interactive < BaseReporter # rubocop:disable Metrics/ClassLength
-    def finish # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def finish
       puts "\n"
-      puts "#{pluralize 'file', counts[:checked]} checked"
-      puts "#{pluralize 'error', total} found"
-      if counts[:total_skipped].positive?
-        puts "#{pluralize 'error', counts[:total_skipped]} skipped"
-      end
-      puts "#{pluralize 'error', counts[:total_fixed]} fixed" if counts[:total_fixed].positive?
-      puts "#{pluralize 'word', counts[:total_added]} added" if counts[:total_added].positive?
+      print_count(:checked, 'file')
+      print_value(total, 'error', 'found')
+      print_count(:total_skipped, 'error', 'skipped', hide_zero: true)
+      print_count(:total_fixed, 'error', 'fixed', hide_zero: true)
+      print_count(:total_added, 'word', 'added', hide_zero: true)
     end
 
     def global_replacements
@@ -27,22 +26,25 @@ module Spellr
       @global_skips ||= counts[:global_skips] = []
     end
 
-    def call(token)
+    def call(token, only_prompt: false)
       # if attempt_global_replacement succeeds, then it throws,
       # it acts like a guard clause all by itself.
       attempt_global_replacement(token)
       return if attempt_global_skip(token)
 
-      super
+      super(token) unless only_prompt
 
-      prompt(token)
+      suggestions = ::Spellr::Suggester.fast_suggestions(token)
+      print_suggestions(suggestions) unless only_prompt
+
+      prompt(token, suggestions)
     end
 
     def prompt_for_key
       print "[ ]\e[2D"
     end
 
-    def loop_within(seconds) # rubocop:disable Metrics/MethodLength
+    def loop_within(seconds)
       # timeout is just because it gets stuck sometimes
       Timeout.timeout(seconds * 10) do
         start_time = monotonic_time
@@ -84,11 +86,21 @@ module Spellr
       "^#{char.tr(CTRL_STR, ALPHABET)}"
     end
 
-    def prompt(token)
+    def print_suggestions(suggestions)
+      return if suggestions.empty?
+
+      puts "Did you mean: #{number_suggestions(suggestions)}"
+    end
+
+    def number_suggestions(suggestions)
+      suggestions.map.with_index(1) { |word, i| "#{key i.to_s} #{word}" }.join(', ')
+    end
+
+    def prompt(token, suggestions)
       print "#{key 'add'}, #{key 'replace'}, #{key 'skip'}, #{key 'help'}, [^#{bold 'C'}] to exit: "
       prompt_for_key
 
-      handle_response(token)
+      handle_response(token, suggestions)
     end
 
     def clear_line(lines = 1)
@@ -121,9 +133,17 @@ module Spellr
       throw :check_file_from, token
     end
 
-    def handle_response(token) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
+    def suggestions_options(suggestions)
+      return suggestions if suggestions.empty?
+
+      ('1'..(suggestions.length.to_s)).to_a
+    end
+
+    def handle_response(token, suggestions) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/AbcSize
+      numbers = suggestions_options(suggestions)
       # :nocov:
-      case stdin_getch("qaAsSrR?h\u0003\u0004")
+      letter = stdin_getch("qaAsSrR?h\u0003\u0004#{numbers.join}")
+      case letter
       # :nocov:
       when 'q', "\u0003" # ctrl c
         Spellr.exit 1
@@ -137,9 +157,20 @@ module Spellr
         Spellr::InteractiveReplacement.new(token, self).global_replace
       when 'r'
         Spellr::InteractiveReplacement.new(token, self).replace
+      when *numbers
+        handle_replace_with_suggestion(token, suggestions, letter)
       when '?', 'h'
-        handle_help(token)
+        handle_help(token, suggestions)
       end
+    end
+
+    def handle_replace_with_suggestion(token, suggestions, letter)
+      replacement = suggestions[letter.to_i - 1].chomp
+
+      token.replace(replacement)
+      increment(:total_fixed)
+      puts "Replaced #{red(token)} with #{green(replacement)}"
+      throw :check_file_from, token
     end
 
     def handle_skip(token)
@@ -148,9 +179,15 @@ module Spellr
       puts "Skipped #{red(token)}"
     end
 
-    def handle_help(token) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def handle_help(token, suggestions) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       clear_line(2)
       puts ''
+      if suggestions.length > 1
+        puts "#{key '1'}...#{key suggestions.length.to_s} "\
+          "Replace #{red token} with the numbered suggestion"
+      elsif suggestions.length == 1
+        puts "#{key '1'} Replace #{red token} with the numbered suggestion"
+      end
       puts "#{key 'a'} Add #{red token} to a word list"
       puts "#{key 'r'} Replace #{red token}"
       puts "#{key 'R'} Replace this and all future instances of #{red token}"
@@ -160,7 +197,7 @@ module Spellr
       puts "[ctrl] + #{key 'C'} Exit spellr"
       puts ''
       print "What do you want to do? [ ]\e[2D"
-      handle_response(token)
+      handle_response(token, suggestions)
     end
   end
 end

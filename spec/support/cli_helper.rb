@@ -15,7 +15,7 @@ module CLIHelper
     base.include Spellr::StringFormat
   end
 
-  def spellr(argv = '', &block) # rubocop:disable Metrics/MethodLength
+  def spellr(argv = '', &block)
     if block_given?
       run("ruby ./exe/spellr #{argv}", &block)
     else

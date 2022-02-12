@@ -17,7 +17,7 @@ AllCops:
     - vendor/**/*
   DisplayCopNames: true
   DisplayStyleGuide: true
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.5
 
 # all of our layout customisations are because we prefer indentation to be
 # always consistently 2 spaces, for blocks, scopes, multiline expressions, etc
@@ -124,7 +124,7 @@ Layout/LineLength:
   IgnoreCopDirectives: true
 
 Metrics/MethodLength:
-  Max: 5
+  Max: 6
   Exclude:
     - bin/generate/*
 
