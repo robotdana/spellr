@@ -76,12 +76,26 @@ RSpec.describe Spellr::Suggester do
       let(:source_location) { 'describe.rb' }
 
       it { is_expected.to be_slow }
+
+      it 'is memoized' do
+        expect(subject).to be_slow
+        allow(::JaroWinkler).to receive(:method).with(:distance)
+          .and_return(instance_double(Method, source_location: nil))
+        expect(subject).to be_slow
+      end
     end
 
     context 'with c JaroWinkler.describe' do
       let(:source_location) { nil }
 
       it { is_expected.not_to be_slow }
+
+      it 'is memoized' do
+        expect(subject).not_to be_slow
+        allow(::JaroWinkler).to receive(:method).with(:distance)
+          .and_return(instance_double(Method, source_location: 'whatever.rb'))
+        expect(subject).not_to be_slow
+      end
     end
   end
 
