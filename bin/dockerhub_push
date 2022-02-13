@@ -6,7 +6,7 @@ version_tag=$(git describe --exact-match --abbrev=0)
 
 docker build -t robotdana/spellr:$version_tag -t robotdana/spellr:latest .
 # prove it works
-docker run -it -v $PWD:/app robotdana/spellr:$version_tag -i
+docker run -it -v $PWD:/app robotdana/spellr:$version_tag --version
 
 docker push robotdana/spellr:$version_tag
 docker push robotdana/spellr:latest
