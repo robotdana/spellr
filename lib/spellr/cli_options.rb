@@ -9,8 +9,6 @@ module Spellr
     class Options
       class << self
         def parse(argv)
-          @parallel_option = false
-
           options.parse!(argv)
         end
 
@@ -25,6 +23,7 @@ module Spellr
           opts.on('-w', '--wordlist', 'Outputs errors in wordlist format', &method(:wordlist_option))
           opts.on('-q', '--quiet', 'Silences output', &method(:quiet_option))
           opts.on('-i', '--interactive', 'Runs the spell check interactively', &method(:interactive_option))
+          opts.on('-a', '--autocorrect', 'Autocorrect errors', &method(:autocorrect_option))
           opts.separator('')
           opts.on('--[no-]parallel', 'Run in parallel or not, default --parallel', &method(:parallel_option))
           opts.on('-d', '--dry-run', 'List files to be checked', &method(:dry_run_option))
@@ -54,9 +53,12 @@ module Spellr
 
         def interactive_option(_)
           require_relative 'interactive'
-          require_relative 'check_interactive'
           Spellr.config.reporter = Spellr::Interactive.new
-          Spellr.config.checker = Spellr::CheckInteractive unless @parallel_option
+        end
+
+        def autocorrect_option(_)
+          require_relative 'autocorrect_reporter'
+          Spellr.config.reporter = Spellr::AutocorrectReporter.new
         end
 
         def suppress_file_rules(_)
@@ -73,15 +75,8 @@ module Spellr
           Spellr.config.config_file = file
         end
 
-        def parallel_option(parallel) # rubocop:disable Metrics/MethodLength
-          @parallel_option = true
-          Spellr.config.checker = if parallel
-            require_relative 'check_parallel'
-            Spellr::CheckParallel
-          else
-            require_relative 'check'
-            Spellr::Check
-          end
+        def parallel_option(parallel)
+          Spellr.config.parallel = parallel
         end
 
         def dry_run_option(_)

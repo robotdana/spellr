@@ -4,6 +4,9 @@ alnum
 arg
 arglist
 args
+autocorrect
+autocorrecting
+autocorrects
 backports
 baz
 behaviour
@@ -66,6 +69,7 @@ hardcoded
 hashbang
 hashbangs
 hashbangs
+hellooo
 heuristically
 hml
 hostnames
@@ -147,7 +151,9 @@ sudo
 superselector
 svg
 symlinks
+thiswordisoutsidethethreshould
 thu
+titlecase
 tlds
 tmp
 todo

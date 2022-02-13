@@ -35,7 +35,7 @@ module Spellr
       }
     end
 
-    def fast_ignore # rubocop:disable Metrics/MethodLength
+    def fast_ignore
       FastIgnore.new(
         **configured_rules,
         argv_rules: @patterns,

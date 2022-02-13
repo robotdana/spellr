@@ -66,5 +66,14 @@ module Spellr
       @replacement = replacement
       location.file.insert(replacement, file_char_range)
     end
+
+    def case_method
+      @case_method ||= case self
+      when /\A[[:lower:]]+\z/ then :downcase
+      when /\A[[:upper:]]+\z/ then :upcase
+      when /\A[[:upper:]][[:lower:]]*\z/ then :capitalize
+      else :itself
+      end
+    end
   end
 end

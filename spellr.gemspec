@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
     spec.metadata['changelog_uri'] = "#{spec.homepage}/blob/main/CHANGELOG.md"
   end
 
-  spec.required_ruby_version = '>= 2.4'
+  spec.required_ruby_version = '>= 2.5'
 
   spec.files = Dir.glob('{lib,exe,wordlists}/**/{*,.*}') + %w{
     CHANGELOG.md
@@ -47,6 +47,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'tty_string', '>= 1.1.0'
   spec.add_development_dependency 'webmock', '~> 3.8'
 
+  spec.add_dependency 'did_you_mean'
   spec.add_dependency 'fast_ignore', '>= 0.11.0'
+  spec.add_dependency 'jaro_winkler'
   spec.add_dependency 'parallel', '~> 1.0'
 end

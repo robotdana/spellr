@@ -8,7 +8,7 @@ module Spellr
   class ConfigValidator
     include Spellr::Validations
 
-    validate :checker_and_reporter_coexist
+    validate :not_interactive_and_parallel
     validate :interactive_is_interactive
     validate :only_has_one_key_per_language
     validate :languages_with_conflicting_keys
@@ -31,11 +31,11 @@ module Spellr
       nil
     end
 
-    def checker_and_reporter_coexist
-      if Spellr.config.reporter.class.name == 'Spellr::Interactive' &&
-          Spellr.config.checker.name == 'Spellr::CheckParallel'
-        errors << 'CLI error: --interactive is incompatible with --parallel'
-      end
+    def not_interactive_and_parallel
+      return unless Spellr.config.reporter.class.name == 'Spellr::Interactive' &&
+        Spellr.config.parallel
+
+      errors << 'CLI error: --interactive is incompatible with --parallel'
     end
 
     def only_has_one_key_per_language

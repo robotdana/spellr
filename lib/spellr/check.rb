@@ -3,6 +3,7 @@
 require_relative '../spellr'
 require_relative 'tokenizer'
 require_relative 'string_format'
+require_relative 'output_stubbed'
 
 module Spellr
   class Check
@@ -21,8 +22,10 @@ module Spellr
     end
 
     def check
-      files.each do |file|
-        check_and_count_file(file)
+      if Spellr.config.parallel
+        parallel_check
+      else
+        files.each { |file| check_and_count_file(file, reporter) }
       end
 
       reporter.finish
@@ -30,24 +33,48 @@ module Spellr
 
     private
 
-    def check_and_count_file(file)
-      check_file(file)
-      reporter.output.increment(:checked)
-    rescue Spellr::InvalidByteSequence
-      # sometimes files are binary
-      reporter.warn "Skipped unreadable file: #{aqua file.relative_path}"
+    def parallel_check
+      require 'parallel'
+
+      Parallel.each(files, finish: ->(_, _, result) { reporter.output << result }) do |file|
+        sub_reporter = reporter.class.new(Spellr::OutputStubbed.new)
+        check_and_count_file(file, sub_reporter)
+        sub_reporter.output
+      end
     end
 
-    def check_file(file, start_at = nil, found_word_proc = wordlist_proc_for(file))
+    def check_and_count_file(file, current_reporter)
+      check_file(file, current_reporter)
+      current_reporter.output.increment(:checked)
+    rescue Spellr::InvalidByteSequence
+      # sometimes files are binary
+      current_reporter.warn "Skipped unreadable file: #{aqua file.relative_path}"
+    end
+
+    def check_file(file, curr_reporter, start_at = nil, wordlist_proc = wordlist_proc_for(file))
+      restart_token = catch(:check_file_from) do
+        report_file(file, curr_reporter, start_at, wordlist_proc)
+        nil
+      end
+      check_file_from_restart(file, curr_reporter, restart_token, wordlist_proc) if restart_token
+    end
+
+    def report_file(file, curr_reporter, start_at = nil, wordlist_proc = wordlist_proc_for(file))
       Spellr::Tokenizer.new(file, start_at: start_at)
-        .each_token(skip_term_proc: found_word_proc) do |token|
-          reporter.call(token)
-          reporter.output.exit_code = 1
+        .each_token(skip_term_proc: wordlist_proc) do |token|
+          curr_reporter.call(token)
+          curr_reporter.output.exit_code = 1
         end
     end
 
+    def check_file_from_restart(file, current_reporter, restart_token, wordlist_proc)
+      # new wordlist cache when adding a word
+      wordlist_proc = wordlist_proc_for(file) unless restart_token.replacement
+      check_file(file, current_reporter, restart_token.location, wordlist_proc)
+    end
+
     def wordlist_proc_for(file)
-      wordlists = Spellr.config.wordlists_for(file).sort_by(&:length).reverse
+      wordlists = file.wordlists
 
       ->(term) { wordlists.any? { |w| w.include?(term) } }
     end

@@ -10,7 +10,7 @@ require 'pathname'
 
 module Spellr
   class Config
-    attr_writer :reporter, :checker
+    attr_writer :reporter, :parallel
 
     attr_accessor :suppress_file_rules, :dry_run
 
@@ -68,6 +68,10 @@ module Spellr
       @reporter ||= default_reporter
     end
 
+    def parallel
+      defined?(@parallel) ? @parallel : default_parallel
+    end
+
     def checker
       return dry_run_checker if dry_run?
 
@@ -101,8 +105,12 @@ module Spellr
     end
 
     def default_checker
-      require_relative 'check_parallel'
-      Spellr::CheckParallel
+      require_relative 'check'
+      Spellr::Check
+    end
+
+    def default_parallel
+      reporter.class.name != 'Spellr::Interactive'
     end
   end
 end

@@ -92,12 +92,10 @@ class RubyWords
     return unless constant.respond_to?(:constants)
 
     constant.constants.each do |child|
-      begin
-        add_words(child)
-        check_and_collect_words_for(constant.const_get(child))
-      rescue StandardError, LoadError => e
-        warn "Error loading #{constant}::#{child} => #{e.message}"
-      end
+      add_words(child)
+      check_and_collect_words_for(constant.const_get(child))
+    rescue StandardError, LoadError => e
+      warn "Error loading #{constant}::#{child} => #{e.message}"
     end
   end
 
@@ -118,11 +116,9 @@ class RubyWords
 
   def require_stdlibs
     STDLIBS.each do |lib|
-      begin
-        require lib
-      rescue LoadError
-        puts "can't load #{lib}"
-      end
+      require lib
+    rescue LoadError
+      puts "can't load #{lib}"
     end
   end
 end

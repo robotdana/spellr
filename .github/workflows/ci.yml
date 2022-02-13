@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.4, 2.5, 2.6, 2.7, 3.0, ruby-head]
+        ruby: [2.5, 2.6, 2.7, 3.0, ruby-head]
     continue-on-error: ${{ endsWith(matrix.ruby, 'head') }}
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +22,7 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - run: bundle exec rspec
+    - run: gem install did_you_mean; bundle exec rspec
 
   coverage:
     runs-on: ubuntu-latest
@@ -32,7 +32,7 @@ jobs:
         with:
           ruby-version: 2.7
           bundler-cache: true
-      - run: COVERAGE=1 bundle exec rspec
+      - run: gem install did_you_mean; COVERAGE=1 bundle exec rspec
 
       - uses: actions/upload-artifact@v2
         with:
@@ -49,7 +49,7 @@ jobs:
       with:
         ruby-version: 2.7
         bundler-cache: true
-    - run: bundle exec rubocop
+    - run: gem install did_you_mean; bundle exec rubocop
 
   spellr:
     runs-on: ubuntu-latest
@@ -59,7 +59,7 @@ jobs:
       with:
         ruby-version: 2.7
         bundler-cache: true
-    - run: bundle exec spellr
+    - run: gem install did_you_mean; bundle exec spellr
 
   leftovers:
     runs-on: ubuntu-latest
@@ -69,7 +69,7 @@ jobs:
       with:
         ruby-version: 2.7
         bundler-cache: true
-    - run: bundle exec leftovers
+    - run: gem install did_you_mean; bundle exec leftovers
 
   build:
     runs-on: ubuntu-latest
@@ -79,5 +79,5 @@ jobs:
       with:
         ruby-version: 2.7
         bundler-cache: true
-    - run: bundle exec rake build
+    - run: gem install did_you_mean; bundle exec rake build
 

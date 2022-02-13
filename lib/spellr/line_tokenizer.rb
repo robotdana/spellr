@@ -37,7 +37,7 @@ module Spellr
       end
     end
 
-    def each_token(skip_term_proc: nil) # rubocop:disable Metrics/MethodLength
+    def each_token(skip_term_proc: nil)
       until eos?
         term = next_term
         next unless term
