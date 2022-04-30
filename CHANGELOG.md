@@ -1,3 +1,6 @@
+# v0.10.1
+- Resolve fast_ignore follow_symlinks deprecation
+
 # v0.10.0
 - Drop ruby 2.4 support, to allow for...
 - Spelling suggestions while using `spellr --interactive`

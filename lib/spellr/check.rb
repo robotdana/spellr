@@ -46,8 +46,7 @@ module Spellr
     def check_and_count_file(file, current_reporter)
       check_file(file, current_reporter)
       current_reporter.output.increment(:checked)
-    rescue Spellr::InvalidByteSequence
-      # sometimes files are binary
+    rescue Spellr::InvalidByteSequence, ::Errno::ENOENT, ::Errno::EISDIR, ::Errno::EACCES
       current_reporter.warn "Skipped unreadable file: #{aqua file.relative_path}"
     end
 

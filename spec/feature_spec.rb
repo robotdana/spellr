@@ -705,6 +705,48 @@ RSpec.describe 'command line', type: :cli do
           dolar
         WORDS
       end
+
+      it 'returns an error for symlinks to directories' do
+        invalid_dir = Spellr.pwd.join('invalid_dir')
+        target_dir = Spellr.pwd.join('target_dir')
+        FileUtils.mkdir_p invalid_dir
+        FileUtils.mkdir_p target_dir
+
+        FileUtils.ln_s(target_dir, invalid_dir.join('invalid_file'))
+        spellr '--wordlist'
+
+        expect(stderr).to have_output <<~WORDS
+          Skipped unreadable file: #{aqua 'invalid_dir/invalid_file'}
+        WORDS
+
+        expect(exitstatus).to eq 1
+        expect(stdout).to have_output <<~WORDS
+          amet
+          dolar
+        WORDS
+      end
+
+      it 'returns an error for symlinks to nothing' do
+        invalid_dir = Spellr.pwd.join('invalid_dir')
+        invalid_target = invalid_dir.join('invalid_target')
+        FileUtils.mkdir_p invalid_dir
+        invalid_target.write('')
+
+        FileUtils.ln_s(invalid_target, invalid_dir.join('invalid_file'))
+        invalid_target.unlink
+
+        spellr '--wordlist'
+
+        expect(stderr).to have_output <<~WORDS
+          Skipped unreadable file: #{aqua 'invalid_dir/invalid_file'}
+        WORDS
+
+        expect(exitstatus).to eq 1
+        expect(stdout).to have_output <<~WORDS
+          amet
+          dolar
+        WORDS
+      end
     end
 
     describe 'spellr' do

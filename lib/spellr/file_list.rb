@@ -39,7 +39,6 @@ module Spellr
       FastIgnore.new(
         **configured_rules,
         argv_rules: @patterns,
-        follow_symlinks: true,
         root: Spellr.pwd_s
       )
     end
