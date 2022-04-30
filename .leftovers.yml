@@ -1,5 +1,10 @@
 exclude_paths:
   - vendor
+  - .simplecov
+
+keep:
+  - marshal_dump
+  - marshal_load
 
 dynamic:
   name: validate
