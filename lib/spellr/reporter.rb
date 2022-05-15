@@ -2,6 +2,7 @@
 
 require_relative 'base_reporter'
 require 'shellwords'
+require 'set'
 
 module Spellr
   class Reporter < Spellr::BaseReporter
