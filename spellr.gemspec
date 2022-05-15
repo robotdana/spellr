@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler', '~> 2.0'
+  spec.add_development_dependency 'did_you_mean' unless ENV['DID_YOU_MEAN'] == '0'
   spec.add_development_dependency 'leftovers', '>= 0.4.0'
   spec.add_development_dependency 'mime-types', '~> 3.3.1'
   spec.add_development_dependency 'nokogiri'
@@ -47,7 +48,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'tty_string', '>= 1.1.0'
   spec.add_development_dependency 'webmock', '~> 3.8'
 
-  spec.add_dependency 'did_you_mean'
   spec.add_dependency 'fast_ignore', '>= 0.11.0'
   spec.add_dependency 'jaro_winkler'
   spec.add_dependency 'parallel', '~> 1.0'

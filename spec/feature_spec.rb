@@ -881,7 +881,7 @@ RSpec.describe 'command line', type: :cli do
     end
 
     describe '--interactive' do
-      it 'returns the first unmatched term and a prompt' do
+      it 'returns the first unmatched term and a prompt', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -894,7 +894,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the interactive command help' do
+      it 'returns the interactive command help', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -954,7 +954,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'exits when ctrl C' do
+      it 'exits when ctrl C', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -975,7 +975,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'ignores up' do
+      it 'ignores up', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -998,7 +998,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after skipping' do
+      it 'returns the next unmatched term and a prompt after skipping', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1060,7 +1060,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after skipping with S' do
+      it 'returns the next unmatched term and a prompt after skipping with S', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1104,7 +1104,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'can bail early when trying to add with a' do
+      it 'can bail early when trying to add with a', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1155,7 +1155,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it "asks me again when i chose a language that doesn't exist when adding with a" do
+      it 'asks me again when i chose a missing language when adding with a', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1194,7 +1194,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after adding with a' do
+      it 'returns the next unmatched term and a prompt after adding with a', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1297,7 +1297,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'can add with a to a new wordlist' do
+      it 'can add with a to a new wordlist', :did_you_mean do
         stub_fs_file '.spellr.yml', <<~YML
           languages:
             lorem: {}
@@ -1343,7 +1343,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'can bail early when trying to replace with R' do
+      it 'can bail early when trying to replace with R', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1389,7 +1389,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after replacing with R' do
+      it 'returns the next unmatched term and a prompt after replacing with R', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1526,7 +1526,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'can bail early when trying to replace with r' do
+      it 'can bail early when trying to replace with r', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1572,7 +1572,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'disallows replacing with nothing when replacing with r' do
+      it 'disallows replacing with nothing when replacing with r', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1620,7 +1620,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'disallows replacing with the same when replacing with r' do
+      it 'disallows replacing with the same when replacing with r', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1658,7 +1658,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the help prompt with one button when theres one suggestion' do
+      it 'returns the help prompt with one button when theres one suggestion', :did_you_mean do
         spellr '-i' do
           stub_fs_file 'check.txt', <<~FILE
             hellooo
@@ -1698,7 +1698,7 @@ RSpec.describe 'command line', type: :cli do
         spellr '-i' do
           stub_fs_file 'check.txt', <<~FILE
             thiswordisoutsidethethreshould
-            lorem ipsum dolar
+            thiswordisalsooutsidethethreshold
           FILE
 
           expect(stdout).to have_output <<~STDOUT.chomp
@@ -1742,8 +1742,7 @@ RSpec.describe 'command line', type: :cli do
 
             What do you want to do? [#{bold 's'}]
             Skipped #{red 'thiswordisoutsidethethreshould'}
-            #{aqua 'check.txt:2:12'} lorem ipsum #{red 'dolar'}
-            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola
+            #{aqua 'check.txt:2:0'} #{red 'thiswordisalsooutsidethethreshold'}
             #{prompt}
           STDOUT
 
@@ -1752,7 +1751,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after replacing with a suggestion' do
+      it 'prompts the next unmatched term after replacing with a suggestion', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1805,7 +1804,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after replacing with r' do
+      it 'returns the next unmatched term and a prompt after replacing with r', :did_you_mean do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative '../lib/spellr/suggester'
+require_relative '../lib/spellr/maybe_suggester'
 require_relative '../lib/spellr/token'
 require_relative '../lib/spellr/tokenizer'
 
-RSpec.describe Spellr::Suggester do
+RSpec.describe Spellr::Suggester, :did_you_mean do
   before { with_temp_dir }
 
   describe '.suggestions' do

@@ -2,7 +2,7 @@
 
 require_relative '../spellr'
 require_relative 'base_reporter'
-require_relative 'suggester'
+require_relative 'maybe_suggester'
 
 module Spellr
   class AutocorrectReporter < BaseReporter

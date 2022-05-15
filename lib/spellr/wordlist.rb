@@ -86,7 +86,7 @@ module Spellr
 
     def suggester
       @suggester ||= begin
-        require_relative 'suggester'
+        require_relative 'maybe_suggester'
 
         ::Spellr::Suggester.new(self)
       end

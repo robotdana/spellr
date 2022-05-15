@@ -5,7 +5,7 @@ require_relative '../spellr'
 require_relative 'interactive_add'
 require_relative 'interactive_replacement'
 require_relative 'base_reporter'
-require_relative 'suggester'
+require_relative 'maybe_suggester'
 
 module Spellr
   class Interactive < BaseReporter # rubocop:disable Metrics/ClassLength
