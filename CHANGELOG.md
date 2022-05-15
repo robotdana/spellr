@@ -1,3 +1,9 @@
+# v0.11.0
+- Remove explicit did_you_mean dependency
+  (if you want the suggestions in ruby 2.5 & 2.6, you'll need to add did_you_mean to your Gemfile directly).
+- require 'set' in Spellr::Reporter
+  previously we were just were relying on FastIgnore requiring it, and i don't use it there any longer.
+
 # v0.10.1
 - Resolve fast_ignore follow_symlinks deprecation
 
