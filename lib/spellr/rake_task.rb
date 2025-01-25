@@ -46,7 +46,7 @@ module Spellr
     end
 
     def write_cli_cmd(argv)
-      $stdout.puts("\e[2mspellr #{escaped_argv(argv)}\e[0m")
+      warn("\e[2mspellr #{escaped_argv(argv)}\e[0m")
     end
 
     def run(argv)

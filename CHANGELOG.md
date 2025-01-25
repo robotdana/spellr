@@ -1,9 +1,11 @@
 # v0.12.0
 
-- Require stringio (thanks @alexdeng-mp)
-- Remove implicit did_you_mean dependency, inline and specialize what of did_you_mean this was using.
-- Update rubies this is tested with
+- Require stringio in the tokenizer (thanks @alexdeng-mp)
+- Remove implicit did_you_mean dependency, inline and tweak what of did_you_mean we were using
+- Test with recent rubies
 - Replace readline dependency with reline
+  - Drop support for ruby 2.5 because the reline that works supports 2.6 and up
+- Hints and run statistics are printed to stderr rather than stdout
 
 # v0.11.0
 - Remove explicit did_you_mean dependency

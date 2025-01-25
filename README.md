@@ -27,7 +27,7 @@ However, in a programming context spelling things _consistently_ is useful, wher
 
 ## Installation
 
-This is tested against ruby 2.5-3.3.
+This is tested against ruby 2.6-3.4.
 
 ### With Bundler
 

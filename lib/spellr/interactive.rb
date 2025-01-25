@@ -10,7 +10,7 @@ require_relative 'maybe_suggester'
 module Spellr
   class Interactive < BaseReporter # rubocop:disable Metrics/ClassLength
     def finish
-      puts "\n"
+      warn "\n"
       print_count(:checked, 'file')
       print_value(total, 'error', 'found')
       print_count(:total_skipped, 'error', 'skipped', hide_zero: true)
@@ -165,7 +165,7 @@ module Spellr
     end
 
     def handle_replace_with_suggestion(token, suggestions, letter)
-      replacement = suggestions[letter.to_i - 1].chomp
+      replacement = suggestions[letter.to_i - 1]
 
       token.replace(replacement)
       increment(:total_fixed)

@@ -145,35 +145,36 @@ RSpec.describe 'command line', type: :cli do
 
       it 'can be run with no arguments' do
         run_rake('spellr')
-        expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to have_output <<~STDOUT
+        expect(stdout).to be_empty
+        expect(stderr).to have_output <<~STDERR
           \e[2mspellr \e[0m
 
           1 file checked
           0 errors found
-        STDOUT
+        STDERR
       end
 
       it 'can be run with arguments' do
         run_rake('spellr[--quiet]')
-        expect(stderr).to be_empty
+        expect(stdout).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to have_output <<~STDOUT
+        expect(stderr).to have_output <<~STDERR
           \e[2mspellr --quiet\e[0m
-        STDOUT
+        STDERR
       end
 
       it 'can be run with the default task' do
         run_rake
-        expect(stderr).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to have_output <<~STDOUT
+        expect(stderr).to have_output <<~STDERR
           \e[2mspellr \e[0m
 
           1 file checked
           0 errors found
-        STDOUT
+        STDERR
+
+        expect(stdout).to be_empty
       end
 
       it 'can run a with a spelling error' do
@@ -181,17 +182,19 @@ RSpec.describe 'command line', type: :cli do
 
         run_rake
 
-        expect(stderr).to be_empty
         expect(exitstatus).to eq 1
-        expect(stdout).to have_output <<~STDOUT
+        expect(stderr).to have_output <<~STDERR
           \e[2mspellr \e[0m
-          #{aqua 'foo.txt:1:0'} #{red 'notaword'}
 
           2 files checked
           1 error found
 
           to add or replace words interactively, run:
             spellr --interactive foo.txt
+        STDERR
+
+        expect(stdout).to have_output <<~STDOUT
+          #{aqua 'foo.txt:1:0'} #{red 'notaword'}
         STDOUT
       end
     end
@@ -217,30 +220,30 @@ RSpec.describe 'command line', type: :cli do
 
       it 'can be run with the default arguments' do
         run_rake('spellr_quiet')
-        expect(stderr).to be_empty
+        expect(stdout).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to have_output <<~STDOUT
+        expect(stderr).to have_output <<~STDERR
           \e[2mspellr --quiet\e[0m
-        STDOUT
+        STDERR
       end
 
       it 'can be run with replacement arguments' do
         run_rake('spellr_quiet[--no-parallel]')
-        expect(stderr).to be_empty
+        expect(stdout).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to have_output <<~STDOUT
+        expect(stderr).to have_output <<~STDERR
           \e[2mspellr --no-parallel\e[0m
 
           1 file checked
           0 errors found
-        STDOUT
+        STDERR
       end
 
       it 'can be run as the default task' do
         run_rake
-        expect(stderr).to be_empty
+        expect(stdout).to be_empty
         expect(exitstatus).to eq 0
-        expect(stdout).to have_output <<~STDOUT
+        expect(stderr).to have_output <<~STDOUT
           \e[2mspellr --quiet\e[0m
         STDOUT
       end
@@ -250,11 +253,11 @@ RSpec.describe 'command line', type: :cli do
 
         run_rake
 
-        expect(stderr).to be_empty
+        expect(stdout).to be_empty
         expect(exitstatus).to eq 1
-        expect(stdout).to have_output <<~STDOUT
+        expect(stderr).to have_output <<~STDERR
           \e[2mspellr --quiet\e[0m
-        STDOUT
+        STDERR
       end
     end
   end
@@ -455,18 +458,19 @@ RSpec.describe 'command line', type: :cli do
     it 'allows the ruby files to say casecmp but not the txt file' do
       spellr
 
-      expect(stderr).to be_empty
       expect(exitstatus).to eq 1
       expect(stdout).to have_unordered_output <<~WORDS
         #{aqua 'test_control_no_ext:1:9'} "string".#{red 'casecmp'} "STRING"
         #{aqua 'test_control.txt:1:9'} "string".#{red 'casecmp'} "STRING"
+      WORDS
+      expect(stderr).to have_output <<~STDERR
 
         6 files checked
         2 errors found
 
         to add or replace words interactively, run:
           spellr --interactive test_control.txt test_control_no_ext
-      WORDS
+      STDERR
     end
   end
 
@@ -581,19 +585,21 @@ RSpec.describe 'command line', type: :cli do
     it 'returns the list of unmatched words and their locations' do
       spellr
 
-      expect(stderr).to be_empty
       expect(exitstatus).to eq 1
       expect(stdout).to have_output <<~WORDS
         #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
         #{aqua 'check.txt:8:2'} #{red 'dolar'} amet
         #{aqua 'check.txt:8:8'} dolar #{red 'amet'}
+      WORDS
+
+      expect(stderr).to have_output <<~STDERR
 
         1 file checked
         3 errors found
 
         to add or replace words interactively, run:
           spellr --interactive check.txt
-      WORDS
+      STDERR
     end
   end
 
@@ -753,19 +759,20 @@ RSpec.describe 'command line', type: :cli do
       it 'returns the list of unmatched words and their locations' do
         spellr
 
-        expect(stderr).to be_empty
         expect(exitstatus).to eq 1
         expect(stdout).to have_output <<~WORDS
           #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
           #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
           #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
+        WORDS
+        expect(stderr).to have_output <<~STDERR
 
           1 file checked
           3 errors found
 
           to add or replace words interactively, run:
             spellr --interactive check.txt
-        WORDS
+        STDERR
       end
 
       it 'returns the list of unmatched words and their locations with lots of files' do
@@ -778,7 +785,6 @@ RSpec.describe 'command line', type: :cli do
 
         spellr
 
-        expect(stderr).to be_empty
         expect(exitstatus).to eq 1
         expect(stdout).to have_unordered_output <<~WORDS
           #{aqua 'check_00.txt:1:2'} 00#{red 'dolar'}
@@ -804,37 +810,39 @@ RSpec.describe 'command line', type: :cli do
           #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
           #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
           #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
+        WORDS
+        expect(stderr).to have_output <<~STDERR
 
           21 files checked
           23 errors found
 
           to add or replace words interactively, run:
             spellr --interactive
-        WORDS
+        STDERR
       end
 
       it 'can be run with --no-parallel' do
         spellr '--no-parallel'
 
-        expect(stderr).to be_empty
         expect(exitstatus).to eq 1
         expect(stdout).to have_output <<~WORDS
           #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
           #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
           #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
+        WORDS
+        expect(stderr).to have_output(<<~STDERR)
 
           1 file checked
           3 errors found
 
           to add or replace words interactively, run:
             spellr --interactive check.txt
-        WORDS
+        STDERR
       end
 
       it 'autocorrects when asked' do
         spellr '-a'
 
-        expect(stderr).to be_empty
         expect(exitstatus).to eq 0
         expect(stdout).to have_output <<~WORDS
           #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -843,11 +851,13 @@ RSpec.describe 'command line', type: :cli do
           Replaced #{red 'dolar'} with #{green 'dollar'}
           #{aqua 'check.txt:3:9'} dollar #{red 'amet'}
           Replaced #{red 'amet'} with #{green 'ament'}
+        WORDS
+        expect(stderr).to have_output(<<~STDERR)
 
           1 file checked
           3 errors found
           3 errors fixed
-        WORDS
+        STDERR
 
         expect(check_file.read).to eq <<~FILE
           lorem ipsum dollar
@@ -865,12 +875,13 @@ RSpec.describe 'command line', type: :cli do
 
         expect(stdout).to have_output <<~WORDS
           #{aqua 'check.txt:1:0'} #{red 'thiswordisoutsidethethreshould'}
+        WORDS
+        expect(stderr).to have_output(<<~STDERR)
 
           1 file checked
           1 error found
           1 error unfixed
-        WORDS
-        expect(stderr).to be_empty
+        STDERR
         expect(exitstatus).to eq 1
       end
     end
@@ -1030,7 +1041,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt}
           STDOUT
 
@@ -1046,16 +1057,18 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt 's'}
             Skipped #{red 'amet'}
+          STDOUT
+
+          expect(stderr).to have_output(<<~STDERR)
 
             1 file checked
             3 errors found
             3 errors skipped
-          STDOUT
+          STDERR
 
-          expect(stderr).to be_empty
           expect(exitstatus).to eq 1
         end
       end
@@ -1077,7 +1090,7 @@ RSpec.describe 'command line', type: :cli do
             Skipped #{red 'dolar'}
             Automatically skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt}
           STDOUT
 
@@ -1090,16 +1103,18 @@ RSpec.describe 'command line', type: :cli do
             Skipped #{red 'dolar'}
             Automatically skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt 'S'}
             Skipped #{red 'amet'}
+          STDOUT
+
+          expect(stderr).to have_output(<<~STDERR)
 
             1 file checked
             3 errors found
             3 errors skipped
-          STDOUT
+          STDERR
 
-          expect(stderr).to be_empty
           expect(exitstatus).to eq 1
         end
       end
@@ -1227,7 +1242,7 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolar'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt}
           STDOUT
 
@@ -1250,7 +1265,7 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolar'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1271,7 +1286,7 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolar'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1279,11 +1294,13 @@ RSpec.describe 'command line', type: :cli do
               Add #{red 'amet'} to which wordlist? [#{bold 'e'}]
 
             Added #{red 'amet'} to the #{bold 'english'} wordlist
+          STDOUT
+          expect(stderr).to have_output(<<~STDERR)
 
             1 file checked
             2 errors found
             2 words added
-          STDOUT
+          STDERR
 
           expect(english_wordlist.read).to eq <<~FILE
             amet
@@ -1292,7 +1309,6 @@ RSpec.describe 'command line', type: :cli do
             lorem
           FILE
 
-          expect(stderr).to be_empty
           expect(exitstatus).to eq 0
         end
       end
@@ -1337,7 +1353,7 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolar'} to the #{bold 'lorem'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt}
           STDOUT
         end
@@ -1410,7 +1426,7 @@ RSpec.describe 'command line', type: :cli do
               Replace all #{red 'dolar'} with: dolar
           STDOUT
 
-          stdin.print "es\n"
+          stdin.print "a\n"
 
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1418,16 +1434,16 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: dolares
+              Replace all #{red 'dolar'} with: dolara
 
-            Replaced all #{red 'dolar'} with #{green 'dolares'}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
+            Replaced all #{red 'dolar'} with #{green 'dolara'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolara'}
+            Did you mean: [#{bold '1'}] dola, [#{bold '2'}] dollar
             #{prompt}
           STDOUT
 
           expect(check_file.read).to eq <<~FILE
-            lorem ipsum dolares
+            lorem ipsum dolara
 
               dolar amet
           FILE
@@ -1440,16 +1456,16 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: dolares
+              Replace all #{red 'dolar'} with: dolara
 
-            Replaced all #{red 'dolar'} with #{green 'dolares'}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
+            Replaced all #{red 'dolar'} with #{green 'dolara'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolara'}
+            Did you mean: [#{bold '1'}] dola, [#{bold '2'}] dollar
             #{prompt 'a'}
 
               [#{bold 'e'}] english
               [^#{bold 'C'}] to go back
-              Add #{red 'dolares'} to which wordlist? [ ]
+              Add #{red 'dolara'} to which wordlist? [ ]
           STDOUT
 
           stdin.print 'e'
@@ -1460,32 +1476,32 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: dolares
+              Replace all #{red 'dolar'} with: dolara
 
-            Replaced all #{red 'dolar'} with #{green 'dolares'}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
+            Replaced all #{red 'dolar'} with #{green 'dolara'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolara'}
+            Did you mean: [#{bold '1'}] dola, [#{bold '2'}] dollar
             #{prompt 'a'}
 
               [#{bold 'e'}] english
               [^#{bold 'C'}] to go back
-              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+              Add #{red 'dolara'} to which wordlist? [#{bold 'e'}]
 
-            Added #{red 'dolares'} to the #{bold 'english'} wordlist
-            Automatically replaced #{red 'dolar'} with #{green 'dolares'}
-            #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Added #{red 'dolara'} to the #{bold 'english'} wordlist
+            Automatically replaced #{red 'dolar'} with #{green 'dolara'}
+            #{aqua 'check.txt:3:9'} dolara #{red 'amet'}
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt}
           STDOUT
 
           expect(check_file.read).to eq <<~FILE
-            lorem ipsum dolares
+            lorem ipsum dolara
 
-              dolares amet
+              dolara amet
           FILE
 
           expect(english_wordlist.read).to eq <<~FILE
-            dolares
+            dolara
             ipsum
             lorem
           FILE
@@ -1498,32 +1514,34 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: dolares
+              Replace all #{red 'dolar'} with: dolara
 
-            Replaced all #{red 'dolar'} with #{green 'dolares'}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
+            Replaced all #{red 'dolar'} with #{green 'dolara'}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolara'}
+            Did you mean: [#{bold '1'}] dola, [#{bold '2'}] dollar
             #{prompt 'a'}
 
               [#{bold 'e'}] english
               [^#{bold 'C'}] to go back
-              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+              Add #{red 'dolara'} to which wordlist? [#{bold 'e'}]
 
-            Added #{red 'dolares'} to the #{bold 'english'} wordlist
-            Automatically replaced #{red 'dolar'} with #{green 'dolares'}
-            #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Added #{red 'dolara'} to the #{bold 'english'} wordlist
+            Automatically replaced #{red 'dolar'} with #{green 'dolara'}
+            #{aqua 'check.txt:3:9'} dolara #{red 'amet'}
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt 's'}
             Skipped #{red('amet')}
+          STDOUT
+
+          expect(stderr).to have_output(<<~STDERR)
 
             1 file checked
             4 errors found
             1 error skipped
             2 errors fixed
             1 word added
-          STDOUT
+          STDERR
 
-          expect(stderr).to be_empty
           expect(exitstatus).to eq 1
         end
       end
@@ -1795,7 +1813,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt '2'}
             Replaced #{red('dolar')} with #{green('dola')}
             #{aqua 'check.txt:3:7'} dola #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt}
           STDOUT
 
@@ -1829,7 +1847,7 @@ RSpec.describe 'command line', type: :cli do
               Replace #{red 'dolar'} with: dolar
           STDOUT
 
-          stdin.print "es\n"
+          stdin.print "a\n"
 
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1837,16 +1855,16 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: dolares
+              Replace #{red 'dolar'} with: dolara
 
-            Replaced #{red('dolar')} with #{green('dolares')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
+            Replaced #{red('dolar')} with #{green('dolara')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolara'}
+            Did you mean: [#{bold '1'}] dola, [#{bold '2'}] dollar
             #{prompt}
           STDOUT
 
           expect(check_file.read).to eq <<~FILE
-            lorem ipsum dolares
+            lorem ipsum dolara
 
               dolar amet
           FILE
@@ -1859,16 +1877,16 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: dolares
+              Replace #{red 'dolar'} with: dolara
 
-            Replaced #{red('dolar')} with #{green('dolares')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
+            Replaced #{red('dolar')} with #{green('dolara')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolara'}
+            Did you mean: [#{bold '1'}] dola, [#{bold '2'}] dollar
             #{prompt 'a'}
 
               [#{bold 'e'}] english
               [^#{bold 'C'}] to go back
-              Add #{red 'dolares'} to which wordlist? [ ]
+              Add #{red 'dolara'} to which wordlist? [ ]
           STDOUT
 
           stdin.print 'e'
@@ -1879,25 +1897,25 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: dolares
+              Replace #{red 'dolar'} with: dolara
 
-            Replaced #{red('dolar')} with #{green('dolares')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
+            Replaced #{red('dolar')} with #{green('dolara')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolara'}
+            Did you mean: [#{bold '1'}] dola, [#{bold '2'}] dollar
             #{prompt 'a'}
 
               [#{bold 'e'}] english
               [^#{bold 'C'}] to go back
-              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+              Add #{red 'dolara'} to which wordlist? [#{bold 'e'}]
 
-            Added #{red 'dolares'} to the #{bold 'english'} wordlist
+            Added #{red 'dolara'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola, [#{bold '3'}] dolares
+            Did you mean: [#{bold '1'}] dolara, [#{bold '2'}] dollar, [#{bold '3'}] dola
             #{prompt}
           STDOUT
 
           expect(english_wordlist.read).to eq <<~FILE
-            dolares
+            dolara
             ipsum
             lorem
           FILE
@@ -1910,24 +1928,24 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: dolares
+              Replace #{red 'dolar'} with: dolara
 
-            Replaced #{red('dolar')} with #{green('dolares')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
+            Replaced #{red('dolar')} with #{green('dolara')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolara'}
+            Did you mean: [#{bold '1'}] dola, [#{bold '2'}] dollar
             #{prompt 'a'}
 
               [#{bold 'e'}] english
               [^#{bold 'C'}] to go back
-              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+              Add #{red 'dolara'} to which wordlist? [#{bold 'e'}]
 
-            Added #{red 'dolares'} to the #{bold 'english'} wordlist
+            Added #{red 'dolara'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola, [#{bold '3'}] dolares
+            Did you mean: [#{bold '1'}] dolara, [#{bold '2'}] dollar, [#{bold '3'}] dola
             #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt}
           STDOUT
 
@@ -1939,35 +1957,36 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: dolares
+              Replace #{red 'dolar'} with: dolara
 
-            Replaced #{red('dolar')} with #{green('dolares')}
-            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
+            Replaced #{red('dolar')} with #{green('dolara')}
+            #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolara'}
+            Did you mean: [#{bold '1'}] dola, [#{bold '2'}] dollar
             #{prompt 'a'}
 
               [#{bold 'e'}] english
               [^#{bold 'C'}] to go back
-              Add #{red 'dolares'} to which wordlist? [#{bold 'e'}]
+              Add #{red 'dolara'} to which wordlist? [#{bold 'e'}]
 
-            Added #{red 'dolares'} to the #{bold 'english'} wordlist
+            Added #{red 'dolara'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola, [#{bold '3'}] dolares
+            Did you mean: [#{bold '1'}] dolara, [#{bold '2'}] dollar, [#{bold '3'}] dola
             #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
             #{prompt 's'}
             Skipped #{red 'amet'}
+          STDOUT
+          expect(stderr).to have_output(<<~STDERR)
 
             1 file checked
             4 errors found
             2 errors skipped
             1 error fixed
             1 word added
-          STDOUT
+          STDERR
 
-          expect(stderr).to be_empty
           expect(exitstatus).to eq 1
         end
       end

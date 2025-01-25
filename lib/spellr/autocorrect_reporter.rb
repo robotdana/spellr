@@ -7,7 +7,7 @@ require_relative 'maybe_suggester'
 module Spellr
   class AutocorrectReporter < BaseReporter
     def finish
-      puts "\n"
+      warn "\n"
       print_count(:checked, 'file')
       print_value(total, 'error', 'found')
       print_count(:total_fixed, 'error', 'fixed', hide_zero: true)

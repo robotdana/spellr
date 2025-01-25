@@ -8,7 +8,7 @@ class String
 
   def spellr_normalize
     @@spellr_normalize.fetch(to_s) do |term|
-      @@spellr_normalize[term] = "#{term.strip.downcase.unicode_normalize.tr('’', "'")}\n"
+      @@spellr_normalize[term] = term.strip.downcase.unicode_normalize.tr('’', "'").to_s
     end
   end
 end

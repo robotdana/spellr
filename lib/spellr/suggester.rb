@@ -17,12 +17,11 @@ module Spellr
           all_suggestions(term, jaro_winkler_similarity_threshold, wordlist)
         end
         suggestions.uniq!(&:word)
-        suggestions.sort_by!(&:jaro_winkler_similarity)
-        suggestions.reverse!
+        suggestions.sort_by! { |suggestion| [-suggestion.jaro_winkler_similarity, suggestion.word] }
 
         suggestions = reduce_suggestions(suggestions, term, limit)
 
-        suggestions.map { |suggestion| suggestion.word.send(token.case_method).chomp }
+        suggestions.map { |suggestion| suggestion.word.send(token.case_method) }
       end
 
       def slow?
@@ -42,11 +41,11 @@ module Spellr
       private
 
       def all_suggestions(term, jaro_winkler_similarity_threshold, wordlist)
-        wordlist.filter_map do |word|
+        wordlist.reduce([]) do |acc, word|
           similarity = ::JaroWinkler.similarity(word, term)
-          next unless similarity >= jaro_winkler_similarity_threshold
+          next acc unless similarity >= jaro_winkler_similarity_threshold
 
-          Suggestion.new(word, similarity)
+          acc << Suggestion.new(word, similarity)
         end
       end
 

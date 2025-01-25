@@ -6,7 +6,7 @@ require_relative 'base_reporter'
 module Spellr
   class WordlistReporter < Spellr::BaseReporter
     def finish
-      puts words.sort.join unless words.empty?
+      puts words.sort.join("\n") unless words.empty?
     end
 
     def call(token)

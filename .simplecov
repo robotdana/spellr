@@ -10,44 +10,15 @@ SimpleCov.add_filter '/backports'
 SimpleCov.add_filter '/spec/'
 # because i have to skip and mock some of it for expediency reasons
 SimpleCov.add_filter '/bin/generate'
-require 'parallel'
-
-# internals of Parallel i'm sure it's fine
-# this is the only way that i can tell to coverage inside parallel blocks
-# without modifying my code in ugly ways
-
-module Parallel
-  def self.worker(job_factory, options, &block) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    child_read, parent_write = IO.pipe
-    parent_read, child_write = IO.pipe
-
-    pid = Process.fork do
-      # here begins my additions
-      SimpleCov.command_name "Parallel #{Process.pid}"
-      SimpleCov.formatter SimpleCov::Formatter::SimpleFormatter
-      SimpleCov.minimum_coverage 0
-      SimpleCov.print_error_status = false
-      SimpleCov.start
-      # here ends my additions
-
-      self.worker_number = options[:worker_number]
-
-      begin
-        options.delete(:started_workers).each(&:close_pipes)
-
-        parent_write.close
-        parent_read.close
-
-        process_incoming_jobs(child_read, child_write, job_factory, options, &block)
-      ensure
-        child_read.close
-        child_write.close
-      end
-    end
-
-    child_read.close
-    child_write.close
-
-    Worker.new(parent_read, parent_write, pid)
-  end
+SimpleCov.enable_for_subprocesses true
+SimpleCov.at_fork do |pid|
+  # This needs a unique name so it won't be overwritten
+  SimpleCov.command_name "#{SimpleCov.command_name} (subprocess: #{pid})"
+  # be quiet, the parent process will be in charge of output and checking coverage totals
+  SimpleCov.print_error_status = false
+  SimpleCov.formatter SimpleCov::Formatter::SimpleFormatter
+  SimpleCov.minimum_coverage 0
+  # start
+  SimpleCov.start
 end
+SimpleCov.start

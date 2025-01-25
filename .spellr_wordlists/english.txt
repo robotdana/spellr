@@ -70,7 +70,6 @@ hardcoded
 hashbang
 hashbangs
 hashbangs
-hellooo
 heuristically
 hml
 hostnames
@@ -154,8 +153,6 @@ sudo
 superselector
 svg
 symlinks
-thiswordisalsooutsidethethreshold
-thiswordisoutsidethethreshould
 thu
 titlecase
 tlds

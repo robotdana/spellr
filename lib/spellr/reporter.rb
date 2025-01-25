@@ -7,7 +7,7 @@ require 'set'
 module Spellr
   class Reporter < Spellr::BaseReporter
     def finish
-      puts "\n"
+      warn "\n"
       print_count(:checked, 'file')
       print_count(:total, 'error', 'found')
 
@@ -24,12 +24,12 @@ module Spellr
     private
 
     def interactive_command
-      puts "\nto add or replace words interactively, run:"
+      warn "\nto add or replace words interactively, run:"
       command = ['spellr', '--interactive']
       # sort is purely for repeatability for tests. so
       command.concat(counts[:filenames].to_a.sort) unless counts[:filenames].length > 20
 
-      puts "  #{Shellwords.join(command)}"
+      warn "  #{Shellwords.join(command)}"
     end
 
     def filenames

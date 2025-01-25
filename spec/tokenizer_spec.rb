@@ -8,6 +8,8 @@ RSpec::Matchers.define :have_tokens do |*expected|
   match do |actual|
     @actual = ::Spellr::Tokenizer.new(::StringIO.new(actual)).terms
     expect(@actual).to match(expected)
+    @actual = ::Spellr::Tokenizer.new(::StringIO.new(actual)).map(&:to_s)
+    expect(@actual).to match(expected)
   end
 
   diffable
@@ -277,12 +279,8 @@ RSpec.describe Spellr::Tokenizer do
       expect('this spellr:disable-line and that').to have_no_tokens
       expect('spellr:disable-line this and that').to have_no_tokens
       expect('this and that spellr:disable-line').to have_no_tokens
-    end
-
-    it 'excludes whole line with spellr:disable:line' do
-      expect('this spellr:disable:line and that').to have_no_tokens
-      expect('spellr:disable:line this and that').to have_no_tokens
-      expect('this and that spellr:disable:line').to have_no_tokens
+      expect("this and that\nthen spellr:disable-line another\nfinally")
+        .to have_tokens('this', 'and', 'that', 'finally')
     end
 
     it 'excludes terms between spellr:disable and spellr:enable across multiple lines' do

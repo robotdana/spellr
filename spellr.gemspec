@@ -43,7 +43,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.93.1'
   spec.add_development_dependency 'rubocop-rspec', '~> 1.44.1'
-  spec.add_development_dependency 'simplecov', '~> 0.18.5'
+  spec.add_development_dependency 'simplecov', '~> 0.22.0'
   spec.add_development_dependency 'simplecov-console'
   spec.add_development_dependency 'tty_string', '>= 2.0.3'
   spec.add_development_dependency 'webmock', '~> 3.8'

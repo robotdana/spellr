@@ -52,7 +52,7 @@ module Spellr
     end
 
     def print_value(value, noun, verb, hide_zero: false)
-      puts "#{pluralize noun, value} #{verb}" if !hide_zero || value.positive?
+      warn "#{pluralize noun, value} #{verb}" if !hide_zero || value.positive?
     end
   end
 end

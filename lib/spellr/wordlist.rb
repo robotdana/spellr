@@ -41,23 +41,29 @@ module Spellr
       touch
       @include[term] = true
       insert_sorted(term)
-      @path.write(words.join) # we don't need to clear the cache
+      write(words, clear_cache: false)
     end
 
     def words
-      @words ||= (exist? ? @path.readlines : [])
+      @words ||= if exist?
+        @path.readlines(chomp: true)
+      else
+        []
+      end
     end
     alias_method :to_a, :words
 
     def clean(file = @path)
       require_relative 'tokenizer'
-      write(Spellr::Tokenizer.new(file, skip_key: false).normalized_terms.join)
+      write(Spellr::Tokenizer.new(file, skip_key: false).normalized_terms)
     end
 
-    def write(content)
+    def write(words, clear_cache: true)
+      content = words.join("\n")
+      content << "\n" unless words.empty?
       @path.write(content)
 
-      clear_cache
+      self.clear_cache if clear_cache
     end
 
     def exist?
@@ -70,8 +76,7 @@ module Spellr
       return if exist?
 
       @path.dirname.mkpath
-      @path.write('')
-      clear_cache
+      write([])
     end
 
     def length
