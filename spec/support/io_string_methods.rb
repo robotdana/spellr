@@ -21,6 +21,10 @@ class ExitStatus
   end
 end
 
+def tty_string(string)
+  TTYString.parse(string.to_s.gsub(/\e\[6n/, ''), style: :render, unknown: :raise)
+end
+
 # just so i get a nice diff.
 RSpec::Matchers.define :have_output do |expected|
   match do |actual|
@@ -36,7 +40,7 @@ end
 # just so i get a nice diff.
 RSpec::Matchers.define :have_unordered_output do |expected|
   match do |actual|
-    @actual = TTYString.new(actual, clear_style: false).to_s.split("\n")
+    @actual = tty_string(actual).to_s.split("\n")
     expect(@actual).to match_array(expected.to_s.split("\n"))
   end
 
@@ -49,7 +53,7 @@ module StringIOStringMethods
   end
 
   def to_s
-    TTYString.new(string, clear_style: false).to_s
+    tty_string(string)
   end
 
   def to_str

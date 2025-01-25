@@ -881,7 +881,7 @@ RSpec.describe 'command line', type: :cli do
     end
 
     describe '--interactive' do
-      it 'returns the first unmatched term and a prompt', :did_you_mean do
+      it 'returns the first unmatched term and a prompt' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -894,7 +894,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the interactive command help', :did_you_mean do
+      it 'returns the interactive command help' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -954,7 +954,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'exits when ctrl C', :did_you_mean do
+      it 'exits when ctrl C' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -975,7 +975,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'ignores up', :did_you_mean do
+      it 'ignores up' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -998,7 +998,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after skipping', :did_you_mean do
+      it 'returns the next unmatched term and a prompt after skipping' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1030,7 +1030,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt}
           STDOUT
 
@@ -1046,7 +1046,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt 's'}
             Skipped #{red 'amet'}
 
@@ -1060,7 +1060,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after skipping with S', :did_you_mean do
+      it 'returns the next unmatched term and a prompt after skipping with S' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1077,7 +1077,7 @@ RSpec.describe 'command line', type: :cli do
             Skipped #{red 'dolar'}
             Automatically skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt}
           STDOUT
 
@@ -1090,7 +1090,7 @@ RSpec.describe 'command line', type: :cli do
             Skipped #{red 'dolar'}
             Automatically skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt 'S'}
             Skipped #{red 'amet'}
 
@@ -1104,7 +1104,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'can bail early when trying to add with a', :did_you_mean do
+      it 'can bail early when trying to add with a' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1155,7 +1155,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'asks me again when i chose a missing language when adding with a', :did_you_mean do
+      it 'asks me again when i chose a missing language when adding with a' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1194,7 +1194,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after adding with a', :did_you_mean do
+      it 'returns the next unmatched term and a prompt after adding with a' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1227,7 +1227,7 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolar'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt}
           STDOUT
 
@@ -1250,7 +1250,7 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolar'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1271,7 +1271,7 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolar'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1297,7 +1297,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'can add with a to a new wordlist', :did_you_mean do
+      it 'can add with a to a new wordlist' do
         stub_fs_file '.spellr.yml', <<~YML
           languages:
             lorem: {}
@@ -1337,13 +1337,13 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolar'} to the #{bold 'lorem'} wordlist
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt}
           STDOUT
         end
       end
 
-      it 'can bail early when trying to replace with R', :did_you_mean do
+      it 'can bail early when trying to replace with R' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1359,12 +1359,13 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: \e[32mdolar
+              Replace all #{red 'dolar'} with: dolar
           STDOUT
 
           stdin.print "something\u0003" # ctrl c
 
           expect(stdout).to have_output <<~STDOUT.chomp
+
 
 
 
@@ -1379,6 +1380,7 @@ RSpec.describe 'command line', type: :cli do
 
 
 
+
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola
             #{prompt '^C'}
@@ -1389,7 +1391,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after replacing with R', :did_you_mean do
+      it 'returns the next unmatched term and a prompt after replacing with R' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1405,7 +1407,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: \e[32mdolar
+              Replace all #{red 'dolar'} with: dolar
           STDOUT
 
           stdin.print "es\n"
@@ -1416,11 +1418,11 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: \e[32mdolares
+              Replace all #{red 'dolar'} with: dolares
 
-            \e[0mReplaced all #{red 'dolar'} with #{green 'dolares'}
+            Replaced all #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] doles, [#{bold '2'}] dollars, [#{bold '3'}] dolores
+            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
             #{prompt}
           STDOUT
 
@@ -1438,11 +1440,11 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: \e[32mdolares
+              Replace all #{red 'dolar'} with: dolares
 
-            \e[0mReplaced all #{red 'dolar'} with #{green 'dolares'}
+            Replaced all #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] doles, [#{bold '2'}] dollars, [#{bold '3'}] dolores
+            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1458,11 +1460,11 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: \e[32mdolares
+              Replace all #{red 'dolar'} with: dolares
 
-            \e[0mReplaced all #{red 'dolar'} with #{green 'dolares'}
+            Replaced all #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] doles, [#{bold '2'}] dollars, [#{bold '3'}] dolores
+            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1472,7 +1474,7 @@ RSpec.describe 'command line', type: :cli do
             Added #{red 'dolares'} to the #{bold 'english'} wordlist
             Automatically replaced #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt}
           STDOUT
 
@@ -1496,11 +1498,11 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'R'}
 
               #{lighten '[^C] to go back'}
-              Replace all #{red 'dolar'} with: \e[32mdolares
+              Replace all #{red 'dolar'} with: dolares
 
-            \e[0mReplaced all #{red 'dolar'} with #{green 'dolares'}
+            Replaced all #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] doles, [#{bold '2'}] dollars, [#{bold '3'}] dolores
+            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1510,7 +1512,7 @@ RSpec.describe 'command line', type: :cli do
             Added #{red 'dolares'} to the #{bold 'english'} wordlist
             Automatically replaced #{red 'dolar'} with #{green 'dolares'}
             #{aqua 'check.txt:3:10'} dolares #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt 's'}
             Skipped #{red('amet')}
 
@@ -1526,7 +1528,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'can bail early when trying to replace with r', :did_you_mean do
+      it 'can bail early when trying to replace with r' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1542,12 +1544,13 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolar
+              Replace #{red 'dolar'} with: dolar
           STDOUT
 
           stdin.print "\u0003" # ctrl c
 
           expect(stdout).to have_output <<~STDOUT.chomp
+
 
 
 
@@ -1562,6 +1565,7 @@ RSpec.describe 'command line', type: :cli do
 
 
 
+
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola
             #{prompt '^C'}
@@ -1572,7 +1576,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'disallows replacing with nothing when replacing with r', :did_you_mean do
+      it 'disallows replacing with nothing when replacing with r' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1588,19 +1592,21 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolar
+              Replace #{red 'dolar'} with: dolar
           STDOUT
 
           stdin.print "\b" * 17
 
+          # rubocop:disable Lint/LiteralInInterpolation
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
             Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32m
+              Replace #{red 'dolar'} with:#{' '}
           STDOUT
+          # rubocop:enable Lint/LiteralInInterpolation
 
           stdin.puts ''
 
@@ -1612,7 +1618,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolar
+              Replace #{red 'dolar'} with: dolar
           STDOUT
 
           expect(stderr).to have_output ''
@@ -1620,7 +1626,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'disallows replacing with the same when replacing with r', :did_you_mean do
+      it 'disallows replacing with the same when replacing with r' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1636,7 +1642,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolar
+              Replace #{red 'dolar'} with: dolar
           STDOUT
 
           stdin.puts ''
@@ -1650,7 +1656,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolar
+              Replace #{red 'dolar'} with: dolar
           STDOUT
 
           expect(stderr).to be_empty
@@ -1658,7 +1664,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the help prompt with one button when theres one suggestion', :did_you_mean do
+      it 'returns the help prompt with one button when theres one suggestion' do
         spellr '-i' do
           stub_fs_file 'check.txt', <<~FILE
             hellooo
@@ -1751,7 +1757,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'prompts the next unmatched term after replacing with a suggestion', :did_you_mean do
+      it 'prompts the next unmatched term after replacing with a suggestion' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1789,7 +1795,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt '2'}
             Replaced #{red('dolar')} with #{green('dola')}
             #{aqua 'check.txt:3:7'} dola #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt}
           STDOUT
 
@@ -1804,7 +1810,7 @@ RSpec.describe 'command line', type: :cli do
         end
       end
 
-      it 'returns the next unmatched term and a prompt after replacing with r', :did_you_mean do
+      it 'returns the next unmatched term and a prompt after replacing with r' do
         spellr '-i' do
           expect(stdout).to have_output <<~STDOUT.chomp
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolar'}
@@ -1820,7 +1826,7 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolar
+              Replace #{red 'dolar'} with: dolar
           STDOUT
 
           stdin.print "es\n"
@@ -1831,11 +1837,11 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolares
+              Replace #{red 'dolar'} with: dolares
 
-            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
+            Replaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] doles, [#{bold '2'}] dollars, [#{bold '3'}] dolores
+            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
             #{prompt}
           STDOUT
 
@@ -1853,11 +1859,11 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolares
+              Replace #{red 'dolar'} with: dolares
 
-            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
+            Replaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] doles, [#{bold '2'}] dollars, [#{bold '3'}] dolores
+            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1873,11 +1879,11 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolares
+              Replace #{red 'dolar'} with: dolares
 
-            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
+            Replaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] doles, [#{bold '2'}] dollars, [#{bold '3'}] dolores
+            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1886,7 +1892,7 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolares'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola
+            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola, [#{bold '3'}] dolares
             #{prompt}
           STDOUT
 
@@ -1904,11 +1910,11 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolares
+              Replace #{red 'dolar'} with: dolares
 
-            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
+            Replaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] doles, [#{bold '2'}] dollars, [#{bold '3'}] dolores
+            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1917,11 +1923,11 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolares'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola
+            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola, [#{bold '3'}] dolares
             #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt}
           STDOUT
 
@@ -1933,11 +1939,11 @@ RSpec.describe 'command line', type: :cli do
             #{prompt 'r'}
 
               #{lighten '[^C] to go back'}
-              Replace #{red 'dolar'} with: \e[32mdolares
+              Replace #{red 'dolar'} with: dolares
 
-            \e[0mReplaced #{red('dolar')} with #{green('dolares')}
+            Replaced #{red('dolar')} with #{green('dolares')}
             #{aqua 'check.txt:1:12'} lorem ipsum #{red 'dolares'}
-            Did you mean: [#{bold '1'}] doles, [#{bold '2'}] dollars, [#{bold '3'}] dolores
+            Did you mean: [#{bold '1'}] dollars, [#{bold '2'}] dolores, [#{bold '3'}] doles, [#{bold '4'}] dares
             #{prompt 'a'}
 
               [#{bold 'e'}] english
@@ -1946,11 +1952,11 @@ RSpec.describe 'command line', type: :cli do
 
             Added #{red 'dolares'} to the #{bold 'english'} wordlist
             #{aqua 'check.txt:3:2'} #{red 'dolar'} amet
-            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola
+            Did you mean: [#{bold '1'}] dollar, [#{bold '2'}] dola, [#{bold '3'}] dolares
             #{prompt 's'}
             Skipped #{red 'dolar'}
             #{aqua 'check.txt:3:8'} dolar #{red 'amet'}
-            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet
+            Did you mean: [#{bold '1'}] ament, [#{bold '2'}] armet, [#{bold '3'}] amt, [#{bold '4'}] kamet, [#{bold '5'}] ramet
             #{prompt 's'}
             Skipped #{red 'amet'}
 

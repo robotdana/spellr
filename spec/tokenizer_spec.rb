@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'stringio'
 require 'spec_helper'
 require_relative '../lib/spellr/tokenizer'
 

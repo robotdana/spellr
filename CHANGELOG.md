@@ -1,3 +1,10 @@
+# v0.12.0
+
+- Require stringio (thanks @alexdeng-mp)
+- Remove implicit did_you_mean dependency, inline and specialize what of did_you_mean this was using.
+- Update rubies this is tested with
+- Replace readline dependency with reline
+
 # v0.11.0
 - Remove explicit did_you_mean dependency
   (if you want the suggestions in ruby 2.5 & 2.6, you'll need to add did_you_mean to your Gemfile directly).

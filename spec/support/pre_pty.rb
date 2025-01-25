@@ -15,7 +15,7 @@ module Spellr
     ENV['SPELLR_TEST_PWD']
   end
 
-  class Suggester
+  module Suggester
     class << self
       undef slow?
 

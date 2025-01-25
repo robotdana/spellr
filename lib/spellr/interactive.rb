@@ -34,7 +34,7 @@ module Spellr
 
       super(token) unless only_prompt
 
-      suggestions = ::Spellr::Suggester.fast_suggestions(token)
+      suggestions = ::Spellr::Suggester.fast_suggestions(token, 5)
       print_suggestions(suggestions) unless only_prompt
 
       prompt(token, suggestions)
@@ -107,7 +107,7 @@ module Spellr
       print "\r\e[K"
       (lines - 1).times do
         sleep 0.01
-        print "\r\e[1T\e[2K"
+        print "\r\e[0m\e[1T\e[2K"
       end
     end
 

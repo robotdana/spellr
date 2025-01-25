@@ -5,7 +5,7 @@ require_relative '../lib/spellr/maybe_suggester'
 require_relative '../lib/spellr/token'
 require_relative '../lib/spellr/tokenizer'
 
-RSpec.describe Spellr::Suggester, :did_you_mean do
+RSpec.describe Spellr::Suggester do
   before { with_temp_dir }
 
   describe '.suggestions' do
@@ -64,7 +64,7 @@ RSpec.describe Spellr::Suggester, :did_you_mean do
     before do
       described_class.slow? # ensure the instance variable is there to remove
       described_class.remove_instance_variable(:@slow)
-      allow(::JaroWinkler).to receive(:method).with(:distance)
+      allow(::JaroWinkler).to receive(:method).with(:similarity)
         .and_return(instance_double(Method, source_location: source_location))
     end
 
@@ -72,27 +72,27 @@ RSpec.describe Spellr::Suggester, :did_you_mean do
       described_class.remove_instance_variable(:@slow)
     end
 
-    context 'with ruby JaroWinkler.describe' do
+    context 'with ruby JaroWinkler.similarity' do
       let(:source_location) { 'describe.rb' }
 
       it { is_expected.to be_slow }
 
       it 'is memoized' do
         expect(subject).to be_slow
-        allow(::JaroWinkler).to receive(:method).with(:distance)
+        allow(::JaroWinkler).to receive(:method).with(:similarity)
           .and_return(instance_double(Method, source_location: nil))
         expect(subject).to be_slow
       end
     end
 
-    context 'with c JaroWinkler.describe' do
+    context 'with c JaroWinkler.similarity' do
       let(:source_location) { nil }
 
       it { is_expected.not_to be_slow }
 
       it 'is memoized' do
         expect(subject).not_to be_slow
-        allow(::JaroWinkler).to receive(:method).with(:distance)
+        allow(::JaroWinkler).to receive(:method).with(:similarity)
           .and_return(instance_double(Method, source_location: 'whatever.rb'))
         expect(subject).not_to be_slow
       end

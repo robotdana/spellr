@@ -17,14 +17,6 @@ RSpec.describe Spellr::NullSuggester do
     it { is_expected.to be_empty }
   end
 
-  describe '#suggestions' do
-    subject { ::Spellr::NullSuggester.new(::Spellr::Wordlist.new('ruby')).suggestions(word) }
-
-    let(:word) { 'unword' } # spellr:disable-line
-
-    it { is_expected.to be_empty }
-  end
-
   describe '.slow?' do
     subject { described_class }
 

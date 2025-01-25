@@ -78,20 +78,6 @@ module Spellr
       to_a.length
     end
 
-    def suggestions(term)
-      suggester.suggestions(term)
-    end
-
-    private
-
-    def suggester
-      @suggester ||= begin
-        require_relative 'maybe_suggester'
-
-        ::Spellr::Suggester.new(self)
-      end
-    end
-
     def insert_sorted(term)
       insert_at = words.bsearch_index { |value| value >= term }
       insert_at ? words.insert(insert_at, term) : words.push(term)
@@ -99,7 +85,6 @@ module Spellr
 
     def clear_cache
       @words = nil
-      @suggester = nil
       @include = {}
       remove_instance_variable(:@exist) if defined?(@exist)
     end

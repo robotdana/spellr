@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'pathname'
+require 'stringio'
 require_relative '../../../lib/spellr/wordlist'
 
 module Write

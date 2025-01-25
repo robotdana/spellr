@@ -1,5 +1,6 @@
 abc
 addable
+alexdeng
 alnum
 arg
 arglist
@@ -122,6 +123,7 @@ punycode
 pwd
 rakefile
 rdoc
+readline
 readme
 redisplay
 regexps
@@ -142,6 +144,7 @@ stdin
 stdlib
 stdout
 str
+stringio
 stringscanner
 strscan
 struct

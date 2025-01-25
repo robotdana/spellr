@@ -1,4 +1,5 @@
 cov
+damerau
 kwarg
 matchdata
 nocov

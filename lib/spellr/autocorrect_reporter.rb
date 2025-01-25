@@ -27,7 +27,7 @@ module Spellr
     end
 
     def handle_replace(token)
-      replacement = ::Spellr::Suggester.suggestions(token).first
+      replacement = ::Spellr::Suggester.suggestions(token, 1).first
       return increment(:total_unfixed) unless replacement
 
       token.replace(replacement)
