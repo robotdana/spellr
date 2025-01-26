@@ -17,7 +17,7 @@ task default: [:spec, :rubocop, :spellr, :leftovers, :build]
 
 namespace :release do
   task :dockerhub_push do
-    system("#{__dir__}/bin/dockerhub_push")
+    system('bin/dockerhub_push', chdir: __dir__)
   end
 end
 Rake::Task[:release].enhance([:"release:dockerhub_push"])

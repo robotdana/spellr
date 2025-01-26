@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -xeuo pipefail
 
 version_tag=$(git describe --exact-match --abbrev=0)
-
-docker build -t robotdana/spellr:$version_tag -t robotdana/spellr:latest .
-# prove it works
-docker run -it -v $PWD:/app robotdana/spellr:$version_tag --version
+. ./bin/docker_build $version_tag
 
 docker push robotdana/spellr:$version_tag
 docker push robotdana/spellr:latest

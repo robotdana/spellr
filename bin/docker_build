@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+version_tag=${1-"v$(grep -F VERSION lib/spellr/version.rb | cut -d"'" -f2)"}
+if (( ${#version_tag} < 7 )); then
+  echo "version '$version_tag' doesn't look correct"
+  exit 1
+fi
+
+docker build -t robotdana/spellr:$version_tag -t robotdana/spellr:latest .
+
+# prove it works
+[[ v$(docker run -v $PWD:/app robotdana/spellr:$version_tag --version) == $version_tag ]]

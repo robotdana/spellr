@@ -10,11 +10,14 @@
 /.simplecov
 /.spellr.yml
 /.travis.yml
+/Gemfile.lock
 /Dockerfile
 /Rakefile
 /vendor/
 /.bundle/
 /.github
-/spec
-/bin
-/.spellr_wordlists
+/pkg
+/tmp
+/coverage
+/.ruby-version
+/.rspec_status

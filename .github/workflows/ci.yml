@@ -74,3 +74,9 @@ jobs:
         bundler-cache: true
     - run: bundle exec rake build
 
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - run: bin/docker_build
+
